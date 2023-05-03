@@ -25,11 +25,12 @@
 
     // SVG has very specific requirements for colour specification, baseline
     // all colors to #rrggbb. This converts: 'rgb(rrr, ggg, bbb)' and '#rgb'.
+    // Although it could also just be Inkscape, SVG does have a broad range
+    // of color possibilities.
     var rgb2hex = (rgb) => {
-      if ( !rgb ) { return "none" }
-      if ( rgb === null ) { return "none" }
+      if ( !rgb || rgb === null || rgb == "none" ) { return "none" }
 
-      rgb3 = rgb.match(/^#(.)(.)(.)$/);
+      var rgb3 = rgb.match(/^#(.)(.)(.)$/);
       if ( rgb3 ) {
         return ("#" +rgb3[1]+rgb3[1]+rgb3[2]+rgb3[2]+rgb3[3]+rgb3[3]);
       }
@@ -38,7 +39,21 @@
       if ( rgb3 ) { return rgb; }
 
       rgb3 = rgb.match(/^rgb\(([0-9]+),\s+([0-9]+),\s+([0-9]+)/);
-      if ( rgb3 === null ) { return rgb; }
+      if ( rgb3 === null ) {
+        var rgb4 = rgb.match(/^rgba\(([0-9]+),\s+([0-9]+),\s+([0-9]+),\s+([0-9]+)/);
+        if ( rgb4 ) {
+          return {
+            clr: ("#" +
+                  ("0" + parseInt(rgb4[1],10).toString(16)).slice(-2) +
+                  ("0" + parseInt(rgb4[2],10).toString(16)).slice(-2) +
+                  ("0" + parseInt(rgb4[3],10).toString(16)).slice(-2) ),
+            opa: rgb4[4]
+          }
+        } else {
+          console.log( "Screenshot node: returning unknown color: " + rgb );
+          return rgb;
+        }
+      }
 
       return "#" +
         ("0" + parseInt(rgb3[1],10).toString(16)).slice(-2) +
@@ -55,19 +70,28 @@
         var origElem = origElems[idx];
 
         [
-          "fill", "stroke"
-        ].forEach( function(attrname) {
-          elem.setAttribute(attrname,
-                            rgb2hex($(origElem).attr(attrname) ||
-                                    $(origElem).css(attrname) ));
-        });
-
-        [
-          "stroke-width","fill-opacity","stroke-opacity","opacity"
+          "stroke-width","fill-opacity","stroke-opacity","opacity",
+          "stroke-dasharray"
         ].forEach(function(attrname) {
           elem.setAttribute(attrname,
                             $(origElem).attr(attrname) ||
                             $(origElem).css(attrname));
+        });
+
+        [
+          "fill", "stroke"
+        ].forEach( function(attrname) {
+          var val = rgb2hex($(origElem).attr(attrname) ||
+                            $(origElem).css(attrname) );
+
+          // Browsers/CSS has the color 'transparent', SVG is oblivious to
+          // such frills and whistles, instead opacity to the rescue.
+          if ( typeof val == "object" ) {
+            elem.setAttribute(attrname + "-opacity", val.opa);
+            elem.setAttribute(attrname, val.clr);
+          } else {
+            elem.setAttribute(attrname,val);
+          }
         });
 
         if ( $(origElem).hasClass('hide') ) {
@@ -91,7 +115,7 @@
         var origElem = origElems[idx];
 
         ["font-family", "font-size", "font-size-adjust", "font-stretch",
-         "font-style", "font-variant", "font-weight"
+         "font-style", "font-variant", "font-weight", "text-anchor"
         ].forEach( function(attrname) {
           elem.setAttribute(attrname,
                             $(origElem).attr(attrname) ||
