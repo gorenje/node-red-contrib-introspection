@@ -1,14 +1,16 @@
 <script type="text/javascript">
   RED.nodes.registerType('Screenshot',{
     color: '#e5e4ef',
-    icon: "subflow.svg",
-    category: 'Writer Map Tools',
+    icon: "font-awesome/fa-camera",
+    category: 'introspection',
     paletteLabel: "Screenshot",
     defaults: {
       name: {
         value:"",
       },
-      screenshot: {value:"This is the payload: {{payload}} !"},
+      screenshot: {
+        value:"Please wait, screenshot being prepared ..."
+      },
     },
     inputs:0,
     outputs:0,
@@ -24,8 +26,6 @@
     oneditprepare: function() {
       const that = this;
       const stateId = RED.editor.generateViewStateId("node", this, "");
-
-      $('#node-input-screenshot').val("please wait ...");
 
       if (!this.field) {
         this.field = 'payload';
@@ -153,12 +153,10 @@
       convertCssToAttr(doc.getElementsByTagName("text"));
       convertFontsToAttr(doc.getElementsByTagName("text"));
 
-      // inline image data, assume that all images are SVGs
+      // inline image data. Image types supported: Jpeg, Png and Svg.
       var imageColl = doc.getElementsByTagName("image");
-      var idx = 0;
-      var numItems = imageColl.length;
 
-      var getDataAndCallbackWhenDone = (elem, cb) => {
+      var getDataAndCallbackWhenDone = (elem, cntr, cb) => {
         var postfix = elem.getAttribute("xlink:href").substr(-4,4).toLowerCase();
 
         switch(postfix){
@@ -191,9 +189,9 @@
               elem.setAttribute("xlink:href",
                                 "data:image/"+fileType[postfix]+";base64," +
                                 arrayBufferToBase64(arrayBuffer));
-              cb()
+              cb(cntr-1)
             } else {
-              cb()
+              cb(cntr-1)
             }
           };
 
@@ -206,23 +204,26 @@
             elem.setAttribute( "xlink:href",
                                "data:image/svg+xml;base64," +
                                btoa(serializer.serializeToString(data)));
-            cb()
+            cb(cntr-1)
           });
           break;
         }
       };
 
-      var cb = () => {
-        idx++;
-        if ( idx == numItems ) {
+      var cb = (cntr) => {
+        if ( cntr < 0 ) {
           const serializer = new XMLSerializer();
           that.editor.setValue( serializer.serializeToString(doc) );
         } else {
-          getDataAndCallbackWhenDone( imageColl.item(idx), cb );
+          getDataAndCallbackWhenDone( imageColl.item(cntr), cntr, cb );
         }
       };
 
-      getDataAndCallbackWhenDone( imageColl.item(idx), cb );
+      if ( imageColl.length > 0 ) {
+        getDataAndCallbackWhenDone( imageColl.item(imageColl.length-1),
+                                    imageColl.length-1,
+                                    cb );
+      }
 
       // handle the download button under the editor window.
       $('#node-screenshot-download-svg').on("click", function (e) {

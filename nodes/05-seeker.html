@@ -1,8 +1,8 @@
 <script type="text/javascript">
   RED.nodes.registerType('Seeker',{
     color: '#e5e4ef',
-    icon: "subflow.svg",
-    category: 'Writer Map Tools',
+    icon: "font-awesome/fa-ship",
+    category: 'introspection',
     paletteLabel: "Seeker",
     defaults: {
       name: {
@@ -167,7 +167,7 @@
 
         var nodeDef = RED.nodes.getType(n.type);
         var label;
-        var sublabel = "Steps: " + path.length;
+        var sublabel = "Nodes: " + path.length;
 
         if (nodeDef) {
           var l = nodeDef.label;
@@ -272,5 +272,5 @@
 </script>
 
 <script type="text/html" data-help-name="Seeker">
-  <p>Seeker is the start of a chain of nodes to complete a full text.</p>
+  <p>Ther Seeker seeks in the sink and presents all (max 25) paths that lead to the sink.</p>
 </script>
