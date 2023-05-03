@@ -54,14 +54,16 @@
 
       this.editor.setValue( "Please wait, screenshot being prepared ..." );
 
-      var hwAttrs = (
-        'width="' + $($('svg')[0]).attr('width') + '" height="' +
-          $($('svg')[0]).attr('height') + '"'
-      );
-
       //
       // begin the SVG conversion code.
       //
+      var origSvg = $($('svg')[0]);
+
+      var hwAttrs = (
+        'width="' + origSvg.attr('width') + '" height="' +
+          origSvg.attr('height') + '"'
+      );
+
       var svgHeader = (
         '<?xml version="1.0" standalone="no"?>\r\n' +
           '<svg ' + hwAttrs + ' pointer-events="all" style="cursor: crosshair; '+
@@ -69,7 +71,7 @@
           'xmlns:xlink="http://www.w3.org/1999/xlink">\r\n'
       );
 
-      var svgBody = $($('svg')[0]).html();
+      var svgBody = origSvg.html();
 
       var parser = new DOMParser();
       var doc = parser.parseFromString(svgHeader + svgBody + '\r\n</svg>',
@@ -101,23 +103,28 @@
       // Set everything that might have been set via CSS directly on the
       // element. All styling values must be defined as attributes on the
       // SVG element.
-      var convertCssToAttr = function( collection ) {
+      var convertCssToAttr = function( collection, origElems ) {
         for ( var idx = 0; idx < collection.length; idx++ ) {
           var elem = collection.item(idx);
-          ["fill", "stroke"].forEach( function(attrname) {
+          var origElem = origElems[idx];
+
+          [
+            "fill", "stroke"
+          ].forEach( function(attrname) {
             elem.setAttribute(attrname,
-                              rgb2hex($(elem).attr(attrname) ||
-                                      $(elem).css(attrname) ));
+                              rgb2hex($(origElem).attr(attrname) ||
+                                      $(origElem).css(attrname) ));
           });
 
           [
             "stroke-width","fill-opacity","stroke-opacity","opacity"
           ].forEach(function(attrname) {
             elem.setAttribute(attrname,
-                              $(elem).attr(attrname) || $(elem).css(attrname));
+                              $(origElem).attr(attrname) ||
+                              $(origElem).css(attrname));
           });
 
-          if ( $(elem).hasClass('hide') ) {
+          if ( $(origElem).hasClass('hide') ) {
             if ( elem.tagName == "g" ) {
               // according to the SVG standard, visibility cannot be applied
               // (or better said: has no effect) on 'g' (group) elements.
@@ -132,28 +139,35 @@
       }
 
       // include font details on the text elements.
-      var convertFontsToAttr = function( collection ) {
+      var convertFontsToAttr = function( collection, origElems ) {
         for ( var idx = 0; idx < collection.length; idx++ ) {
           var elem = collection.item(idx);
+          var origElem = origElems[idx];
+
           ["font-family", "font-size", "font-size-adjust", "font-stretch",
            "font-style", "font-variant", "font-weight"
           ].forEach( function(attrname) {
             elem.setAttribute(attrname,
-                              $(elem).attr(attrname) || $(elem).css(attrname) );
+                              $(origElem).attr(attrname) ||
+                              $(origElem).css(attrname) );
           })
         }
       }
 
       // probably missed some elements ...
-      convertCssToAttr(doc.getElementsByTagName("g"));
-      convertCssToAttr(doc.getElementsByTagName("rect"));
-      convertCssToAttr(doc.getElementsByTagName("line"));
-      convertCssToAttr(doc.getElementsByTagName("path"));
-      convertCssToAttr(doc.getElementsByTagName("circle"));
-      convertCssToAttr(doc.getElementsByTagName("image"));
+      var tagnames = [ "g", "rect", "line", "path", "circle", "image" ];
+      tagnames.forEach( function(tagname) {
+        convertCssToAttr(doc.getElementsByTagName(tagname),
+                         origSvg.find(tagname));
+      });
 
-      convertCssToAttr(doc.getElementsByTagName("text"));
-      convertFontsToAttr(doc.getElementsByTagName("text"));
+      [ "text" ].forEach( function(tagname) {
+        convertCssToAttr(doc.getElementsByTagName(tagname),
+                         origSvg.find(tagname));
+
+        convertFontsToAttr(doc.getElementsByTagName(tagname),
+                           origSvg.find(tagname));
+      });
 
       // inline image data. Image types supported: Jpeg, Png and Svg.
       var imageColl = doc.getElementsByTagName("image");
