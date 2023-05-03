@@ -1,6 +1,6 @@
 {
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [
     "node-red"
   ],
@@ -8,7 +8,7 @@
   "license": "SEE LICENSE IN https://github.com/gorenje/node-red-contrib-introspection/blob/main/LICENSE",
   "author": "Gerrit Riessen <nodered@spreads-the.love> (https://spread-the.love)",
   "engines": {
-    "node": ">=16"
+    "node": ">=6"
   },
   "node-red": {
     "version": ">=2.0.0",

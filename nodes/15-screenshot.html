@@ -9,7 +9,7 @@
         value:"",
       },
       screenshot: {
-        value:"Please wait, screenshot being prepared ..."
+        value:""
       },
     },
     inputs:0,
@@ -51,6 +51,8 @@
         stateId: stateId,
         value: $("#node-input-screenshot").val()
       });
+
+      this.editor.setValue( "Please wait, screenshot being prepared ..." );
 
       var hwAttrs = (
         'width="' + $($('svg')[0]).attr('width') + '" height="' +

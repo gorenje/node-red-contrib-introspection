@@ -58,7 +58,7 @@ There is a single example flow contained in the package. There are also examples
 - [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c) - top right
 - [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e) - top left
 
-Example screenshot:
+Example screenshot: 
 
 ![example screenshot](/assets/screenshot.svg)
 
