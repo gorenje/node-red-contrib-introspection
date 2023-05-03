@@ -321,6 +321,16 @@
       })
     },
 
+    oneditsave: function() {
+      this.editor.destroy();
+      delete this.editor;
+    },
+
+    oneditcancel: function() {
+      this.editor.destroy();
+      delete this.editor;
+    },
+
     oneditresize: function(size) {
       var rows = $("#dialog-form>div:not(.node-text-editor-row)");
       var height = $("#dialog-form").height();
