@@ -1,0 +1,276 @@
+<script type="text/javascript">
+  RED.nodes.registerType('Seeker',{
+    color: '#e5e4ef',
+    icon: "subflow.svg",
+    category: 'Writer Map Tools',
+    paletteLabel: "Seeker",
+    defaults: {
+      name: {
+        value:"",
+      },
+    },
+    inputs:0,
+    outputs:1,
+
+    label: function() {
+      return (this.name || this._def.paletteLabel);
+    },
+
+    labelStyle: function() {
+      return this.name?"node_label_italic":"";
+    },
+
+    oneditprepare: function() {
+      var that = this;
+
+      this._resize = function() {
+        var rows = $("#dialog-form>div:not(.node-input-target-list-row)");
+        var height = $("#dialog-form").height();
+        for (var i=0;i<rows.length;i++) {
+          height -= $(rows[i]).outerHeight(true);
+        }
+        var editorRow = $("#dialog-form>div.node-input-target-list-row");
+        editorRow.css("height",height+"px");
+      };
+
+      var search = $("#node-input-seeker-target-filter").searchBox({
+        style: "compact",
+        delay: 300,
+        change: function() {
+          var val = $(this).val().trim().toLowerCase();
+          if (val === "") {
+            dirList.treeList("filter", null);
+            search.searchBox("count","");
+          } else {
+            var count = dirList.treeList("filter", function(item) {
+              return item.label.toLowerCase().indexOf(val) > -1 || item.node.type.toLowerCase().indexOf(val) > -1
+            });
+            search.searchBox("count",count+" / "+items.length);
+          }
+        }
+      });
+
+      var dirList = $("#node-input-seeker-target-container-div").css({
+        width: "100%",
+        height: "100%"
+      }).treeList({multi:true}).on("treelistitemmouseover", function(e, item) {
+
+        if ( item.node) {
+          if ( item.children) {
+            item.node.highlighted = true;
+            item.node.dirty = true;
+            item.children.forEach( function(n) {
+              n.node.highlighted = true;
+              n.node.dirty = true;
+            });
+          } else {
+            item.node.highlighted = true;
+            item.node.dirty = true;
+          }
+          RED.view.redraw();
+        }
+      }).on("treelistitemmouseout", function(e, item) {
+
+        if ( item.node ) {
+          if ( item.children ) {
+            item.node.highlighted = false;
+            item.node.dirty = true;
+            item.children.forEach( function(n) {
+              n.node.highlighted = false;
+              n.node.dirty = true;
+            });
+          } else {
+            item.node.highlighted = true;
+            item.node.dirty = true;
+          }
+          RED.view.redraw();
+        }
+      }).on('treelistselect', function(event, item) {
+        if ( item.node ) {
+          if ( item.children) {
+            var preselected = item.children.map(function(n) {
+              return n.node.id
+            });
+
+            RED.tray.hide();
+            RED.view.selectNodes({
+              selected: preselected,
+              onselect: function(selection) {
+                RED.tray.show();
+              },
+              oncancel: function() {
+                RED.tray.show();
+              }
+            });
+
+          } else {
+            RED.workspaces.show(item.node.z,false,false,true);
+            item.node.highlighted = true;
+            item.node.dirty = true;
+            RED.view.reveal(item.node.id,true)
+          }
+
+          RED.view.redraw();
+        }
+      });
+
+      var nodePaths = [];
+
+      var traverse = function( node, nodeIds ) {
+        if ( nodeIds.indexOf(node.id) < 0 ) {
+
+          switch( node.type ) {
+
+          case "link out":
+              node.links.forEach( function(lnkNdeId) {
+                var dNode = RED.nodes.node(lnkNdeId);
+                if ( !dNode ) { return }
+
+                traverse( dNode, [...nodeIds, node.id] );
+              });
+              break;
+
+          case "Sink":
+            nodePaths.push(nodeIds);
+            break;
+
+          default:
+            RED.nodes.getNodeLinks(node).forEach( function(l) {
+              traverse( l.target, [...nodeIds, node.id] );
+            })
+          }
+        }
+      };
+
+      RED.nodes.getNodeLinks(that).forEach( function(l) {
+        traverse(l.target, [])
+      });
+
+      var items = [];
+      var nodeItemMap = {};
+
+      var listOfNodes = function(nodePaths) {
+        var lenNodePaths = nodePaths.length;
+        if ( lenNodePaths > 25 ) {
+          var rdmIdx = Math.floor( Math.random() * lenNodePaths );
+          /* Avoid duplication by taking a random range of 25 nodes */
+          return [...nodePaths, ...nodePaths.slice(0,30)].slice(
+            rdmIdx, rdmIdx + 25
+          )
+        } else {
+          return nodePaths;
+        }
+      }
+
+      listOfNodes(nodePaths).forEach( function (path) {
+        var n = RED.nodes.node(path[0]);
+
+        var nodeDef = RED.nodes.getType(n.type);
+        var label;
+        var sublabel = "Steps: " + path.length;
+
+        if (nodeDef) {
+          var l = nodeDef.label;
+          label = (typeof l === "function" ? l.call(n) : l)||"";
+
+          if (sublabel.indexOf("subflow:") === 0) {
+            return;
+          }
+        }
+
+        if (!nodeDef || !label) {
+          label = n.type;
+        }
+
+        var children = [];
+
+        path.forEach( function(nId) {
+          var nde = RED.nodes.node(nId);
+
+          /* junctions can be undefined */
+          if ( nde === undefined ) { return }
+
+          var ndeDef = RED.nodes.getType(nde.type);
+          var labelStr = nde.type;
+
+          if ( ndeDef ) {
+            labelStr = (typeof ndeDef.label === "function" ?
+                        ndeDef.label.call(nde) : ndeDef.label) || nde.type ||"";
+          }
+
+          children.push(
+            {
+              "label":    labelStr,
+              "node":     nde,
+              "sublabel": nde.type
+            }
+          )
+        });
+
+        nodeItemMap[n.id] = {
+          node: n,
+          label: label,
+          sublabel: sublabel,
+          selected: false,
+          checkbox: false,
+          children: children
+        };
+        items.push(nodeItemMap[n.id]);
+      });
+
+      dirList.treeList('data',items);
+
+      $("#node-input-seeker-target-select").on("click", function(e) {
+        e.preventDefault();
+        var preselected = dirList.treeList('selected').map(function(n) {
+          return n.node.id
+        });
+
+        RED.tray.hide();
+        RED.view.selectNodes({
+          selected: preselected,
+          onselect: function(selection) {
+            RED.tray.show();
+          },
+          oncancel: function() {
+            RED.tray.show();
+          },
+          filter: function(n) {
+            return n.id !== that.id;
+          }
+        });
+      })
+    },
+
+    oneditsave: function() {
+    },
+
+    oneditresize: function(size) {
+      this._resize();
+    }
+
+});
+</script>
+
+<script type="text/html" data-template-name="Seeker">
+
+  <div class="form-row node-input-target-row">
+    <button id="node-input-seeker-target-select" class="red-ui-button">Show Selected</button>
+  </div>
+
+  <div class="form-row node-input-target-row node-input-target-list-row" style="position: relative; min-height: 100px">
+    <div style="position: absolute; top: -30px; right: 0;"><input type="text" id="node-input-seeker-target-filter"></div>
+
+    <div id="node-input-seeker-target-container-div"></div>
+  </div>
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name">Name</span></label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+</script>
+
+<script type="text/html" data-help-name="Seeker">
+  <p>Seeker is the start of a chain of nodes to complete a full text.</p>
+</script>

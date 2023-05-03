@@ -1,0 +1,36 @@
+{
+  "name": "@gregoriusrippenstein/node-red-contrib-introspection",
+  "version": "0.0.1",
+  "keywords": [
+    "node-red"
+  ],
+  "homepage": "https://github.com/gorenje/node-red-contrib-introspection#README.md",
+  "license": "SEE LICENSE IN https://github.com/gorenje/node-red-contrib-introspection#LICENSE",
+  "author": "Gerrit Riessen <nodered@spreads-the.love> (https://spread-the.love)",
+  "engines": {
+    "node": ">=16"
+  },
+  "node-red": {
+    "version": ">=2.0.0",
+    "nodes": {
+      "seeker":     "nodes/05-seeker.js",
+      "sink":       "nodes/10-sink.js",
+      "screenshot": "nodes/15-screenshot.js",
+      "orphans":    "nodes/20-orphans.js"
+    }
+  },
+  "description": "Node-RED Editor-only nodes for introspecting flows.",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gorenje/node-red-contrib-introspection.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gorenje/node-red-contrib-introspection/issues"
+  }
+}
