@@ -239,6 +239,9 @@
         getDataAndCallbackWhenDone( imageColl.item(imageColl.length-1),
                                     imageColl.length-1,
                                     cb );
+      } else {
+        const serializer = new XMLSerializer();
+        that.editor.setValue( serializer.serializeToString(doc) );
       }
 
       // handle the download button under the editor window.
