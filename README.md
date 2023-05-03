@@ -34,20 +34,20 @@ Double click on the top-level node and all nodes in the pathway are highlighted.
 
 Drag the node into a flow, double-click on the node and the tray opens -depending on the size of the flow, this might take a moment. Once the tray is opened, the SVG is shown in the editor window (I took the code from the template node hence the syntax dropdown). Below the editor window is the download button. Pressing that will download the SVG as it is in the editor window, so making changes in that window will be reflected in the downloaded content.
 
-The SVG code can also be copied and pasted into something like [drawsvg.org](https://drawsvg.org/drawsvg.html) hence select-all-copy-paste is provide by having the editor window.
+The SVG code can also be copied and pasted into something like [drawsvg.org](https://drawsvg.org/drawsvg.html) hence select-all-copy-paste is provided by having the editor window.
 
 Improvements over [svgexport.io](https://svgexport.io) browser plugin:
 
-- Respects the 'hide' CSS class that is used to hide specific elements, this the svgexport plugin cannot know.
+- Respects the 'hide' CSS class that is used to hide specific elements, this is something that the svgexport plugin cannot know.
 - Compliments the setting of visibility on the 'g' element with opacity=0. The SVG Standard ignores visibility on 'g' elements but browsers don't seem to care, Inkscape does care.
 - Image data (i.e. icons) is inlined using `data:image/XXXX;base64,` - this is good for things such as Inkscape that can't resolve relative urls. PNG, JPEG and SVG are supported.
 - It also retrieves font details and includes them in the SVG. This makes the font italic, even if it's not the correct font family (because font might not be installed on system).
 
 Disappointments:
 
-- Font-awesome icons, because they use the font-awesome font, aren't inlined and therefore aren't available in external tools (but are visible if SVG opened in browser). If the font-awesome fonts are installed on the system icons do work in Inkscape.
+- Font-awesome icons, because they use the font-awesome font, aren't inlined and therefore aren't available in external tools. If the font-awesome fonts are installed on the system icons do work in Inkscape and browser.
 - Because a double click is required, any highlights in the workflow are lost (i.e. link-in/out highlights showing the other tab names disappears)
-- Limited testing: on Firefox (on mac), your mileage might vary
+- Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
 
 ## Examples
@@ -64,7 +64,7 @@ Example screenshot:
 
 ## License
 
-[Do whatever but don't do evil](/LICENSE)
+[*Do whatever but don't do evil* license](/LICENSE)
 
 ## Contribution & Ideas
 
