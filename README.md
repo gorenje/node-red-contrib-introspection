@@ -46,13 +46,16 @@ Improvements over [svgexport.io](https://svgexport.io) browser plugin:
 Disappointments:
 
 - Font-awesome icons, because they use the font-awesome font, aren't inlined and therefore aren't available in external tools. If the font-awesome fonts are installed on the system icons do work in Inkscape and browser.
-- Because a double click is required, any highlights in the workflow are lost (i.e. link-in/out highlights showing the other tab names disappears)
 - Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
 
+Since version 0.0.5 the Screenshot node takes one input. That input will trigger the node to take a screenshot *without double clicking to open the tray*. The intention is to have an inject trigger regularly so that screenshots are made automagically and flows can have highlights. Screenshots are then posted to the endpoint `/screenshot` (this can be captured with a http-in node) and data is post as a json object `{ d: <svgdata> }`.
+
+There is an example [flow](/examples/trigger-and-save-screenshot.json) that demonstrates this feature. The author is aware that this is dangerously close to enabling spyware for flow modification, please see the [LICENSE](/LICENSE) and behaviour. 
+
 ## Examples
 
-There is a single example flow contained in the package. There are also examples to be found online: 
+There are some example flow contained in the package. There are also examples to be found online: 
 
 - [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e) - node is top left of flow or search for `type:Orphans`
 - [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c) - top right

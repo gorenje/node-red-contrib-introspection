@@ -1,4 +1,196 @@
 <script type="text/javascript">
+  function nr_intro_generate_svg( callbackWithSvgCode ) {
+    //
+    // begin the SVG conversion code.
+    //
+    var origSvg = $($('svg')[0]);
+
+    var hwAttrs = (
+      'width="' + origSvg.attr('width') + '" height="' +
+        origSvg.attr('height') + '"'
+    );
+
+    var svgHeader = (
+      '<?xml version="1.0" standalone="no"?>\r\n' +
+        '<svg ' + hwAttrs + ' pointer-events="all" style="cursor: crosshair; '+
+        'touch-action: none;" xmlns="http://www.w3.org/2000/svg" '+
+        'xmlns:xlink="http://www.w3.org/1999/xlink">\r\n'
+    );
+
+    var svgBody = origSvg.html();
+
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(svgHeader + svgBody + '\r\n</svg>',
+                                     "image/svg+xml");
+
+    // SVG has very specific requirements for colour specification, baseline
+    // all colors to #rrggbb. This converts: 'rgb(rrr, ggg, bbb)' and '#rgb'.
+    var rgb2hex = (rgb) => {
+      if ( !rgb ) { return "none" }
+      if ( rgb === null ) { return "none" }
+
+      rgb3 = rgb.match(/^#(.)(.)(.)$/);
+      if ( rgb3 ) {
+        return ("#" +rgb3[1]+rgb3[1]+rgb3[2]+rgb3[2]+rgb3[3]+rgb3[3]);
+      }
+
+      rgb3 = rgb.match(/^#......$/);
+      if ( rgb3 ) { return rgb; }
+
+      rgb3 = rgb.match(/^rgb\(([0-9]+),\s+([0-9]+),\s+([0-9]+)/);
+      if ( rgb3 === null ) { return rgb; }
+
+      return "#" +
+        ("0" + parseInt(rgb3[1],10).toString(16)).slice(-2) +
+        ("0" + parseInt(rgb3[2],10).toString(16)).slice(-2) +
+        ("0" + parseInt(rgb3[3],10).toString(16)).slice(-2);
+    }
+
+    // Set everything that might have been set via CSS directly on the
+    // element. All styling values must be defined as attributes on the
+    // SVG element.
+    var convertCssToAttr = function( collection, origElems ) {
+      for ( var idx = 0; idx < collection.length; idx++ ) {
+        var elem = collection.item(idx);
+        var origElem = origElems[idx];
+
+        [
+          "fill", "stroke"
+        ].forEach( function(attrname) {
+          elem.setAttribute(attrname,
+                            rgb2hex($(origElem).attr(attrname) ||
+                                    $(origElem).css(attrname) ));
+        });
+
+        [
+          "stroke-width","fill-opacity","stroke-opacity","opacity"
+        ].forEach(function(attrname) {
+          elem.setAttribute(attrname,
+                            $(origElem).attr(attrname) ||
+                            $(origElem).css(attrname));
+        });
+
+        if ( $(origElem).hasClass('hide') ) {
+          if ( elem.tagName == "g" ) {
+            // according to the SVG standard, visibility cannot be applied
+            // (or better said: has no effect) on 'g' (group) elements.
+            // Inkscape is rather pedantic about this and will show the
+            // group, so hack-it by using opacity. Browsers (firefox) doesn't
+            // seem to care and will apply visibility to 'g' elements.
+            elem.setAttribute("opacity", "0");
+          }
+          elem.setAttribute("visibility", "hidden");
+        }
+      }
+    }
+
+    // include font details on the text elements.
+    var convertFontsToAttr = function( collection, origElems ) {
+      for ( var idx = 0; idx < collection.length; idx++ ) {
+        var elem = collection.item(idx);
+        var origElem = origElems[idx];
+
+        ["font-family", "font-size", "font-size-adjust", "font-stretch",
+         "font-style", "font-variant", "font-weight"
+        ].forEach( function(attrname) {
+          elem.setAttribute(attrname,
+                            $(origElem).attr(attrname) ||
+                            $(origElem).css(attrname) );
+        })
+      }
+    }
+
+    // probably missed some elements ...
+    var tagnames = [ "g", "rect", "line", "path", "circle", "image" ];
+    tagnames.forEach( function(tagname) {
+      convertCssToAttr(doc.getElementsByTagName(tagname),
+                       origSvg.find(tagname));
+    });
+
+    [ "text" ].forEach( function(tagname) {
+      convertCssToAttr(doc.getElementsByTagName(tagname),
+                       origSvg.find(tagname));
+
+      convertFontsToAttr(doc.getElementsByTagName(tagname),
+                         origSvg.find(tagname));
+    });
+
+    // inline image data. Image types supported: Jpeg, Png and Svg.
+    var imageColl = doc.getElementsByTagName("image");
+
+    var getDataAndCallbackWhenDone = (elem, cntr, cb) => {
+      var postfix = elem.getAttribute("xlink:href").substr(-4,4).toLowerCase();
+
+      switch(postfix){
+      case ".jpg":
+      case "jpeg":
+      case ".png":
+        var fileType = {
+          ".jpg": "jpeg",
+          "jpeg": "jpeg",
+          ".png": "png"
+        };
+
+        var oReq = new XMLHttpRequest();
+        oReq.open("GET", elem.getAttribute( "xlink:href" ), true);
+        oReq.responseType = "arraybuffer";
+
+        var arrayBufferToBase64 = ( buffer ) => {
+          var binary = '';
+          var bytes = new Uint8Array( buffer );
+          var len = bytes.byteLength;
+          for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode( bytes[ i ] );
+          }
+          return window.btoa( binary );
+        };
+
+        oReq.onload = function (oEvent) {
+          var arrayBuffer = oReq.response; // Note: not oReq.responseText
+          if (arrayBuffer) {
+            elem.setAttribute("xlink:href",
+                              "data:image/"+fileType[postfix]+";base64," +
+                              arrayBufferToBase64(arrayBuffer));
+            cb(cntr-1)
+          } else {
+            cb(cntr-1)
+          }
+        };
+
+        oReq.send(null);
+        break;
+
+      case ".svg":
+        $.get( elem.getAttribute( "xlink:href" ), function(data) {
+          const serializer = new XMLSerializer();
+          elem.setAttribute( "xlink:href",
+                             "data:image/svg+xml;base64," +
+                             btoa(serializer.serializeToString(data)));
+          cb(cntr-1)
+        });
+        break;
+      }
+    };
+
+    var cb = (cntr) => {
+      if ( cntr < 0 ) {
+        const serializer = new XMLSerializer();
+        callbackWithSvgCode( serializer.serializeToString(doc) );
+      } else {
+        getDataAndCallbackWhenDone( imageColl.item(cntr), cntr, cb );
+      }
+    };
+
+    if ( imageColl.length > 0 ) {
+      getDataAndCallbackWhenDone( imageColl.item(imageColl.length-1),
+                                  imageColl.length-1,
+                                  cb );
+    } else {
+      const serializer = new XMLSerializer();
+      callbackWithSvgCode( serializer.serializeToString(doc) );
+    }
+  };
+
   RED.nodes.registerType('Screenshot',{
     color: '#e5e4ef',
     icon: "font-awesome/fa-camera",
@@ -12,7 +204,7 @@
         value:""
       },
     },
-    inputs:0,
+    inputs:1,
     outputs:0,
 
     label: function() {
@@ -20,6 +212,34 @@
     },
 
     labelStyle: function() {
+      /*
+        because there is not a better hook to connect up the event
+        listener, misuse the label styling for this. Also don't register a
+        new listener each time, maintain only one listener by removing and
+        readding.
+      */
+      var that = this;
+      var functName = "introspect:" + that.id;
+
+      if ( !window[functName] ) {
+        window[functName] = (e,m) => {
+          if ( m.msg == "timer-tripped" ) {
+            nr_intro_generate_svg( (svgdata) => {
+              $.ajax({
+                type: "POST",
+                url: "/screenshot",
+                data: { d: svgdata },
+                success: (data) => {},
+                dataType: "image/svg+xml;charset=utf-8"
+              });
+            });
+          }
+        }
+      }
+
+      RED.comms.unsubscribe(functName, window[functName]);
+      RED.comms.subscribe(functName, window[functName] );
+
       return this.name?"node_label_italic":"";
     },
 
@@ -54,195 +274,9 @@
 
       this.editor.setValue( "Please wait, screenshot being prepared ..." );
 
-      //
-      // begin the SVG conversion code.
-      //
-      var origSvg = $($('svg')[0]);
-
-      var hwAttrs = (
-        'width="' + origSvg.attr('width') + '" height="' +
-          origSvg.attr('height') + '"'
-      );
-
-      var svgHeader = (
-        '<?xml version="1.0" standalone="no"?>\r\n' +
-          '<svg ' + hwAttrs + ' pointer-events="all" style="cursor: crosshair; '+
-          'touch-action: none;" xmlns="http://www.w3.org/2000/svg" '+
-          'xmlns:xlink="http://www.w3.org/1999/xlink">\r\n'
-      );
-
-      var svgBody = origSvg.html();
-
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(svgHeader + svgBody + '\r\n</svg>',
-                                       "image/svg+xml");
-
-      // SVG has very specific requirements for colour specification, baseline
-      // all colors to #rrggbb. This converts: 'rgb(rrr, ggg, bbb)' and '#rgb'.
-      var rgb2hex = (rgb) => {
-        if ( !rgb ) { return "none" }
-        if ( rgb === null ) { return "none" }
-
-        rgb3 = rgb.match(/^#(.)(.)(.)$/);
-        if ( rgb3 ) {
-          return ("#" +rgb3[1]+rgb3[1]+rgb3[2]+rgb3[2]+rgb3[3]+rgb3[3]);
-        }
-
-        rgb3 = rgb.match(/^#......$/);
-        if ( rgb3 ) { return rgb; }
-
-        rgb3 = rgb.match(/^rgb\(([0-9]+),\s+([0-9]+),\s+([0-9]+)/);
-        if ( rgb3 === null ) { return rgb; }
-
-        return "#" +
-          ("0" + parseInt(rgb3[1],10).toString(16)).slice(-2) +
-          ("0" + parseInt(rgb3[2],10).toString(16)).slice(-2) +
-          ("0" + parseInt(rgb3[3],10).toString(16)).slice(-2);
-      }
-
-      // Set everything that might have been set via CSS directly on the
-      // element. All styling values must be defined as attributes on the
-      // SVG element.
-      var convertCssToAttr = function( collection, origElems ) {
-        for ( var idx = 0; idx < collection.length; idx++ ) {
-          var elem = collection.item(idx);
-          var origElem = origElems[idx];
-
-          [
-            "fill", "stroke"
-          ].forEach( function(attrname) {
-            elem.setAttribute(attrname,
-                              rgb2hex($(origElem).attr(attrname) ||
-                                      $(origElem).css(attrname) ));
-          });
-
-          [
-            "stroke-width","fill-opacity","stroke-opacity","opacity"
-          ].forEach(function(attrname) {
-            elem.setAttribute(attrname,
-                              $(origElem).attr(attrname) ||
-                              $(origElem).css(attrname));
-          });
-
-          if ( $(origElem).hasClass('hide') ) {
-            if ( elem.tagName == "g" ) {
-              // according to the SVG standard, visibility cannot be applied
-              // (or better said: has no effect) on 'g' (group) elements.
-              // Inkscape is rather pedantic about this and will show the
-              // group, so hack-it by using opacity. Browsers (firefox) doesn't
-              // seem to care and will apply visibility to 'g' elements.
-              elem.setAttribute("opacity", "0");
-            }
-            elem.setAttribute("visibility", "hidden");
-          }
-        }
-      }
-
-      // include font details on the text elements.
-      var convertFontsToAttr = function( collection, origElems ) {
-        for ( var idx = 0; idx < collection.length; idx++ ) {
-          var elem = collection.item(idx);
-          var origElem = origElems[idx];
-
-          ["font-family", "font-size", "font-size-adjust", "font-stretch",
-           "font-style", "font-variant", "font-weight"
-          ].forEach( function(attrname) {
-            elem.setAttribute(attrname,
-                              $(origElem).attr(attrname) ||
-                              $(origElem).css(attrname) );
-          })
-        }
-      }
-
-      // probably missed some elements ...
-      var tagnames = [ "g", "rect", "line", "path", "circle", "image" ];
-      tagnames.forEach( function(tagname) {
-        convertCssToAttr(doc.getElementsByTagName(tagname),
-                         origSvg.find(tagname));
+      nr_intro_generate_svg( (svgdata) => {
+        that.editor.setValue( svgdata );
       });
-
-      [ "text" ].forEach( function(tagname) {
-        convertCssToAttr(doc.getElementsByTagName(tagname),
-                         origSvg.find(tagname));
-
-        convertFontsToAttr(doc.getElementsByTagName(tagname),
-                           origSvg.find(tagname));
-      });
-
-      // inline image data. Image types supported: Jpeg, Png and Svg.
-      var imageColl = doc.getElementsByTagName("image");
-
-      var getDataAndCallbackWhenDone = (elem, cntr, cb) => {
-        var postfix = elem.getAttribute("xlink:href").substr(-4,4).toLowerCase();
-
-        switch(postfix){
-        case ".jpg":
-        case "jpeg":
-        case ".png":
-          var fileType = {
-            ".jpg": "jpeg",
-            "jpeg": "jpeg",
-            ".png": "png"
-          };
-
-          var oReq = new XMLHttpRequest();
-          oReq.open("GET", elem.getAttribute( "xlink:href" ), true);
-          oReq.responseType = "arraybuffer";
-
-          var arrayBufferToBase64 = ( buffer ) => {
-            var binary = '';
-            var bytes = new Uint8Array( buffer );
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-              binary += String.fromCharCode( bytes[ i ] );
-            }
-            return window.btoa( binary );
-          };
-
-          oReq.onload = function (oEvent) {
-            var arrayBuffer = oReq.response; // Note: not oReq.responseText
-            if (arrayBuffer) {
-              elem.setAttribute("xlink:href",
-                                "data:image/"+fileType[postfix]+";base64," +
-                                arrayBufferToBase64(arrayBuffer));
-              cb(cntr-1)
-            } else {
-              cb(cntr-1)
-            }
-          };
-
-          oReq.send(null);
-          break;
-
-        case ".svg":
-          $.get( elem.getAttribute( "xlink:href" ), function(data) {
-            const serializer = new XMLSerializer();
-            elem.setAttribute( "xlink:href",
-                               "data:image/svg+xml;base64," +
-                               btoa(serializer.serializeToString(data)));
-            cb(cntr-1)
-          });
-          break;
-        }
-      };
-
-      var cb = (cntr) => {
-        if ( cntr < 0 ) {
-          const serializer = new XMLSerializer();
-          that.editor.setValue( serializer.serializeToString(doc) );
-        } else {
-          getDataAndCallbackWhenDone( imageColl.item(cntr), cntr, cb );
-        }
-      };
-
-      if ( imageColl.length > 0 ) {
-        getDataAndCallbackWhenDone( imageColl.item(imageColl.length-1),
-                                    imageColl.length-1,
-                                    cb );
-      } else {
-        const serializer = new XMLSerializer();
-        that.editor.setValue( serializer.serializeToString(doc) );
-      }
 
       // handle the download button under the editor window.
       $('#node-screenshot-download-svg').on("click", function (e) {
@@ -256,8 +290,6 @@
         downloadLink.click();
         document.body.removeChild(downloadLink);
       });
-
-      // normality resumes here, all the SVG handling is done.
 
       $("#node-input-format").on("change", function() {
         var mod = "ace/mode/"+$("#node-input-format").val();

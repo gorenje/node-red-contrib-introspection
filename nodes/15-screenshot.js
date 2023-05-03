@@ -9,7 +9,14 @@ module.exports = function(RED) {
       node.status({});
     });
 
-    node.on("input",function(msg, send, done) {
+    node.on("input", function(msg, send, done) {
+      RED.comms.publish("introspect:" + node.id, RED.util.encodeObject({
+        msg: "timer-tripped",
+      }));
+
+      node.status({ fill: "green", shape: "dot", text:"Taking screenshot" });
+      setTimeout( () => { node.status({}) }, 1432 );
+
       send(msg);
     });
   }
