@@ -8,7 +8,7 @@
   "license": "SEE LICENSE IN https://github.com/gorenje/node-red-contrib-introspection/blob/main/LICENSE",
   "author": "Gerrit Riessen <nodered@spreads-the.love> (https://spread-the.love)",
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "node-red": {
     "version": ">=2.0.0",
@@ -16,7 +16,9 @@
       "seeker":     "nodes/05-seeker.js",
       "sink":       "nodes/10-sink.js",
       "screenshot": "nodes/15-screenshot.js",
-      "orphans":    "nodes/20-orphans.js"
+      "orphans":    "nodes/20-orphans.js",
+      "ismobile":   "nodes/25-ismobile.js",
+      "navigator":  "nodes/30-navigator.js"
     }
   },
   "description": "Node-RED Editor-only nodes for introspecting flows.",

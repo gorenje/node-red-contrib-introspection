@@ -53,13 +53,25 @@ Since version 0.0.5 the Screenshot node takes one input. That input will trigger
 
 There is an example [flow](/examples/trigger-and-save-screenshot.json) that demonstrates this feature. The author is aware that this is dangerously close to enabling spyware for flow modification, please see the [LICENSE](/LICENSE) and behaviour. 
 
+### IsMobile
+
+Is a palette-only node meaning that it should not be included in any flows. It's single purpose is to remove the palette and sidebars on devices which have a screen width less that 890px. Node-RED has both bars open by default, that makes the mobile experience not so nice. This node is a simple hack that uses `onpaletteadd` callback to close both bars if the device is detected to have "small" width.
+
+If this functionality is not desired, then disable this node in the palette manager.
+
+### Navigator
+
+Is a palette-only node meaning that it should not be included in any flows. What it does is to highlight nodes if they are referenced in the URL. This node will check the hash value of the URL and if it contains a node id, it will jump to the workspace and focus on the node in question. The node id should be given in the form of `/n/<node id>`, for example: [`.../#flow/878170e6f86c502b/n/b3baf3ca092064a9`](https://demo.openmindmap.org/omm/#flow/878170e6f86c502b/n/b3baf3ca092064a9). Any flow id that is given will be ignored and instead the flow of the node will be shown.
+
+This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
+
 ## Examples
 
 There are some example flow contained in the package. There are also examples to be found online: 
 
-- [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e) - node is top left of flow or search for `type:Orphans`
-- [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c) - top right
-- [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e) - top left
+- [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e/n/2be3f8794979d47b) - node is top left of flow or search for `type:Orphans`
+- [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae/n/b5f189a78d829197) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c/n/e3262d9d2791ab78) - top right
+- [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e/n/499b1383580831aa) - top left
 
 Example screenshot: 
 

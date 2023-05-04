@@ -1,0 +1,53 @@
+<script type="text/javascript">
+  RED.nodes.registerType('Navigator',{
+    color: '#e5e4ef',
+    icon: "font-awesome/fa-crosshairs",
+    category: 'introspection',
+    defaults: {
+      name: {
+        value:"",
+      },
+    },
+    inputs:0,
+    outputs:0,
+
+    label: function() {
+      return (this.name || this._def.paletteLabel);
+    },
+
+    labelStyle: function() {
+      return this.name?"node_label_italic":"";
+    },
+
+    onpaletteadd: () => {
+      var nodeId = window.location.hash.match(/\/n\/(.{16})/);
+
+      // RED.nodes is not initialised at this point, so there is no way to
+      // check whether the nodeId really does exist, so we assume that nodeId
+      // will be eventually addded to a workspace.
+      if ( nodeId ) {
+        var hndlr = (node) => {
+          if ( node.id == nodeId[1] ) {
+            setTimeout( function() {
+              RED.workspaces.show(RED.nodes.node(nodeId[1]).z,false,false,true);
+              RED.view.reveal(nodeId[1],true)
+            }, 1234);
+            RED.events.off("nodes:add", hndlr);
+          }
+        };
+        RED.events.on("nodes:add", hndlr);
+      }
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="Navigator">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="Navigator">
+  <p>A palette-only node, this does not get included in any flow. This node ensures that nodes are focused on when the url contains `/n/[nodeid]`. If not required, disable the node in the palette manager.</p>
+</script>
