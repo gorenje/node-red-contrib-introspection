@@ -115,7 +115,8 @@
         var origElem = origElems[idx];
 
         ["font-family", "font-size", "font-size-adjust", "font-stretch",
-         "font-style", "font-variant", "font-weight", "text-anchor"
+         "font-style", "font-variant", "font-weight", "text-anchor",
+         "dominant-baseline"
         ].forEach( function(attrname) {
           elem.setAttribute(attrname,
                             $(origElem).attr(attrname) ||
