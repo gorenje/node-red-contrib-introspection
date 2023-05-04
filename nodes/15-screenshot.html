@@ -318,6 +318,13 @@
         document.body.removeChild(downloadLink);
       });
 
+      $('#node-screenshot-copy-to-clipboard-svg').on("click", function (e) {
+        e.preventDefault();
+        if ( RED.clipboard.copyText(that.editor.getValue()) ) {
+          RED.notify("SVG copied to clipboard", { type: "success" });
+        }
+      });
+
       $("#node-input-format").on("change", function() {
         var mod = "ace/mode/"+$("#node-input-format").val();
         that.editor.getSession().setMode({
@@ -405,7 +412,8 @@
   </div>
 
   <div class="form-row">
-  <button type="button" id="node-screenshot-download-svg" class="red-ui-button red-ui-button-small"><i class="fa fa-download"></i>Download</button>
+    <button type="button" id="node-screenshot-download-svg" class="red-ui-button red-ui-button-large"><i class="fa fa-download"></i>Download</button>
+    <button type="button" id="node-screenshot-copy-to-clipboard-svg" class="red-ui-button red-ui-button-large"><i class="fa fa-clipboard"></i>Copy to Clipboard</button>
   </div>
 </script>
 
