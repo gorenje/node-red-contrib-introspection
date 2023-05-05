@@ -249,14 +249,24 @@
       if ( !window[functName] ) {
         window[functName] = (e,m) => {
           if ( m.msg == "timer-tripped" ) {
-            RED.notify("Screenshot triggered", { type: "warning" });
+
+            if ( m.notification != "off" ) {
+              RED.notify("Screenshot triggered", { type: "warning" });
+            }
+
+            var notification = m.notification;
             nr_intro_generate_svg( (svgdata) => {
               $.ajax({
                 type: "POST",
                 url: "/screenshot",
-                data: { d: svgdata },
+                data: {
+                  ...m,
+                  d: svgdata
+                },
                 complete: (data) => {
-                  RED.notify("Screenshot posted", { type: "success" });
+                  if ( notification != "off" ) {
+                    RED.notify("Screenshot posted", { type: "success" });
+                  }
                 },
                 dataType: "image/svg+xml;charset=utf-8"
               });
