@@ -65,13 +65,18 @@ Is a palette-only node meaning that it should not be included in any flows. What
 
 This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
 
+### DrawSVG
+
+A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
+
 ## Examples
 
-There are some example flow contained in the package. There are also examples to be found online: 
+There are [example flows](/examples) contained in the package, examples can also be found online: 
 
 - [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e/n/2be3f8794979d47b) - node is top left of flow or search for `type:Orphans`
 - [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae/n/b5f189a78d829197) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c/n/e3262d9d2791ab78) - top right
 - [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e/n/499b1383580831aa) - top left
+- [DrawSVG](https://demo.openmindmap.org/omm/#flow/6c8ce462533a1da4/n/248f2edd3d8acd96)
 
 Example screenshot: 
 

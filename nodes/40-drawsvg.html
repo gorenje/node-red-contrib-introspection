@@ -1,0 +1,53 @@
+<script type="text/javascript">
+  RED.nodes.registerType('DrawSVG',{
+    color: '#e5e4ef',
+    icon: "font-awesome/fa-image",
+    category: 'introspection',
+    defaults: {
+      name: {
+        value:"",
+      },
+    },
+    inputs:1,
+    outputs:0,
+
+    label: function() {
+      return (this.name || this._def.paletteLabel);
+    },
+
+    labelStyle: function() {
+      /*
+        because there is not a better hook to connect up the event
+        listener, misuse the label styling for this. Also don't register a
+        new listener each time, maintain only one listener by removing and
+        readding.
+      */
+      var that = this;
+      var functName = "introspect:" + that.id;
+
+      if ( !window[functName] ) {
+        window[functName] = (e,m) => {
+          if ( m.msg == "svgdata" ) {
+            $($($('svg')[0]).find('> g > g > g')[2]).append(m.payload);
+          }
+        }
+      }
+
+      RED.comms.unsubscribe(functName, window[functName]);
+      RED.comms.subscribe(functName, window[functName] );
+
+      return this.name?"node_label_italic":"";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="DrawSVG">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="DrawSVG">
+  <p>Draw the given SVG onto the workspace placing it between the grid and the nodes and their connections. To remove the image, reload the workspace. Doing a deploy will completely ignore any image added to the workspace.</p>
+</script>

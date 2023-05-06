@@ -1,6 +1,6 @@
 {
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "keywords": [
     "node-red"
   ],
@@ -18,7 +18,8 @@
       "screenshot": "nodes/15-screenshot.js",
       "orphans":    "nodes/20-orphans.js",
       "ismobile":   "nodes/25-ismobile.js",
-      "navigator":  "nodes/30-navigator.js"
+      "navigator":  "nodes/30-navigator.js",
+      "drawsvg":    "nodes/40-drawsvg.js"
     }
   },
   "description": "Node-RED Editor-only nodes for introspecting flows.",

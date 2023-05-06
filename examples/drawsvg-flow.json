@@ -1,0 +1,72 @@
+[
+    {
+        "id": "214f1986d70db2a6",
+        "type": "tab",
+        "label": "DrawSVG Example",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "97790509b555e06a",
+        "type": "DrawSVG",
+        "z": "214f1986d70db2a6",
+        "name": "",
+        "x": 488,
+        "y": 997,
+        "wires": []
+    },
+    {
+        "id": "be970616115487ae",
+        "type": "http request",
+        "z": "214f1986d70db2a6",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://demo.openmindmap.org/content/open_mind.svg",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 347,
+        "y": 923,
+        "wires": [
+            [
+                "97790509b555e06a"
+            ]
+        ]
+    },
+    {
+        "id": "e6c50e3da88baae0",
+        "type": "inject",
+        "z": "214f1986d70db2a6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 211,
+        "y": 867,
+        "wires": [
+            [
+                "be970616115487ae"
+            ]
+        ]
+    }
+]
