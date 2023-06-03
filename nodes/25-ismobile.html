@@ -24,8 +24,7 @@
         RED.sidebar.info.show()
       }, 1000);
 
-      // a random value of 890px to indicate mobile, is very arbitrary.
-      if ( window.matchMedia('only screen and (max-width: 890px)').matches ) {
+      if ( RED.utils.getBrowserInfo().mobile > 0 ) {
         setTimeout( function() {
           // taken from https://discourse.nodered.org/t/togglepalette-v-togglesidebar/78169/3
           RED.actions.invoke("core:toggle-palette", false)
