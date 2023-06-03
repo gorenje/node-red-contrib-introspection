@@ -10,10 +10,12 @@ module.exports = function(RED) {
     });
 
     node.on("input", function(msg, send, done) {
-      RED.comms.publish("introspect:" + node.id, RED.util.encodeObject({
-        ...msg,
-        msg: "timer-tripped",
-      }));
+      RED.comms.publish("introspect:screenshot-timer-tripped",
+                        RED.util.encodeObject({
+                          ...msg,
+                          msg: "timer-tripped",
+                        })
+      );
 
       node.status({ fill: "green", shape: "dot", text: "Taking screenshot" });
       setTimeout( () => { node.status({}) }, 1432 );

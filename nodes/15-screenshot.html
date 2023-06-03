@@ -5,11 +5,22 @@
     //
     var origSvg = $($('svg')[0]);
 
+    // the DOMParser of Firefox does not like foreignObjects, so remove them.
+    // Correction: DOMParser doesn't mind foreignObjects as long as there is
+    // any HTML/<img>-tags in the foreignObjects.,,, of course, image tags
+    // rarely occur but nonetheless. foreighObjects are used to display divs
+    // within SVGs that contain html code to be displayed in the browser. So
+    // we assume that the foreignObject is not relevant for exporting as its
+    // content is specifically for the browser user.
+    var preParseSvg = origSvg.clone();
+    preParseSvg.find("foreignObject").remove();
+
     var hwAttrs = (
       'width="' + origSvg.attr('width') + '" height="' +
         origSvg.attr('height') + '"'
     );
 
+    // redefine the svgHeader because we need to include the xml namespaces
     var svgHeader = (
       '<?xml version="1.0" standalone="no"?>\r\n' +
         '<svg ' + hwAttrs + ' pointer-events="all" style="cursor: crosshair; '+
@@ -17,9 +28,10 @@
         'xmlns:xlink="http://www.w3.org/1999/xlink">\r\n'
     );
 
-    var svgBody = origSvg.html();
+    var svgBody = preParseSvg.html();
 
     var parser = new DOMParser();
+
     var doc = parser.parseFromString(svgHeader + svgBody + '\r\n</svg>',
                                      "image/svg+xml");
 
@@ -50,7 +62,7 @@
             opa: rgb4[4]
           }
         } else {
-          console.log( "Screenshot node: returning unknown color: " + rgb );
+          console.log( "Screenshot node: returned unknown color: " + rgb );
           return rgb;
         }
       }
@@ -216,6 +228,44 @@
     }
   };
 
+  /*
+    When the server side of this node is triggered, it posts a message on
+    the communication channel. The frontend node captures that message,
+    generates an SVG and posts that to the POST endpoint (that is assumed)
+    to be running. If not, there will be a console error.
+  */
+  RED.comms.subscribe('introspect:screenshot-timer-tripped', (event,data) => {
+    if ( data.msg == "timer-tripped" ) {
+
+      if ( data.notification != "off" ) {
+        RED.notify("Screenshot triggered", { type: "warning" });
+      }
+
+      var notification = data.notification;
+      nr_intro_generate_svg( (svgdata) => {
+        // TODO the post will hit a 'Request too large' limit with the
+        // TODO SVG gets larger than XX-MB (got this when an svg of 5.5MB
+        // TODO but an svg with 4.1MB went through). No immediate fix, would
+        // TODO good to create parts that can be manually joined using the
+        // TODO 'join' node.
+        $.ajax({
+          type: "POST",
+          url: "/screenshot",
+          data: {
+            ...data,
+            d: svgdata
+          },
+          complete: (_ignore) => {
+            if ( notification != "off" ) {
+              RED.notify("Screenshot posted", { type: "success" });
+            }
+          },
+          dataType: "image/svg+xml;charset=utf-8"
+        });
+      });
+    }
+  });
+
   RED.nodes.registerType('Screenshot',{
     color: '#e5e4ef',
     icon: "font-awesome/fa-camera",
@@ -237,47 +287,6 @@
     },
 
     labelStyle: function() {
-      /*
-        because there is not a better hook to connect up the event
-        listener, misuse the label styling for this. Also don't register a
-        new listener each time, maintain only one listener by removing and
-        readding.
-      */
-      var that = this;
-      var functName = "introspect:" + that.id;
-
-      if ( !window[functName] ) {
-        window[functName] = (e,m) => {
-          if ( m.msg == "timer-tripped" ) {
-
-            if ( m.notification != "off" ) {
-              RED.notify("Screenshot triggered", { type: "warning" });
-            }
-
-            var notification = m.notification;
-            nr_intro_generate_svg( (svgdata) => {
-              $.ajax({
-                type: "POST",
-                url: "/screenshot",
-                data: {
-                  ...m,
-                  d: svgdata
-                },
-                complete: (data) => {
-                  if ( notification != "off" ) {
-                    RED.notify("Screenshot posted", { type: "success" });
-                  }
-                },
-                dataType: "image/svg+xml;charset=utf-8"
-              });
-            });
-          }
-        }
-      }
-
-      RED.comms.unsubscribe(functName, window[functName]);
-      RED.comms.subscribe(functName, window[functName] );
-
       return this.name?"node_label_italic":"";
     },
 

@@ -10,7 +10,7 @@ module.exports = function(RED) {
     });
 
     node.on("input", function(msg, send, done) {
-      RED.comms.publish("introspect:" + node.id, RED.util.encodeObject({
+      RED.comms.publish("introspect:drawsvg", RED.util.encodeObject({
         ...msg,
         msg: "svgdata",
       }));
