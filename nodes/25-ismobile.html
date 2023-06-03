@@ -24,7 +24,7 @@
         RED.sidebar.info.show()
       }, 1000);
 
-      if ( RED.utils.getBrowserInfo().mobile > 0 ) {
+      if ( (RED.utils.getBrowserInfo().mobile > 0) || window.matchMedia('only screen and (max-width: 890px)').matches ) {
         setTimeout( function() {
           // taken from https://discourse.nodered.org/t/togglepalette-v-togglesidebar/78169/3
           RED.actions.invoke("core:toggle-palette", false)
