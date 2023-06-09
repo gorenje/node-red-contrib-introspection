@@ -258,14 +258,24 @@
               // if svg larger than that, need to increase the limit.
               // Provide a hint to that setting in the error message.
               RED.notify(
-                "Screenshot too large, increase apiMaxLength in settings.js", {
+                "Screenshot too large, increase apiMaxLength in settings.js.", {
+                  type: "error"
+                }
+              );
+              break;
+            case 404:
+              // Http-in POST node is missing
+              RED.notify(
+                "Missing http-in node: method: POST, path: /screenshot.", {
                   type: "error"
                 }
               );
               break;
             case 200:
               if ( notification != "off" ) {
-                RED.notify("Screenshot posted", { type: "success" });
+                RED.notify("Screenshot successfully posted", {
+                  type: "success"
+                });
               }
               break;
             default:
