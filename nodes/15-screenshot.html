@@ -234,7 +234,7 @@
     generates an SVG and posts that to the POST endpoint (that is assumed)
     to be running. If not, there will be a console error.
   */
-  RED.comms.subscribe('introspect:screenshot-timer-tripped', (event,data) => {
+  RED.comms.subscribe('introspect:screenshot-trigger-tripped', (event,data) => {
     if ( data.msg == "timer-tripped" ) {
 
       if ( data.notification != "off" ) {
@@ -243,24 +243,39 @@
 
       var notification = data.notification;
       nr_intro_generate_svg( (svgdata) => {
-        // TODO the post will hit a 'Request too large' limit with the
-        // TODO SVG gets larger than XX-MB (got this when an svg of 5.5MB
-        // TODO but an svg with 4.1MB went through). No immediate fix, would
-        // TODO good to create parts that can be manually joined using the
-        // TODO 'join' node.
         $.ajax({
           type: "POST",
           url: "/screenshot",
+          dataType: "image/svg+xml;charset=utf-8",
           data: {
             ...data,
             d: svgdata
           },
-          complete: (_ignore) => {
-            if ( notification != "off" ) {
-              RED.notify("Screenshot posted", { type: "success" });
-            }
+          complete: (obj) => {
+            switch( obj.status ) {
+            case 413:
+              // apiMaxLength in the settings.js is set to 5mb by default,
+              // if svg larger than that, need to increase the limit.
+              // Provide a hint to that setting in the error message.
+              RED.notify(
+                "Screenshot too large, increase apiMaxLength in settings.js", {
+                  type: "error"
+                }
+              );
+              break;
+            case 200:
+              if ( notification != "off" ) {
+                RED.notify("Screenshot posted", { type: "success" });
+              }
+              break;
+            default:
+              RED.notify(
+                "Screenshot failed: " + obj.statusText + "  " + obj.status, {
+                  type: "error"
+                }
+              );
+            };
           },
-          dataType: "image/svg+xml;charset=utf-8"
         });
       });
     }

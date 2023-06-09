@@ -10,7 +10,7 @@ module.exports = function(RED) {
     });
 
     node.on("input", function(msg, send, done) {
-      RED.comms.publish("introspect:screenshot-timer-tripped",
+      RED.comms.publish("introspect:screenshot-trigger-tripped",
                         RED.util.encodeObject({
                           ...msg,
                           msg: "timer-tripped",
