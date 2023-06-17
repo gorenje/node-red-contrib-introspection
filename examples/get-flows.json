@@ -1,0 +1,76 @@
+[
+    {
+        "id": "7185cd493586e55a",
+        "type": "inject",
+        "z": "6bab6804614c2612",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 542,
+        "y": 156,
+        "wires": [
+            [
+                "6af8626dd463e3bb"
+            ]
+        ]
+    },
+    {
+        "id": "7c18a75ca7a625eb",
+        "type": "debug",
+        "z": "6bab6804614c2612",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 955,
+        "y": 367,
+        "wires": []
+    },
+    {
+        "id": "6af8626dd463e3bb",
+        "type": "GetFlows",
+        "z": "6bab6804614c2612",
+        "name": "",
+        "x": 672,
+        "y": 222,
+        "wires": [
+            [
+                "a84edc1bacf03204"
+            ]
+        ]
+    },
+    {
+        "id": "a84edc1bacf03204",
+        "type": "json",
+        "z": "6bab6804614c2612",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 797,
+        "y": 292,
+        "wires": [
+            [
+                "7c18a75ca7a625eb"
+            ]
+        ]
+    }
+]

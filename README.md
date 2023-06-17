@@ -10,7 +10,7 @@ I found myself working on various flows and found some particular artistic but I
 
 Orphans node many or many not have their reasons, sometimes nodes aren't meant to be there and can actually be deleted. Either way, nodes that have no connections, either in nor out, *might* no longer be needed. For me, orphan nodes represent commented-out code or code that can't be reached, so they potentially represent nostalgia, a nostalgia for coding ideas that are no longer valid.
 
-Sometimes I found myself having extremely complex flows, flows that went over multiple tabs via the link-in/out nodes. I was lost as to how specific nodes were ever reached. The birth of the Sink & Seeker nodes was inevitable. 
+Sometimes I found myself having extremely complex flows, flows that went over multiple tabs via the link-in/out nodes. I was lost as to how specific nodes were ever reached. The birth of the Sink & Seeker nodes was inevitable.
 
 ## Nodes
 
@@ -26,7 +26,7 @@ The nodes shown are across all flows and tabs, there is no need to have a Orphan
 
 ### Sink & Seeker
 
-Place the sink node at the end of a any flow, the point that needs to be reached. Place the seeker at the starting point. Double click on the seeker to open the tray and all possible paths (if there are any) between it and the sink are shown. 
+Place the sink node at the end of a any flow, the point that needs to be reached. Place the seeker at the starting point. Double click on the seeker to open the tray and all possible paths (if there are any) between it and the sink are shown.
 
 Double click on the top-level node and all nodes in the pathway are highlighted. Opening the top-level node shows all nodes along the path. Clicking on a node will highlight that node in flow.
 
@@ -51,7 +51,7 @@ Disappointments:
 
 Since version 0.0.5 the Screenshot node takes one input. That input will trigger the node to take a screenshot *without double clicking to open the tray*. The intention is to have an inject trigger regularly so that screenshots are made automagically and flows can have highlights. Screenshots are then posted to the endpoint `/screenshot` (this can be captured with a http-in node) and data is post as a json object `{ d: <svgdata> }`.
 
-There is an example [flow](/examples/trigger-and-save-screenshot.json) that demonstrates this feature. The author is aware that this is dangerously close to enabling spyware for flow modification, please see the [LICENSE](/LICENSE) and behaviour. 
+There is an example [flow](/examples/trigger-and-save-screenshot.json) that demonstrates this feature. The author is aware that this is dangerously close to enabling spyware for flow modification, please see the [LICENSE](/LICENSE) and behaviour.
 
 ### IsMobile
 
@@ -69,16 +69,24 @@ This is a hack that uses the `onpaletteadd` callback to do its magic. If this fu
 
 A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
 
+### GetFlows -- Experimental
+
+Node retrieves the current `flows.json` from the server but using the [Node-RED API](https://nodered.org/docs/api/admin/methods/get/flows/) so that it is storage independent. It returns the flows as a `payload` on the message.
+
+The intention that this is triggered on a regular basis to backup the flows to a third party storage system. Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) package that has a [backup](https://github.com/cflurin/node-red-contrib-dsm/wiki/Backup) state machine.
+
+Does not set the authentication token, hence experimental.
+
 ## Examples
 
-There are [example flows](/examples) contained in the package, examples can also be found online: 
+There are [example flows](/examples) contained in the package, examples can also be found online:
 
 - [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e/n/2be3f8794979d47b) - node is top left of flow or search for `type:Orphans`
 - [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae/n/b5f189a78d829197) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c/n/e3262d9d2791ab78) - top right
 - [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e/n/499b1383580831aa) - top left
 - [DrawSVG](https://demo.openmindmap.org/omm/#flow/6c8ce462533a1da4/n/248f2edd3d8acd96)
 
-Example screenshot: 
+Example screenshot:
 
 ![example screenshot](/assets/screenshot.svg)
 
