@@ -71,11 +71,13 @@ A node for inserting an SVG image into the workspace. The image is layered above
 
 ### GetFlows -- Experimental
 
-Node retrieves the current `flows.json` from the server but using the [Node-RED API](https://nodered.org/docs/api/admin/methods/get/flows/) so that it is storage independent. It returns the flows as a `payload` on the message.
+Node retrieves the current `flows.json` from the server but using the [Node-RED API](https://nodered.org/docs/api/admin/methods/get/flows/) so that it is storage independent. It returns the flows as a `payload` of the message.
 
-The intention that this is triggered on a regular basis to backup the flows to a third party storage system. Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) package that has a [backup](https://github.com/cflurin/node-red-contrib-dsm/wiki/Backup) state machine.
+The intention that this is triggered on a regular basis to backup the flows to a third party storage system. Recommended is usage in combination with the [zip](https://flows.nodered.org/node/node-red-contrib-zip) module to make the backups smaller.
 
-Does not set the authentication token, hence experimental.
+GetFlows supports version selection of the flows and it has limited authentication using password `grant_type`.
+
+Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) package that has a [backup](https://github.com/cflurin/node-red-contrib-dsm/wiki/Backup) state machine.
 
 ## Examples
 
