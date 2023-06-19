@@ -46,7 +46,10 @@
 
         var hndlr = (stst) => {
           if ( stst.state == "start" ) {
-            setTimeout( () => { RED.view.selectNodes({ selected: nodeIds });}, 321);
+            setTimeout( () => {
+              RED.workspaces.show(RED.nodes.node(nodeIds[0]).z,false,false,true);
+              RED.view.selectNodes({ selected: nodeIds });
+            }, 321);
             RED.events.off("runtime-state", hndlr);
           }
         };
