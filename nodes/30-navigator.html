@@ -4,9 +4,7 @@
     icon: "font-awesome/fa-crosshairs",
     category: 'introspection',
     defaults: {
-      name: {
-        value:"",
-      },
+      name: { value:"", },
     },
     inputs:0,
     outputs:0,
@@ -31,11 +29,28 @@
             setTimeout( function() {
               RED.workspaces.show(RED.nodes.node(nodeId[1]).z,false,false,true);
               RED.view.reveal(nodeId[1],true)
-            }, 1234);
+            }, 1012);
             RED.events.off("nodes:add", hndlr);
           }
         };
         RED.events.on("nodes:add", hndlr);
+      }
+
+      // Highlight an entire path.
+      var pathIds = window.location.hash.match(/\/p\/((.{16},?)+)/);
+      if ( pathIds ) {
+        var nodeIds = [];
+        pathIds[1].split(",").forEach( function(ndeId) {
+          if ( ndeId.trim() != "" ) { nodeIds.push( ndeId.trim() ) }
+        });
+
+        var hndlr = (stst) => {
+          if ( stst.state == "start" ) {
+            setTimeout( () => { RED.view.selectNodes({ selected: nodeIds });}, 321);
+            RED.events.off("runtime-state", hndlr);
+          }
+        };
+        RED.events.on("runtime-state", hndlr);
       }
     },
   });
