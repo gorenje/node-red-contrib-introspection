@@ -18,7 +18,7 @@
     },
 
     onpaletteadd: () => {
-      var nodeId = window.location.hash.match(/\/n\/(.{16})/);
+      var nodeId = window.location.hash.match(/\/n\/([^\/]{16})(\/edit)?/);
 
       // RED.nodes is not initialised at this point, so there is no way to
       // check whether the nodeId really does exist, so we assume that nodeId
@@ -27,8 +27,14 @@
         var hndlr = (node) => {
           if ( node.id == nodeId[1] ) {
             setTimeout( function() {
-              RED.workspaces.show(RED.nodes.node(nodeId[1]).z,false,false,true);
-              RED.view.reveal(nodeId[1],true)
+              var nde = RED.nodes.node(nodeId[1]);
+              RED.workspaces.show(nde.z,false,false,true);
+
+              if ( nodeId[2] == "/edit" ) {
+                RED.editor.edit(nde);
+              }
+
+              RED.view.reveal(nodeId[1],true);
             }, 1012);
             RED.events.off("nodes:add", hndlr);
           }

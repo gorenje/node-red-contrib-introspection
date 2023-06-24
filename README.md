@@ -63,6 +63,12 @@ If this functionality is not desired, then disable this node in the palette mana
 
 Is a palette-only node meaning that it should not be included in any flows. What it does is to highlight nodes if they are referenced in the URL. This node will check the hash value of the URL and if it contains a node id, it will jump to the workspace and focus on the node in question. The node id should be given in the form of `/n/<node id>`, for example: [`.../#flow/878170e6f86c502b/n/b3baf3ca092064a9`](https://demo.openmindmap.org/omm/#flow/878170e6f86c502b/n/b3baf3ca092064a9). Any flow id that is given will be ignored and instead the flow of the node will be shown.
 
+This functionality will be part of Node-RED 3.1.x upon release, so this node only makes sense for Node-RED 3.0.x versions.
+
+This now also support `/n/<node id>/edit` which is also part of the 3.1.x release.
+
+One final feature of this node is path highlighting, this is done by appeanding a `/p/<node1Id>,<node2Id>,<node3Id>,...` to the URL. Whether this will be natively supported in Node-RED is the author unclear.
+
 This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
 
 ### DrawSVG
