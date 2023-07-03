@@ -60,12 +60,22 @@ module.exports = function(RED) {
                       "Authorization": "Bearer " + access_token
                     }
                   }).then( res => {
-                    node.status({fill:"green",shape:"dot",text:"Good"});
-                    setTimeout( function() { node.status({}) }, 450);
+                    var bodySize = res.body.length;
+
                     send( {
                       ...msg,
                       payload: res.body
                     });
+
+                    node.status({fill:"green",shape:"dot",text:"Good"});
+                    setTimeout( function() {
+                      node.status({
+                        fill:  "blue",
+                        shape: "dot",
+                        text:  "Flow size: " + bodySize
+                      })
+                    }, 450);
+
                   }).catch( err => {
                     node.status({fill:"red",shape:"dot",text:"Failed"});
                     node.error(err)
@@ -88,12 +98,21 @@ module.exports = function(RED) {
                  {headers: {"Node-RED-API-Version": cfg.flowVersion}}
         ).then( res => {
           if ( res.statusCode == 200 ) {
+            var bodySize = res.body.length;
+
             send( {
               ...msg,
               payload: res.body
             });
+
             node.status({fill:"green",shape:"dot",text:"Good"});
-            setTimeout( function() { node.status({}) }, 450);
+            setTimeout( function() {
+              node.status({
+                fill:  "blue",
+                shape: "dot",
+                text:  "Flow size: " + bodySize
+              })
+            }, 450);
           } else {
             node.error( res );
             node.status({fill:"red",shape:"dot",text:"Failed"});
