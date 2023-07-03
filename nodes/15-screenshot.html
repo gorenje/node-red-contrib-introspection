@@ -155,21 +155,35 @@
     // inline image data. Image types supported: Jpeg, Png and Svg.
     var imageColl = doc.getElementsByTagName("image");
 
+    var imageCache = {};
+
     var getDataAndCallbackWhenDone = (elem, cntr, cb) => {
-      var postfix = elem.getAttribute("xlink:href").substr(-4,4).toLowerCase();
+      var hrefSrc = elem.getAttribute("xlink:href");
+
+      var postfix = hrefSrc.substr(-4,4).toLowerCase();
+      var fileType = {
+        ".jpg": "jpeg",
+        "jpeg": "jpeg",
+        ".png": "png",
+        ".svg": "svg+xml",
+      };
+
+      if ( imageCache[hrefSrc] ) {
+        console.log( "FOUND " + hrefSrc + " in cache");
+        elem.setAttribute(
+          "xlink:href",
+          "data:image/" + fileType[postfix] + ";base64," + imageCache[hrefSrc]
+        );
+        return cb(cntr-1);
+      }
 
       switch(postfix){
       case ".jpg":
       case "jpeg":
       case ".png":
-        var fileType = {
-          ".jpg": "jpeg",
-          "jpeg": "jpeg",
-          ".png": "png"
-        };
-
         var oReq = new XMLHttpRequest();
-        oReq.open("GET", elem.getAttribute( "xlink:href" ), true);
+
+        oReq.open("GET", hrefSrc, true);
         oReq.responseType = "arraybuffer";
 
         var arrayBufferToBase64 = ( buffer ) => {
@@ -185,9 +199,11 @@
         oReq.onload = function (oEvent) {
           var arrayBuffer = oReq.response; // Note: not oReq.responseText
           if (arrayBuffer) {
-            elem.setAttribute("xlink:href",
-                              "data:image/"+fileType[postfix]+";base64," +
-                              arrayBufferToBase64(arrayBuffer));
+            var b64Data = arrayBufferToBase64(arrayBuffer);
+            imageCache[hrefSrc] = b64Data;
+            elem.setAttribute(
+              "xlink:href", "data:image/"+fileType[postfix]+";base64,"+b64Data
+            );
             cb(cntr-1)
           } else {
             cb(cntr-1)
@@ -198,11 +214,12 @@
         break;
 
       case ".svg":
-        $.get( elem.getAttribute( "xlink:href" ), function(data) {
+        $.get( hrefSrc, function(data) {
           const serializer = new XMLSerializer();
+          var b64Data = btoa(serializer.serializeToString(data));
+          imageCache[hrefSrc] = b64Data;
           elem.setAttribute( "xlink:href",
-                             "data:image/svg+xml;base64," +
-                             btoa(serializer.serializeToString(data)));
+                             "data:image/svg+xml;base64," + b64Data);
           cb(cntr-1)
         });
         break;
@@ -211,8 +228,8 @@
 
     var cb = (cntr) => {
       if ( cntr < 0 ) {
-        const serializer = new XMLSerializer();
-        callbackWithSvgCode( serializer.serializeToString(doc) );
+        delete imageCache;
+        callbackWithSvgCode((new XMLSerializer()).serializeToString(doc));
       } else {
         getDataAndCallbackWhenDone( imageColl.item(cntr), cntr, cb );
       }
@@ -223,8 +240,8 @@
                                   imageColl.length-1,
                                   cb );
     } else {
-      const serializer = new XMLSerializer();
-      callbackWithSvgCode( serializer.serializeToString(doc) );
+      delete imageCache;
+      callbackWithSvgCode( (new XMLSerializer()).serializeToString(doc) );
     }
   };
 
