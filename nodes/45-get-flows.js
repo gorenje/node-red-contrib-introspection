@@ -11,12 +11,40 @@ module.exports = function(RED) {
 
     node.on("input", function(msg, send, done) {
       var os = require('os');
-      var got = require('got');
 
       var baseUrl = "http://" + os.hostname() + ":" + RED.settings.get("uiPort");
       if ( RED.settings.get("httpAdminRoot") != "/" ) {
         baseUrl += RED.settings.get("httpAdminRoot");
       }
+
+      var getFlows = (hdrs, got) => {
+        got.get( baseUrl + "/flows", {
+          headers: {
+            "Node-RED-API-Version": cfg.flowVersion,
+            ...hdrs
+          }
+        }).then( res => {
+          var bodySize = res.body.length;
+
+          send({
+            ...msg,
+            payload: res.body
+          });
+
+          node.status({fill:"green",shape:"dot",text:"Good"});
+          setTimeout( function() {
+            node.status({
+              fill:  "blue",
+              shape: "dot",
+              text:  "Flow size: " + bodySize
+            })
+          }, 450);
+
+        }).catch( err => {
+          node.status({fill:"red",shape:"dot",text:"Failed"});
+          node.error(err)
+        });
+      };
 
       if ( cfg.useAuthentication ) {
         var username = undefined;
@@ -48,41 +76,26 @@ module.exports = function(RED) {
                       "password":   password
                 }
 
-                got.post( baseUrl + "/auth/token", {
-                  json: data
-                }).then( res => {
-                  node.status({fill:"blue",shape:"dot",text:"Requesting flows"});
-
-                  var access_token = JSON.parse(res.body).access_token;
-                  got.get( baseUrl + "/flows", {
-                    headers: {
-                      "Node-RED-API-Version": cfg.flowVersion,
-                      "Authorization": "Bearer " + access_token
-                    }
+                import('got').then( (module) => {
+                  module.got.post( baseUrl + "/auth/token", {
+                    json: data
                   }).then( res => {
-                    var bodySize = res.body.length;
-
-                    send( {
-                      ...msg,
-                      payload: res.body
+                    node.status({
+                      fill:"blue",
+                      shape:"dot",
+                      text:"Requesting flows"
                     });
 
-                    node.status({fill:"green",shape:"dot",text:"Good"});
-                    setTimeout( function() {
-                      node.status({
-                        fill:  "blue",
-                        shape: "dot",
-                        text:  "Flow size: " + bodySize
-                      })
-                    }, 450);
+                    var access_token = JSON.parse(res.body).access_token;
 
-                  }).catch( err => {
+                    getFlows({
+                      "Authorization": "Bearer " + access_token
+                    }, module.got);
+
+                  }).catch((err) => {
                     node.status({fill:"red",shape:"dot",text:"Failed"});
-                    node.error(err)
+                    node.error( err );
                   });
-                }).catch((err) => {
-                  node.status({fill:"red",shape:"dot",text:"Failed"});
-                  node.error( err );
                 });
               }
             })
@@ -93,36 +106,12 @@ module.exports = function(RED) {
          * Authentication free zone...
          */
         node.status({fill:"blue",shape:"dot",text:"Requesting flows"});
-
-        got.get( baseUrl + "/flows",
-                 {headers: {"Node-RED-API-Version": cfg.flowVersion}}
-        ).then( res => {
-          if ( res.statusCode == 200 ) {
-            var bodySize = res.body.length;
-
-            send( {
-              ...msg,
-              payload: res.body
-            });
-
-            node.status({fill:"green",shape:"dot",text:"Good"});
-            setTimeout( function() {
-              node.status({
-                fill:  "blue",
-                shape: "dot",
-                text:  "Flow size: " + bodySize
-              })
-            }, 450);
-          } else {
-            node.error( res );
-            node.status({fill:"red",shape:"dot",text:"Failed"});
-          }
-        }).catch( err => {
-          node.status({fill:"red",shape:"dot",text:"Failed"});
-          node.error(err)
+        import('got').then( (module) => {
+          getFlows({}, module.got);
         });
       }
     });
   }
+
   RED.nodes.registerType("GetFlows", GetFlowsFunctionality);
 }
