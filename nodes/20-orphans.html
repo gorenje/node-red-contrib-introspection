@@ -135,6 +135,19 @@
       });
 
       dirList.treeList('data',items);
+
+      $("#node-input-back-home-but").on("click", function(e) {
+        e.preventDefault();
+        var nde = RED.nodes.node(node.id);
+        if ( nde ) {
+          RED.workspaces.show(nde.z,false,false,true);
+          nde.highlighted = true;
+          nde.dirty = true;
+          RED.view.reveal(nde.id,true)
+          RED.view.redraw();
+          RED.tray.close();
+        }
+      });
     },
 
     oneditsave: function() {
@@ -148,8 +161,9 @@
 </script>
 
 <script type="text/html" data-template-name="Orphans">
-  <div class="form-row">
-    <label><i class="fa fa-tag"></i> <span>Orphans</span></label>
+  <div class="form-row node-input-target-row">
+    <button id="node-input-back-home-but"
+            class="red-ui-button">Back Home</button>
   </div>
 
   <div class="form-row node-input-target-row node-input-target-list-row" style="position: relative; min-height: 100px">
