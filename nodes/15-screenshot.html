@@ -169,7 +169,6 @@
       };
 
       if ( imageCache[hrefSrc] ) {
-        console.log( "FOUND " + hrefSrc + " in cache");
         elem.setAttribute(
           "xlink:href",
           "data:image/" + fileType[postfix] + ";base64," + imageCache[hrefSrc]
