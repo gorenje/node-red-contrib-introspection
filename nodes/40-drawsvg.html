@@ -1,7 +1,19 @@
 <script type="text/javascript">
   RED.comms.subscribe("introspect:drawsvg", (event,data) => {
     if ( data.msg == "svgdata" ) {
-      $($($('svg')[0]).find('> g > g > g')[2]).append(data.payload);
+      var version = RED.settings.version.split(".");
+
+      if ( version[0] == "3" && version[1] == "0" ) {
+        $($($('svg')[0]).find('> g > g > g')[2]).append(
+          data.payload
+        );
+      }
+
+      if ( version[0] == "3" && version[1] == "1" ) {
+        $($($('svg[width=8000]')[0]).find('> g > g > g')[2]).append(
+          data.payload
+        );
+      }
     }
   });
 

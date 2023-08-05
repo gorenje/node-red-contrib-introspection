@@ -14,6 +14,7 @@ module.exports = function(RED) {
                         RED.util.encodeObject({
                           ...msg,
                           msg: "timer-tripped",
+                          endpoint: cfg.endpoint,
                         })
       );
 
@@ -23,5 +24,6 @@ module.exports = function(RED) {
       send(msg);
     });
   }
+
   RED.nodes.registerType("Screenshot", ScreenshotFunctionality);
 }
