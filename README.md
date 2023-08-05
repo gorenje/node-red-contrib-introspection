@@ -75,7 +75,7 @@ This is a hack that uses the `onpaletteadd` callback to do its magic. If this fu
 
 A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
 
-### GetFlows -- Experimental
+### GetFlows
 
 Node retrieves the current `flows.json` from the server but using the [Node-RED API](https://nodered.org/docs/api/admin/methods/get/flows/) so that it is storage independent. It returns the flows as a `payload` of the message.
 
@@ -85,18 +85,18 @@ GetFlows supports version selection of the flows and it has limited authenticati
 
 Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) package that has a [backup](https://github.com/cflurin/node-red-contrib-dsm/wiki/Backup) state machine.
 
+## Node-RED Versions
+
+These nodes have been tested and found to work on Node-RED 3.0.2 and 3.1.0.beta.4.
+
 ## Examples
 
-There are [example flows](/examples) contained in the package, examples can also be found online:
+There are [example flows](/examples) contained in the package, examples can also be found online at [FlowHub.org](https://flowhub.org):
 
-- [Orphans](https://demo.openmindmap.org/omm/#flow/3ebb65fdbecb182e/n/2be3f8794979d47b) - node is top left of flow or search for `type:Orphans`
-- [Seeker](https://demo.openmindmap.org/omm/#flow/40ea5f2aea6592ae/n/b5f189a78d829197) - top left and the [Sink](https://demo.openmindmap.org/omm/#flow/459c271a96458c7c/n/e3262d9d2791ab78) - top right
-- [Screenshot](https://demo.openmindmap.org/omm/#flow/4e2d8c13066b705e/n/499b1383580831aa) - top left
-- [DrawSVG](https://demo.openmindmap.org/omm/#flow/6c8ce462533a1da4/n/248f2edd3d8acd96)
-
-Example screenshot:
-
-![example screenshot](/assets/screenshot.svg)
+- [Orphans](https://flowhub.org/f/2401c255b056e0e1)
+- [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
+- [Screenshot](https://flowhub.org/f/07b2d0f3b0445ab5)
+- [DrawSVG](https://flowhub.org/f/141037dcda5b69fd)
 
 ## License
 
