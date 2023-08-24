@@ -97,6 +97,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
 - [Screenshot](https://flowhub.org/f/07b2d0f3b0445ab5)
 - [DrawSVG](https://flowhub.org/f/141037dcda5b69fd)
+- [GetFlows](https://flowhub.org/f/0b1bfbf6e540be66)
 
 ## License
 
