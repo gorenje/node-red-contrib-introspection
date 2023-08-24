@@ -23,7 +23,8 @@
       "ismobile":   "nodes/25-ismobile.js",
       "navigator":  "nodes/30-navigator.js",
       "drawsvg":    "nodes/40-drawsvg.js",
-      "getflows":   "nodes/45-get-flows.js"
+      "getflows":   "nodes/45-get-flows.js",
+      "sendflow":   "nodes/50-send-flow.js"
     }
   },
   "description": "Node-RED Editor-only nodes for introspecting flows.",
