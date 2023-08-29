@@ -85,6 +85,14 @@ GetFlows supports version selection of the flows and it has limited authenticati
 
 Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) package that has a [backup](https://github.com/cflurin/node-red-contrib-dsm/wiki/Backup) state machine.
 
+### SendFlow
+
+Send a flow to another Node-RED instance. This will replace **any existing** flows on the other server, use with care. Under the hood this uses the [Node-RED API](https://nodered.org/docs/api/admin/methods/post/flows/) to post a new flow to the server. This node also supports authentication if the other server happens to have some.
+
+### TriggerImport
+
+This node will open the Node-RED import dialog and insert the payload, i.e. a flow object, into the dialog. The flow can then be imported into the existing workspace. See the [RSS example](https://flowhub.org/f/e02ba6e534f7a0f4) for more details. Payload must be a valid flow object, i.e. a Javascript array with one object per node. The import dialog will complain should this not be the case.
+
 ## Node-RED Versions
 
 These nodes have been tested and found to work on Node-RED 3.0.2 and 3.1.0.beta.4.
@@ -98,6 +106,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [Screenshot](https://flowhub.org/f/07b2d0f3b0445ab5)
 - [DrawSVG](https://flowhub.org/f/141037dcda5b69fd)
 - [GetFlows](https://flowhub.org/f/0b1bfbf6e540be66)
+- [TriggerImport](https://flowhub.org/f/e02ba6e534f7a0f4)
 
 ## License
 

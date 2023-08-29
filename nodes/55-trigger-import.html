@@ -1,0 +1,48 @@
+<script type="text/javascript">
+  RED.comms.subscribe('introspect:trigger-import-tripped', (event,data) => {
+    if ( data.msg == "import-flow" ) {
+      RED.clipboard.import();
+
+      setTimeout( () => {
+        var content = data.flowContent;
+
+        $('#red-ui-clipboard-dialog-import-text').val(
+          JSON.stringify(content)
+        ).trigger("paste");
+      }, 300);
+    }
+  });
+
+  RED.nodes.registerType('TriggerImport',{
+    color: '#e5e4ef',
+    icon: "icons/subflow.svg",
+    category: 'introspection',
+    paletteLabel: "TriggerImport",
+    defaults: {
+      name: {
+        value:"",
+      },
+    },
+    inputs:1,
+    outputs:1,
+
+    label: function() {
+      return (this.name || this._def.paletteLabel);
+    },
+
+    labelStyle: function() {
+      return this.name?"node_label_italic":"";
+    },
+});
+</script>
+
+<script type="text/html" data-template-name="TriggerImport">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name">Name</span></label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="TriggerImport">
+  <p>Trigger import opens the flow import dialog with data that came from the server.</p>
+</script>
