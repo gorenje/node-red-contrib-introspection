@@ -14,6 +14,7 @@ module.exports = function(RED) {
                         RED.util.encodeObject({
                           flowContent: msg.payload,
                           msg: "import-flow",
+                          autoimport: cfg.autoimport
                         })
       );
 

@@ -9,6 +9,12 @@
         $('#red-ui-clipboard-dialog-import-text').val(
           JSON.stringify(content)
         ).trigger("paste");
+
+        if ( data.autoimport ) {
+          setTimeout( () => {
+            $('#red-ui-clipboard-dialog-ok').trigger('click');
+          }, 435);
+        }
       }, 300);
     }
   });
@@ -22,6 +28,9 @@
       name: {
         value:"",
       },
+      autoimport: {
+        value: false
+      },
     },
     inputs:1,
     outputs:1,
@@ -33,14 +42,27 @@
     labelStyle: function() {
       return this.name?"node_label_italic":"";
     },
-});
+  });
 </script>
 
 <script type="text/html" data-template-name="TriggerImport">
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name">Name</span></label>
-    <input type="text" id="node-input-name" placeholder="Name">
+      <label for="node-input-name">
+          <i class="fa fa-tag"></i>
+          <span data-i18n="common.label.name">Name</span>
+      </label>
+      <input type="text" id="node-input-name" placeholder="Name">
   </div>
+
+  <div class="form-row">
+      <label for="node-input-autoimport">
+        <span>Automatic Import?</span>
+      </label>
+      <input type="checkbox"
+             id="node-input-autoimport"
+             style="display:inline-block; width:15px; vertical-align:baseline;">
+  </div>
+
 </script>
 
 <script type="text/html" data-help-name="TriggerImport">
