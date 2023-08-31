@@ -1,11 +1,25 @@
 <script type="text/javascript">
   RED.comms.subscribe('introspect:trigger-import-tripped', (event,data) => {
     if ( data.msg == "import-flow" ) {
+      var content = data.flowContent;
+
+      if ( data.removeduplicates ) {
+        content = content.filter( (elem) => {
+          return RED.nodes.node(elem.id) == undefined
+        });
+      }
+
+      if ( content.length == 0 ) {
+        RED.notify("No new content", {
+          type: "ok",
+          id: "TriggerImport",
+          timeout: 2000
+        });
+        return;
+      }
       RED.clipboard.import();
 
       setTimeout( () => {
-        var content = data.flowContent;
-
         $('#red-ui-clipboard-dialog-import-text').val(
           JSON.stringify(content)
         ).trigger("paste");
@@ -29,6 +43,9 @@
         value:"",
       },
       autoimport: {
+        value: false
+      },
+      removeduplicates: {
         value: false
       },
     },
@@ -55,11 +72,20 @@
   </div>
 
   <div class="form-row">
-      <label for="node-input-autoimport">
+      <label for="node-input-autoimport" style="width: 150px !important;">
         <span>Automatic Import?</span>
       </label>
       <input type="checkbox"
              id="node-input-autoimport"
+             style="display:inline-block; width:15px; vertical-align:baseline;">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-removeduplicates" style="width: 150px !important;">
+        <span>Remove duplicates?</span>
+      </label>
+      <input type="checkbox"
+             id="node-input-removeduplicates"
              style="display:inline-block; width:15px; vertical-align:baseline;">
   </div>
 

@@ -12,9 +12,10 @@ module.exports = function(RED) {
     node.on("input", function(msg, send, done) {
       RED.comms.publish("introspect:trigger-import-tripped",
                         RED.util.encodeObject({
-                          flowContent: msg.payload,
-                          msg: "import-flow",
-                          autoimport: cfg.autoimport
+                          flowContent:      msg.payload,
+                          msg:              "import-flow",
+                          autoimport:       cfg.autoimport,
+                          removeduplicates: cfg.removeduplicates,
                         })
       );
 
