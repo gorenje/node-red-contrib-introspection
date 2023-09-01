@@ -1,5 +1,35 @@
 <script type="text/javascript">
-  RED.comms.subscribe('introspect:trigger-import-tripped', (event,data) => {
+
+ RED.comms.subscribe('introspect:trigger-import-delete', (event,data) => {
+   if ( data.msg == "delete-old-nodes" ) {
+     RED.view.select(false)
+
+     // close any dialog that explains that there are duplicates and therefore
+     // only a copy can be imported, hit the cancel button on that one.
+     // Five clicks should do the job ...
+     for ( var idx = 0 ; idx < 5; idx++ ) {
+       $($('.ui-dialog-buttonset').find("button")[0]).trigger('click')
+     }
+
+     var allSelectNodes = [];
+
+     RED.nodes.eachNode( function(e) {
+       if ( e._def && e.env && e.env[1] &&
+            e._def.category == data.payload.category &&
+            (Date.parse(e.env[1].value) <
+               (new Date().getTime() - parseInt(data.payload.old_than_ms))) ) {
+         allSelectNodes.push(e)
+       }
+     });
+
+     RED.view.select({ nodes: allSelectNodes })
+     setTimeout( () => {
+       RED.actions.invoke("core:delete-selection")
+     }, 1500);
+   }
+ });
+
+ RED.comms.subscribe('introspect:trigger-import-tripped', (event,data) => {
     if ( data.msg == "import-flow" ) {
       var content = data.flowContent;
 

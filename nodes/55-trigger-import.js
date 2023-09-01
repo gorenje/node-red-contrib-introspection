@@ -10,6 +10,18 @@ module.exports = function(RED) {
     });
 
     node.on("input", function(msg, send, done) {
+      if ( msg.payload && msg.payload.cmd == "delete-nodes" ) {
+        RED.comms.publish('introspect:trigger-import-delete',
+                          RED.util.encodeObject({
+                            msg:     "delete-old-nodes",
+                            payload: msg.payload,
+                          })
+        );
+
+        send(msg);
+        return;
+      }
+
       RED.comms.publish("introspect:trigger-import-tripped",
                         RED.util.encodeObject({
                           flowContent:      msg.payload,
