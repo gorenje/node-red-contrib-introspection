@@ -98,6 +98,7 @@ The context for code execution includes the following:
 - `payload` which is the the `msg.payload` value
 - `topic` which is the `msg.topic` value
 
+For more details, [client side code](https://github.com/gorenje/node-red-contrib-introspection/blob/2f5aca9374b28fcb6890c312f943f913ecb4cfce/nodes/60-client-code.html#L3-L8) with the context and [server side code](https://github.com/gorenje/node-red-contrib-introspection/blob/2f5aca9374b28fcb6890c312f943f913ecb4cfce/nodes/60-client-code.js#L13-L22).
 
 ## Node-RED Versions
 
