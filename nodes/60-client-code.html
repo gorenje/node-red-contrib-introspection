@@ -1,0 +1,153 @@
+<script type="text/javascript">
+
+ RED.comms.subscribe('introspect:client-code-perform', (event,data) => {
+   if ( data.msg == "execfunc" ) {
+     var payload = data.payload;
+     eval( data.func );
+   }
+ });
+
+  RED.nodes.registerType('ClientCode',{
+    color: '#e5e4ef',
+    icon: "icons/subflow.svg",
+    category: 'introspection',
+    paletteLabel: "ClientCode",
+    defaults: {
+      name: {
+        value:"",
+      },
+      clientcode: {
+        value: ""
+      },
+      format: {
+        value: ""
+      }
+    },
+    inputs:1,
+    outputs:1,
+
+    label: function() {
+      return (this.name || this._def.paletteLabel);
+    },
+
+    labelStyle: function() {
+      return this.name?"node_label_italic":"";
+    },
+
+    oneditsave: function() {
+      $('#node-input-clientcode').val(this.editor.getValue());
+      this.editor.destroy();
+      delete this.editor;
+    },
+
+    oneditcancel: function() {
+      this.editor.destroy();
+      delete this.editor;
+    },
+
+    oneditprepare: function() {
+      const that = this;
+      const stateId = RED.editor.generateViewStateId("node", this, "");
+
+      this.editor = RED.editor.createEditor({
+        id: 'node-input-clientcode-editor',
+        mode: 'ace/mode/html',
+        stateId: stateId,
+        value: $("#node-input-screenshot").val()
+      });
+
+      this.editor.setValue( that.clientcode );
+
+      $("#node-input-format").on("change", function() {
+        var mod = "ace/mode/"+$("#node-input-format").val();
+        that.editor.getSession().setMode({
+          path: mod,
+          v: Date.now()
+        });
+      });
+
+      RED.popover.tooltip($("#node-clientcode-expand-editor"), RED._("node-red:common.label.expand"));
+      $("#node-clientcode-expand-editor").on("click", function (e) {
+        e.preventDefault();
+        const value = that.editor.getValue();
+        that.editor.saveView();
+        RED.editor.editText({
+          mode: $("#node-input-format").val(),
+          value: value,
+          stateId: stateId,
+          width: "Infinity",
+          focus: true,
+          complete: function (v, cursor) {
+            that.editor.setValue(v, -1);
+            setTimeout(function () {
+              that.editor.restoreView();
+              that.editor.focus();
+            }, 250);
+          }
+        })
+      })
+
+    },
+
+    oneditresize: function(size) {
+      var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+      var height = $("#dialog-form").height();
+      for (var i=0; i<rows.length; i++) {
+        height -= $(rows[i]).outerHeight(true);
+      }
+      var editorRow = $("#dialog-form>div.node-text-editor-row");
+      height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+      $(".node-text-editor").css("height",height+"px");
+      this.editor.resize();
+    }
+  });
+</script>
+
+<script type="text/html" data-template-name="ClientCode">
+  <div class="form-row">
+      <label for="node-input-name">
+          <i class="fa fa-tag"></i>
+          <span data-i18n="common.label.name">Name</span>
+      </label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row" style="position: relative; margin-bottom: 0px;">
+      <label for="node-input-clientcode">
+          <i class="fa fa-file-code-o"></i> Client Code
+      </label>
+      <input type="hidden" id="node-input-clientcode" autofocus="autofocus">
+
+      <div style="position: absolute; right:0;display:inline-block; text-align: right; font-size: 0.8em;">
+          Syntax:
+          <select id="node-input-format" style="width:110px; font-size: 10px !important;  height: 24px; padding:0;">
+              <option value="handlebars">mustache</option>
+              <option value="html">HTML</option>
+              <option value="json">JSON</option>
+              <option value="javascript">JavaScript</option>
+              <option value="css">CSS</option>
+              <option value="markdown">Markdown</option>
+              <option value="php">PHP</option>
+              <option value="python">Python</option>
+              <option value="sql">SQL</option>
+              <option value="yaml">YAML</option>
+              <option value="text">None</option>
+          </select>
+          <button type="button" id="node-clientcode-expand-editor"
+                  class="red-ui-button red-ui-button-small">
+              <i class="fa fa-expand"></i>
+          </button>
+      </div>
+  </div>
+
+  <div class="form-row node-text-editor-row">
+      <div style="height: 250px; min-height:150px;"
+           class="node-text-editor"
+           id="node-input-clientcode-editor" ></div>
+  </div>
+ <input type="hidden" id="node-input-clientcode">
+</script>
+
+<script type="text/html" data-help-name="ClientCode">
+  <p>Execute Javascript code in the Node-RED frontend, triggered from the server.</p>
+</script>

@@ -89,9 +89,15 @@ Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) packa
 
 Send a flow to another Node-RED instance. This will replace **any existing** flows on the other server, use with care. Under the hood this uses the [Node-RED API](https://nodered.org/docs/api/admin/methods/post/flows/) to post a new flow to the server. This node also supports authentication if the other server happens to have some.
 
-### TriggerImport
+### ClientCode
 
-This node will open the Node-RED import dialog and insert the payload, i.e. a flow object, into the dialog. The flow can then be imported into the existing workspace. See the [RSS example](https://flowhub.org/f/e02ba6e534f7a0f4) for more details. Payload must be a valid flow object, i.e. a Javascript array with one object per node. The import dialog will complain should this not be the case.
+ClientCode is a node for executing client side, i.e., in the editor, Javascript code triggered by a server side event. Any code that can be executed in the browseer console can be executed in the ClientCode node. It replaces the TriggerImport node by being more generic, TriggerImport executed very specific code for a server side event, ClientCode can emulate that behaviour.
+
+The context for code execution includes the following:
+
+- `payload` which is the the `msg.payload` value
+- `topic` which is the `msg.topic` value
+
 
 ## Node-RED Versions
 
@@ -106,7 +112,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [Screenshot](https://flowhub.org/f/07b2d0f3b0445ab5)
 - [DrawSVG](https://flowhub.org/f/141037dcda5b69fd)
 - [GetFlows](https://flowhub.org/f/0b1bfbf6e540be66)
-- [TriggerImport](https://flowhub.org/f/e02ba6e534f7a0f4)
+- [ClientCode](https://flowhub.org/f/e02ba6e534f7a0f4)
 
 ## License
 
