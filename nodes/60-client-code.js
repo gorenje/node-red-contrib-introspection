@@ -20,9 +20,30 @@ module.exports = function(RED) {
           nodeid:  node.id
         })
       );
-
-      send(msg);
     });
   }
   RED.nodes.registerType("ClientCode", ClientCodeFunctionality);
+
+  RED.httpAdmin.post("/ClientCode/:id",
+                     RED.auth.needsPermission("ClientCode.write"),
+                     (req,res) => {
+                       var node = RED.nodes.getNode(req.params.id);
+                       if (node != null) {
+                         try {
+                           if (req.body && node.type == "ClientCode" ) {
+                             node.send(req.body);
+                           } else {
+                             res.sendStatus(404);
+                           }
+                           res.sendStatus(200);
+                         } catch(err) {
+                           res.sendStatus(500);
+                           node.error("ClientCode: Submission failed: " +
+                                      err.toString())
+                         }
+                       } else {
+                         res.sendStatus(404);
+                       }
+                     });
+
 }

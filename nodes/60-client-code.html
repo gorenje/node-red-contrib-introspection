@@ -2,7 +2,50 @@
 
  RED.comms.subscribe('introspect:client-code-perform', (event,data) => {
    if ( data.msg == "execfunc" ) {
+
+     var doSend = (data, nodeid) => {
+       $.ajax({
+         url:         "ClientCode/" + nodeid,
+         type:        "POST",
+         contentType: "application/json; charset=utf-8",
+         data: JSON.stringify(data),
+
+         success: function (resp) {
+         },
+
+         error: function (jqXHR, textStatus, errorThrown) {
+           RED.notify("ClientCode Communcation Failure: " +
+                      nodeid + ": " + textStatus, {
+             type: "error",
+             id: nodeid,
+             timeout: 3000
+           });
+         }
+       });
+     };
+
+     var doError = (msg,nodeid) => {
+       RED.notify("ClientCode Failed: " + nodeid + ": " + msg, {
+         type: "error",
+         id: nodeid,
+         timeout: 3000
+       });
+       console.log( "ClientCode: Error with node: " + nodeid +": " +msg);
+     };
+
+     var nodeid = data.nodeid;
+
+     var node = {
+       send: (dt) => {
+         doSend(dt, nodeid)
+       },
+       error: (msg) => {
+         doError(msg, nodeid)
+       }
+     };
+
      var payload = data.payload;
+
      eval( data.func );
    }
  });
