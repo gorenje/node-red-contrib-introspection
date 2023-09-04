@@ -91,14 +91,15 @@ Send a flow to another Node-RED instance. This will replace **any existing** flo
 
 ### ClientCode
 
-ClientCode is a node for executing client side, i.e., in the editor, Javascript code triggered by a server side event. Any code that can be executed in the browseer console can be executed in the ClientCode node. It replaces the TriggerImport node by being more generic, TriggerImport executed very specific code for a server side event, ClientCode can emulate that behaviour.
+ClientCode is a node for executing client side, i.e., in the editor, Javascript code triggered by a server side event. Any code that can be executed in the browseer console can be executed in the ClientCode node. A ClientCode node can also send a message back to the server using `node.send(...)` which becomes the server side output of the node.
 
-The context for code execution includes the following:
+The context in which the code is exected includes:
 
 - `payload` which is the the `msg.payload` value
 - `topic` which is the `msg.topic` value
+- `node.send(payload)` where `payload` becomes the output the node on the server side
+- `node.error("msg")` where msg is shown as a notification within the editor
 
-For more details, [client side code](https://github.com/gorenje/node-red-contrib-introspection/blob/2f5aca9374b28fcb6890c312f943f913ecb4cfce/nodes/60-client-code.html#L3-L8) with the context and [server side code](https://github.com/gorenje/node-red-contrib-introspection/blob/2f5aca9374b28fcb6890c312f943f913ecb4cfce/nodes/60-client-code.js#L13-L22).
 
 ## Node-RED Versions
 
