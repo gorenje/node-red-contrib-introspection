@@ -32,10 +32,10 @@ module.exports = function(RED) {
                          try {
                            if (req.body && node.type == "ClientCode" ) {
                              node.send(req.body);
+                             res.sendStatus(200);
                            } else {
                              res.sendStatus(404);
                            }
-                           res.sendStatus(200);
                          } catch(err) {
                            res.sendStatus(500);
                            node.error("ClientCode: Submission failed: " +

@@ -39,12 +39,13 @@
        send: (dt) => {
          doSend(dt, nodeid)
        },
-       error: (msg) => {
-         doError(msg, nodeid)
+       error: (mg) => {
+         doError(mg, nodeid)
        }
      };
 
      var payload = data.payload;
+     var topic = data.topic;
 
      eval( data.func );
    }
