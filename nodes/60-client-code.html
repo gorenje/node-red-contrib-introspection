@@ -3,7 +3,14 @@
  RED.comms.subscribe('introspect:client-code-perform', (event,data) => {
    if ( data.msg == "execfunc" ) {
 
-     var doSend = (data, nodeid) => {
+     var doSend = (data, nodeid, _msg) => {
+       if ( typeof data == "object" ) {
+         data = {
+           ..._msg,
+           ...data
+         };
+       }
+
        $.ajax({
          url:         "ClientCode/" + nodeid,
          type:        "POST",
@@ -24,23 +31,25 @@
        });
      };
 
-     var doError = (msg,nodeid) => {
+     var doError = (msg, nodeid, _msg) => {
        RED.notify("ClientCode Failed: " + nodeid + ": " + msg, {
          type: "error",
          id: nodeid,
          timeout: 3000
        });
-       console.log( "ClientCode: Error with node: " + nodeid +": " +msg);
+
+       console.log( "ClientCode: Error with node: " + nodeid + ": " + msg);
      };
 
      var nodeid = data.nodeid;
+     var _msg = data._msg;
 
      var node = {
        send: (dt) => {
-         doSend(dt, nodeid)
+         doSend(dt, nodeid, _msg)
        },
        error: (mg) => {
-         doError(mg, nodeid)
+         doError(mg, nodeid, _msg)
        }
      };
 
@@ -64,7 +73,7 @@
         value: ""
       },
       format: {
-        value: ""
+        value: "javascript"
       }
     },
     inputs:1,
@@ -95,12 +104,10 @@
 
       this.editor = RED.editor.createEditor({
         id: 'node-input-clientcode-editor',
-        mode: 'ace/mode/html',
+        mode: 'ace/mode/javascript',
         stateId: stateId,
-        value: $("#node-input-screenshot").val()
+        value: $("#node-input-clientcode").val()
       });
-
-      this.editor.setValue( that.clientcode );
 
       $("#node-input-format").on("change", function() {
         var mod = "ace/mode/"+$("#node-input-format").val();

@@ -17,7 +17,8 @@ module.exports = function(RED) {
           payload: msg.payload,
           topic:   msg.topic,
           func:    cfg.clientcode,
-          nodeid:  node.id
+          nodeid:  node.id,
+          _msg:    msg
         })
       );
     });
