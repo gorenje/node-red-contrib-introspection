@@ -50,7 +50,8 @@
        },
        error: (mg) => {
          doError(mg, nodeid, _msg)
-       }
+       },
+       id: data.nodeid
      };
 
      var payload = data.payload;
@@ -167,7 +168,6 @@
       <label for="node-input-clientcode">
           <i class="fa fa-file-code-o"></i> Client Code
       </label>
-      <input type="hidden" id="node-input-clientcode" autofocus="autofocus">
 
       <div style="position: absolute; right:0;display:inline-block; text-align: right; font-size: 0.8em;">
           Syntax:
@@ -196,7 +196,8 @@
            class="node-text-editor"
            id="node-input-clientcode-editor" ></div>
   </div>
- <input type="hidden" id="node-input-clientcode">
+
+  <input type="hidden" id="node-input-clientcode" autofocus="autofocus">
 </script>
 
 <script type="text/html" data-help-name="ClientCode">
