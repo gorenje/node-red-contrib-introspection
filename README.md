@@ -123,3 +123,7 @@ There are [example flows](/examples) contained in the package, examples can also
 ## Contribution & Ideas
 
 Please here at GitHub via issues.
+
+## Flow
+
+The Node-RED flow that maintains this [codebase](https://flowhub.org/f/d73d76db3df96ba2).
