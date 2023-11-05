@@ -28,7 +28,7 @@
       "clientcode":    "nodes/60-client-code.js"
     }
   },
-  "description": "Node-RED Editor-only nodes for introspecting flows.",
+  "description": "Node-RED Editor-only nodes for introspecting with flows in the frontend.",
   "directories": {
     "example": "examples"
   },
@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gorenje/node-red-contrib-introspection.git"
+    "url": "https://github.com/gorenje/node-red-contrib-introspection.git"
   },
   "bugs": {
     "url": "https://github.com/gorenje/node-red-contrib-introspection/issues"
