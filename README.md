@@ -16,14 +16,6 @@ Sometimes I found myself having extremely complex flows, flows that went over mu
 
 There is no need nor requirement to deploy these nodes. Which implies that they also work in read-only mode of Node-RED. Since these nodes only provide information and make no changes, this should not be an issue.
 
-### Orphans
-
-**Update**: This is now a sidebar plugin which shows all unconnected nodes across alls flow tabs.
-
-~~Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.~~
-
-The nodes shown are across all flows and tabs, there is no need to have a Orphans node per flow.
-
 ### Screenshot
 
 **Update**: Screenshot node has become a sidebar node. This means it can no longer be triggered by external forces.
@@ -46,6 +38,16 @@ Disappointments:
 - Font-awesome icons, because they use the font-awesome font, aren't inlined and therefore aren't available in external tools. If the font-awesome fonts are installed on the system icons do work in Inkscape and browser.
 - Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
+
+### Orphans
+
+**Update**: This is now a sidebar plugin which shows all unconnected nodes across alls flow tabs.
+
+~~Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.~~
+
+![img](https://cdn.openmindmap.org/content/1699272147285_Screen_Shot_2023-11-06_at_13.02.22.png)
+
+Clicking on a node will highlight that node in the workspace. The nodes shown are across all flows and tabs. 
 
 ## Palette Nodes
 
