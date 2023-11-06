@@ -203,27 +203,33 @@
 
 <script type="text/html" data-help-name="ClientCode">
   <p>Execute Javascript code in the Node-RED frontend, triggered from the server.</p>
+  
   The code is executed in the users browser and has the following enviornment defined:
   <pre>
   <code>
-    var nodeid = data.nodeid;
-     var _msg = data._msg;
-     var msg = data._msg;
+Variables:
+  nodeid - id of this node
+  _msg - a reference to the msg object passed to this node
+  msg - alias for _msg
+  node.id - id of this node, same as `nodeid` above
+  payload - a reference to msg.payload as it was received by this node
+  topic - a reference to the msg.topic as it was recieved by this node
 
-     var node = {
-       send: (dt) => {
-         doSend(dt, nodeid, _msg)
-       },
-       error: (mg) => {
-         doError(mg, nodeid, _msg)
-       },
-       id: data.nodeid
-     };
-
-     var payload = data.payload;
-     var topic = data.topic;
+Functionality:
+  node.send({..}) - send data to the output port of this node
+  node.error("msg") - generate an error for the node
     </code>
    </pre>
-   <p>
-    Functionlaty: `node.send` can be used to the define the output of the node, `node.error` to generate an error from the node.
+
+    <p>
+    This might be confusing since the code in the node <b>is not</b> 
+    executed on the Node-RED server, rather it is executed in the client
+    browser.
+    <p>
+    This of course makes no sense for flows that are executed "head less"
+    on the server in the backgrond on some dark and stormy night. The ClientCode
+    node is intended for immediate, frontend-only use.
+    <p>
+    An example flow with some use cases is included and can be accessed either via 
+    the Import Flow dialog or accessed online <a style="color: blue" href="https://flowhub.org/f/e02ba6e534f7a0f4" target="_blank">at here <i class="fa fa-external-link"></i></a>.
 </script>
