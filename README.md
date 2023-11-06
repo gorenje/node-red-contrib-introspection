@@ -53,7 +53,7 @@ Disappointments:
 - Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
 
-### IsMobile
+### ~~IsMobile~~
 
 *Deprecated without replacement.*
 
@@ -61,7 +61,7 @@ Is a palette-only node meaning that it should not be included in any flows. It's
 
 If this functionality is not desired, then disable this node in the palette manager.
 
-### Navigator
+### ~~Navigator~~
 
 *Deprecated without replacement.*
 
@@ -75,7 +75,7 @@ One final feature of this node is path highlighting, this is done by appeanding 
 
 This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
 
-### DrawSVG
+### ~~DrawSVG~~
 
 *Deprecated with ClientCode replacement.*
 
