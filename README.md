@@ -81,6 +81,7 @@ The context in which the code is exected includes:
 - `node.error("msg")` where msg is shown as a notification within the editor
 - `msg.payload` contains the payload sent to the node.
 
+## Deprecated Nodes
 
 ### ~~IsMobile~~
 
