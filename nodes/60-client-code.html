@@ -43,6 +43,7 @@
 
      var nodeid = data.nodeid;
      var _msg = data._msg;
+     var msg = data._msg;
 
      var node = {
        send: (dt) => {
@@ -202,4 +203,27 @@
 
 <script type="text/html" data-help-name="ClientCode">
   <p>Execute Javascript code in the Node-RED frontend, triggered from the server.</p>
+  The code is executed in the users browser and has the following enviornment defined:
+  <pre>
+  <code>
+    var nodeid = data.nodeid;
+     var _msg = data._msg;
+     var msg = data._msg;
+
+     var node = {
+       send: (dt) => {
+         doSend(dt, nodeid, _msg)
+       },
+       error: (mg) => {
+         doError(mg, nodeid, _msg)
+       },
+       id: data.nodeid
+     };
+
+     var payload = data.payload;
+     var topic = data.topic;
+    </code>
+   </pre>
+   <p>
+    Functionlaty: `node.send` can be used to the define the output of the node, `node.error` to generate an error from the node.
 </script>

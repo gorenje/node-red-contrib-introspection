@@ -14,13 +14,13 @@ Sometimes I found myself having extremely complex flows, flows that went over mu
 
 ## Nodes
 
-All nodes are editor-only which means that are triggered by double clicking on them (once they have been dragged into a flow) to open the tray. The tray then shows the fulfilment of their purpose.
-
 There is no need nor requirement to deploy these nodes. Which implies that they also work in read-only mode of Node-RED. Since these nodes only provide information and make no changes, this should not be an issue.
 
 ### Orphans
 
-Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.
+**Update**: This is now a sidebar plugin which shows all unconnected nodes across alls flow tabs.
+
+~~Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.~~
 
 The nodes shown are across all flows and tabs, there is no need to have a Orphans node per flow.
 
@@ -31,6 +31,10 @@ Place the sink node at the end of a any flow, the point that needs to be reached
 Double click on the top-level node and all nodes in the pathway are highlighted. Opening the top-level node shows all nodes along the path. Clicking on a node will highlight that node in flow.
 
 ### Screenshot
+
+**Update**: Screenshot node has become a sidebar node. This means it can no longer be triggered by external forces.
+
+![img](https://cdn.openmindmap.org/content/1699269615464_Screen_Shot_2023-11-06_at_12.20.09.png)
 
 Drag the node into a flow, double-click on the node and the tray opens -depending on the size of the flow, this might take a moment. Once the tray is opened, the SVG is shown in the editor window (I took the code from the template node hence the syntax dropdown). Below the editor window is the download button. Pressing that will download the SVG as it is in the editor window, so making changes in that window will be reflected in the downloaded content.
 
@@ -49,17 +53,17 @@ Disappointments:
 - Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
 
-Since version 0.0.5 the Screenshot node takes one input. That input will trigger the node to take a screenshot *without double clicking to open the tray*. The intention is to have an inject trigger regularly so that screenshots are made automagically and flows can have highlights. Screenshots are then posted to the endpoint `/screenshot` (this can be captured with a http-in node) and data is post as a json object `{ d: <svgdata> }`.
-
-There is an example [flow](/examples/trigger-and-save-screenshot.json) that demonstrates this feature. The author is aware that this is dangerously close to enabling spyware for flow modification, please see the [LICENSE](/LICENSE) and behaviour.
-
 ### IsMobile
+
+*Deprecated without replacement.*
 
 Is a palette-only node meaning that it should not be included in any flows. It's single purpose is to remove the palette and sidebars on devices which have a screen width less that 890px. Node-RED has both bars open by default, that makes the mobile experience not so nice. This node is a simple hack that uses `onpaletteadd` callback to close both bars if the device is detected to have "small" width.
 
 If this functionality is not desired, then disable this node in the palette manager.
 
 ### Navigator
+
+*Deprecated without replacement.*
 
 Is a palette-only node meaning that it should not be included in any flows. What it does is to highlight nodes if they are referenced in the URL. This node will check the hash value of the URL and if it contains a node id, it will jump to the workspace and focus on the node in question. The node id should be given in the form of `/n/<node id>`, for example: [`.../#flow/878170e6f86c502b/n/b3baf3ca092064a9`](https://demo.openmindmap.org/omm/#flow/878170e6f86c502b/n/b3baf3ca092064a9). Any flow id that is given will be ignored and instead the flow of the node will be shown.
 
@@ -73,7 +77,11 @@ This is a hack that uses the `onpaletteadd` callback to do its magic. If this fu
 
 ### DrawSVG
 
+*Deprecated with ClientCode replacement.*
+
 A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
+
+**Update**: See this [flow](https://flowhub.org/f/141037dcda5b69fd) for doing this with a client code node (see below for explanation of ClientCode node.)
 
 ### GetFlows
 
@@ -99,6 +107,7 @@ The context in which the code is exected includes:
 - `topic` which is the `msg.topic` value
 - `node.send(payload)` where `payload` becomes the output the node on the server side
 - `node.error("msg")` where msg is shown as a notification within the editor
+- `msg.payload` contains the payload sent to the node.
 
 
 ## Node-RED Versions
@@ -109,12 +118,11 @@ These nodes have been tested and found to work on Node-RED 3.0.2 and 3.1.0.beta.
 
 There are [example flows](/examples) contained in the package, examples can also be found online at [FlowHub.org](https://flowhub.org):
 
-- [Orphans](https://flowhub.org/f/2401c255b056e0e1)
-- [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
-- [Screenshot](https://flowhub.org/f/07b2d0f3b0445ab5)
+- [ClientCode](https://flowhub.org/f/e02ba6e534f7a0f4)
 - [DrawSVG](https://flowhub.org/f/141037dcda5b69fd)
 - [GetFlows](https://flowhub.org/f/0b1bfbf6e540be66)
-- [ClientCode](https://flowhub.org/f/e02ba6e534f7a0f4)
+- [Orphans](https://flowhub.org/f/2401c255b056e0e1)
+- [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
 
 ## License
 

@@ -15,14 +15,13 @@
   },
   "node-red": {
     "version": ">=2.0.0",
+    "plugins": {
+      "screenshot": "plugins/screenshot.html",
+      "orphans": "plugins/orphans.html"
+    },
     "nodes": {
       "seeker":        "nodes/05-seeker.js",
       "sink":          "nodes/10-sink.js",
-      "screenshot":    "nodes/15-screenshot.js",
-      "orphans":       "nodes/20-orphans.js",
-      "ismobile":      "nodes/25-ismobile.js",
-      "navigator":     "nodes/30-navigator.js",
-      "drawsvg":       "nodes/40-drawsvg.js",
       "getflows":      "nodes/45-get-flows.js",
       "sendflow":      "nodes/50-send-flow.js",
       "clientcode":    "nodes/60-client-code.js"

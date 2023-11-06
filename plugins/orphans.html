@@ -1,0 +1,45 @@
+<script type="text/javascript">
+(function() {
+   function setupTreelist(){var e=collectOrphans();if(0==e.length){RED.notify("No Orphans Found",{type:"warning",timeout:2e3});try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){}}else{try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){$("#node-input-orphan-target-container-div").css({width:"100%",height:"400px"}).treeList({multi:!1}).on("treelistitemmouseover",function(e,t){t.node&&t.node.z==RED.workspaces.active()&&(RED.view.reveal(t.node.id,!0),RED.view.redraw())}).on("treelistitemmouseout",function(e,t){}).on("treelistselect",function(e,t){t.node&&(RED.workspaces.show(t.node.z,!1,!1,!0),RED.view.reveal(t.node.id,!0),RED.view.redraw())}),$("#node-input-orphan-target-filter").show();var n=$("#node-input-orphan-target-filter").searchBox({style:"compact",delay:300,change:function(){var e,t=$(this).val().trim().toLowerCase();""===t?($("#node-input-orphan-target-container-div").treeList("filter",null),n.searchBox("count","")):(e=$("#node-input-orphan-target-container-div").treeList("filter",function(e){return-1<e.label.toLowerCase().indexOf(t)||-1<e.node.type.toLowerCase().indexOf(t)}),n.searchBox("count",e+" / "+$("#node-input-orphan-target-container-div").treeList("data").length))}})}$("#node-input-orphan-target-container-div").treeList("data",e.sort((e,t)=>e.node.z>t.node.z))}}function collectOrphans(){const t=new Set;var n=[],r=(RED.nodes.eachLink(e=>{t.add(e.source),t.add(e.target)}),RED.nodes.eachNode(e=>{t.has(e)||n.push(e)}),[]),i={};return n.forEach(function(e){var t=RED.nodes.getType(e.type);if(t){var n=t.label,n=("function"==typeof n?n.call(e):n)||"",o=e.type;if(0===o.indexOf("subflow:"))return}t&&n||(n=e.type),i[e.id]={node:e,label:n,sublabel:o,selected:!1,checkbox:!1},r.push(i[e.id])}),r}
+
+   var initialiseSidebarOrphanNodeOnce = () => {
+      RED.events.off('runtime-state', initialiseSidebarOrphanNodeOnce);
+
+      // The html content of the sidebar has been specified below as a data-template, from where it can be loaded:
+      var content = $($('script[type="text/x-red"][data-template-name="Orphans"]').i18n().html());
+    
+      // Add a "Your sidebar" tabsheet to the right sidebar panel, in which this sidebar panel can be displayed
+      // --> more details: https://nodered.org/docs/api/ui/sidebar/
+      RED.sidebar.addTab({
+         id: "Orphans",
+         label: "Orphans", // short name for the tab
+         name: "Orphan Nodes", // long name for the menu
+         content: content,
+         enableOnEdit: true,
+         iconClass: "fa fa-life-ring" // your fontawesome icon
+      });
+
+      // When the user has entered new data in the sidebar, then store it into the config node
+      $("#node-input-orphan-find-btn").on("click", function(e) {
+         if ( e ) { e.preventDefault() }
+         setupTreelist();
+      })
+   };
+   RED.events.on('runtime-state', initialiseSidebarOrphanNodeOnce);
+})();
+</script>
+
+<!-- The html for the right sidebar plugin screen -->
+<script type="text/x-red" data-template-name="Orphans">
+   <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
+      <button id="node-input-orphan-find-btn"
+               class="red-ui-button">Find Orphans</button>
+   </div>
+
+   <div class="form-row node-input-target-row node-input-target-list-row" style="margin-left: 10px; position: relative; min-height: 200px; margin-right: 15px;">
+      <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+        <input type="text" id="node-input-orphan-target-filter" style="display: none;">
+      </div>
+      <div id="node-input-orphan-target-container-div"></div>
+   </div>
+</script>

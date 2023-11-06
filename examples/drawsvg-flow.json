@@ -8,15 +8,6 @@
         "env": []
     },
     {
-        "id": "97790509b555e06a",
-        "type": "DrawSVG",
-        "z": "214f1986d70db2a6",
-        "name": "",
-        "x": 488,
-        "y": 997,
-        "wires": []
-    },
-    {
         "id": "be970616115487ae",
         "type": "http request",
         "z": "214f1986d70db2a6",
@@ -24,7 +15,7 @@
         "method": "GET",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "https://demo.openmindmap.org/content/open_mind.svg",
+        "url": "https://cdn.openmindmap.org/content/open_mind.svg",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -32,11 +23,11 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 347,
-        "y": 923,
+        "x": 367,
+        "y": 932,
         "wires": [
             [
-                "97790509b555e06a"
+                "1eb4bf477ee7ccf6"
             ]
         ]
     },
@@ -67,6 +58,19 @@
             [
                 "be970616115487ae"
             ]
+        ]
+    },
+    {
+        "id": "1eb4bf477ee7ccf6",
+        "type": "ClientCode",
+        "z": "214f1986d70db2a6",
+        "name": "",
+        "clientcode": "var version = RED.settings.version.split(\".\");\n\nconsole.log( _msg.payload )\n\nif (version[0] == \"3\" && version[1] == \"0\") {\n    $($($('svg')[0]).find('> g > g > g')[2]).append(\n        _msg.payload\n    );\n}\n\nif (version[0] == \"3\" && version[1] == \"1\") {\n    $($($('svg[width=8000]')[0]).find('> g > g > g')[2]).append(\n        _msg.payload\n    );\n}",
+        "format": "javascript",
+        "x": 531,
+        "y": 1015,
+        "wires": [
+            []
         ]
     }
 ]

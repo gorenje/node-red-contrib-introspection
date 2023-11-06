@@ -1,0 +1,74 @@
+<script type="text/javascript">
+(function() {
+   var globalRefToSvgData;
+
+   function nr_intro_generate_svg_3_1(r){return e=>{try{handleSvgObject($($("svg[width=8000]")[0]),e)}catch(t){var n="Error Generating SVG: "+JSON.stringify(t);r.notify(n,{type:"error"}),e('<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg width="1000" height="1000" viewBox="0 0 1000 1000" pointer-events="all" style="cursor: crosshair; touch-action: none;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style>.small { font: bold 20px sans-serif; fill: red;}</style><text x="10" y="30" class="small">'+n+"</text></svg>")}}}function nr_intro_generate_svg_3_0(r){return e=>{try{handleSvgObject($($("svg")[0]),e)}catch(t){var n="Error Generating SVG: "+JSON.stringify(t);r.notify(n,{type:"error"}),e('<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg width="1000" height="1000" viewBox="0 0 1000 1000" pointer-events="all" style="cursor: crosshair; touch-action: none;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style>.small { font: bold 20px sans-serif; fill: red;}</style><text x="10" y="30" class="small">'+n+"</text></svg>")}}}function handleSvgObject(o,e){var t=o.clone();t.find("foreignObject").remove(),t.find("svg.__screenshot").remove();function a(t,e){for(var n=0;n<t.length;n++){var s=t.item(n),i=e[n];["stroke-width","fill-opacity","stroke-opacity","opacity","stroke-dasharray"].forEach(function(t){s.setAttribute(t,$(i).attr(t)||$(i).css(t))}),["fill","stroke"].forEach(function(t){var e,n,r=(e=$(i).attr(t)||$(i).css(t))&&null!==e&&"none"!=e?(n=e.match(/^#(.)(.)(.)$/))?"#"+n[1]+n[1]+n[2]+n[2]+n[3]+n[3]:(n=e.match(/^#......$/))?e:null===(n=e.match(/^rgb\(([0-9]+),\s+([0-9]+),\s+([0-9]+)/))?(r=e.match(/^rgba\(([0-9]+),\s+([0-9]+),\s+([0-9]+),\s+([0-9]+)/))?{clr:"#"+("0"+parseInt(r[1],10).toString(16)).slice(-2)+("0"+parseInt(r[2],10).toString(16)).slice(-2)+("0"+parseInt(r[3],10).toString(16)).slice(-2),opa:r[4]}:(console.log("Screenshot node: returned unknown color: "+e),e):"#"+("0"+parseInt(n[1],10).toString(16)).slice(-2)+("0"+parseInt(n[2],10).toString(16)).slice(-2)+("0"+parseInt(n[3],10).toString(16)).slice(-2):"none";"object"==typeof r?(s.setAttribute(t+"-opacity",r.opa),s.setAttribute(t,r.clr)):s.setAttribute(t,r)}),$(i).hasClass("hide")&&("g"==s.tagName&&s.setAttribute("opacity","0"),s.setAttribute("visibility","hidden"))}}var n='<?xml version="1.0" standalone="no"?>\r\n<svg '+('width="'+o.attr("width")+'" height="'+o.attr("height")+'"')+' pointer-events="all" style="cursor: crosshair; touch-action: none;" xmlns="http://www.w3.org/2000/svg" class="__screenshot" xmlns:xlink="http://www.w3.org/1999/xlink">\r\n',t=t.html(),l=(new DOMParser).parseFromString(n+t+"\r\n</svg>","image/svg+xml"),r=e=>(["g","rect","line","path","circle","image","text"].forEach(t=>{$(e.getElementsByTagName(t)).each((t,e)=>{e.setAttribute("class",""),e.setAttribute("id","")})}),e),s=(["g","rect","line","path","circle","image"].forEach(function(t){a(l.getElementsByTagName(t),o.find(t))}),["text"].forEach(function(t){a(l.getElementsByTagName(t),o.find(t));for(var e=l.getElementsByTagName(t),n=o.find(t),r=0;r<e.length;r++){var s=e.item(r),i=n[r];["font-family","font-size","font-size-adjust","font-stretch","font-style","font-variant","font-weight","text-anchor","dominant-baseline"].forEach(function(t){s.setAttribute(t,$(i).attr(t)||$(i).css(t))})}}),l.getElementsByTagName("image")),g={},i=(n,r,s)=>{var i=n.getAttribute("xlink:href"),o=i.substr(-4,4).toLowerCase(),a={".jpg":"jpeg",jpeg:"jpeg",".png":"png",".svg":"svg+xml"};if(g[i])return n.setAttribute("xlink:href","data:image/"+a[o]+";base64,"+g[i]),s(r-1);switch(o){case".jpg":case"jpeg":case".png":var l=new XMLHttpRequest;l.open("GET",i,!0),l.responseType="arraybuffer";l.onload=function(t){var e=l.response;e&&(e=(t=>{for(var e="",n=new Uint8Array(t),r=n.byteLength,s=0;s<r;s++)e+=String.fromCharCode(n[s]);return window.btoa(e)})(e),g[i]=e,n.setAttribute("xlink:href","data:image/"+a[o]+";base64,"+e)),s(r-1)},l.send(null);break;case".svg":$.get(i,function(t){var e=new XMLSerializer,e=btoa(e.serializeToString(t));g[i]=e,n.setAttribute("xlink:href","data:image/svg+xml;base64,"+e),s(r-1)})}},c=t=>{t<0?e((new XMLSerializer).serializeToString(r(l))):i(s.item(t),t,c)};0<s.length?i(s.item(s.length-1),s.length-1,c):e((new XMLSerializer).serializeToString(r(l)))}function generatorFunctionForVersion(t){var n,e=t.settings.version.split("."),r=e[0],e=e[1];if("3"==r){if("0"==e)return nr_intro_generate_svg_3_0(t);if("1"==e)return nr_intro_generate_svg_3_1(t)}return n=t,t=>{var e="Node-RED version ("+n.settings.version+") not supported";n.notify(e,{type:"error"}),t&&t('<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg width="1000" height="1000" viewBox="0 0 1000 1000" pointer-events="all" style="cursor: crosshair; touch-action: none;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style>.small { font: bold 20px sans-serif; fill: red;}</style><text x="10" y="30" class="small">'+e+"</text></svg>")}}
+
+   // Add your plugin as a new tabsheet in the right sidebar AFTER the flow editor is completely started
+   var initialiseConfigNodeOnce = () => {
+      RED.events.off('runtime-state', initialiseConfigNodeOnce);
+
+      // The html content of the sidebar has been specified below as a data-template, from where it can be loaded:
+      var content = $($('script[type="text/x-red"][data-template-name="Screenshot"]').i18n().html());
+    
+      // Add a "Your sidebar" tabsheet to the right sidebar panel, in which this sidebar panel can be displayed
+      // --> more details: https://nodered.org/docs/api/ui/sidebar/
+      RED.sidebar.addTab({
+         id: "Screenshot",
+         label: "Screenshot", // short name for the tab
+         name: "Screenshot", // long name for the menu
+         content: content,
+         enableOnEdit: true,
+         iconClass: "fa fa-camera" // your fontawesome icon
+      });
+
+      $('#node-screenshot-capture-btn').on("click", function (e) {
+         if ( e ) { e.preventDefault() }
+
+         $('#node-input-screenshot-svgcontainer').html( "Please wait, screenshot being prepared ..." );
+
+         generatorFunctionForVersion(RED)( (svgdata) => {
+            $('#node-input-screenshot-svgcontainer').html(svgdata);
+            globalRefToSvgData = svgdata;
+         });
+      })
+
+      // handle the download button under the editor window.
+      $('#node-screenshot-download-svg').on("click", function (e) {
+        if (e) { e.preventDefault(); }
+        var svgBlob = new Blob([globalRefToSvgData], {type:"image/svg+xml;charset=utf-8"});
+        var svgUrl = URL.createObjectURL(svgBlob);
+        var downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "screenshot.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
+
+      $('#node-screenshot-copy-to-clipboard-svg').on("click", function (e) {
+        if (e) { e.preventDefault(); }
+        if ( RED.clipboard.copyText(globalRefToSvgData) ) {
+          RED.notify("SVG copied to clipboard", { type: "success" });
+        }
+      });
+   };
+   RED.events.on('runtime-state', initialiseConfigNodeOnce);
+})();
+</script>
+
+<!-- The html for the right sidebar plugin screen -->
+<script type="text/x-red" data-template-name="Screenshot">
+   <div class="form-row" style="margin-left: 10px; margin-top: 30px;">
+      <button type="button" id="node-screenshot-capture-btn" class="red-ui-button red-ui-button-large"><i class="fa fa-camera"></i> Capture</button>
+   </div>
+
+   <div class="form-row" style="min-height: 300px; overflow: scroll; margin-left: 10px; margin-right: 15px; height: 300px; border: 1px rgb(196, 196, 196) solid; border-radius: 5px;">
+      <div id="node-input-screenshot-svgcontainer"></div>
+   </div>
+
+   <div class="form-row" style="margin-left: 10px; margin-top: 5px;">
+      <button type="button" id="node-screenshot-download-svg" class="red-ui-button red-ui-button-large"><i class="fa fa-download"></i>Download</button>
+      <button type="button" id="node-screenshot-copy-to-clipboard-svg" class="red-ui-button red-ui-button-large"><i class="fa fa-clipboard"></i>Copy to Clipboard</button>
+   </div>
+</script>
