@@ -12,7 +12,7 @@ Orphans node many or many not have their reasons, sometimes nodes aren't meant t
 
 Sometimes I found myself having extremely complex flows, flows that went over multiple tabs via the link-in/out nodes. I was lost as to how specific nodes were ever reached. The birth of the Sink & Seeker nodes was inevitable.
 
-## Nodes
+## Sidebar Nodes
 
 There is no need nor requirement to deploy these nodes. Which implies that they also work in read-only mode of Node-RED. Since these nodes only provide information and make no changes, this should not be an issue.
 
@@ -23,12 +23,6 @@ There is no need nor requirement to deploy these nodes. Which implies that they 
 ~~Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.~~
 
 The nodes shown are across all flows and tabs, there is no need to have a Orphans node per flow.
-
-### Sink & Seeker
-
-Place the sink node at the end of a any flow, the point that needs to be reached. Place the seeker at the starting point. Double click on the seeker to open the tray and all possible paths (if there are any) between it and the sink are shown.
-
-Double click on the top-level node and all nodes in the pathway are highlighted. Opening the top-level node shows all nodes along the path. Clicking on a node will highlight that node in flow.
 
 ### Screenshot
 
@@ -53,35 +47,13 @@ Disappointments:
 - Limited testing: Firefox & Opera (on mac), your mileage might vary
 - No error checking - network requests are assumed to work
 
-### ~~IsMobile~~
+## Palette Nodes
 
-*Deprecated without replacement.*
+### Sink & Seeker
 
-Is a palette-only node meaning that it should not be included in any flows. It's single purpose is to remove the palette and sidebars on devices which have a screen width less that 890px. Node-RED has both bars open by default, that makes the mobile experience not so nice. This node is a simple hack that uses `onpaletteadd` callback to close both bars if the device is detected to have "small" width.
+Place the sink node at the end of a any flow, the point that needs to be reached. Place the seeker at the starting point. Double click on the seeker to open the tray and all possible paths (if there are any) between it and the sink are shown.
 
-If this functionality is not desired, then disable this node in the palette manager.
-
-### ~~Navigator~~
-
-*Deprecated without replacement.*
-
-Is a palette-only node meaning that it should not be included in any flows. What it does is to highlight nodes if they are referenced in the URL. This node will check the hash value of the URL and if it contains a node id, it will jump to the workspace and focus on the node in question. The node id should be given in the form of `/n/<node id>`, for example: [`.../#flow/878170e6f86c502b/n/b3baf3ca092064a9`](https://demo.openmindmap.org/omm/#flow/878170e6f86c502b/n/b3baf3ca092064a9). Any flow id that is given will be ignored and instead the flow of the node will be shown.
-
-This functionality will be part of Node-RED 3.1.x upon release, so this node only makes sense for Node-RED 3.0.x versions.
-
-This now also support `/n/<node id>/edit` which is also part of the 3.1.x release.
-
-One final feature of this node is path highlighting, this is done by appeanding a `/p/<node1Id>,<node2Id>,<node3Id>,...` to the URL. Whether this will be natively supported in Node-RED is the author unclear.
-
-This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
-
-### ~~DrawSVG~~
-
-*Deprecated with ClientCode replacement.*
-
-A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
-
-**Update**: See this [flow](https://flowhub.org/f/141037dcda5b69fd) for doing this with a client code node (see below for explanation of ClientCode node.)
+Double click on the top-level node and all nodes in the pathway are highlighted. Opening the top-level node shows all nodes along the path. Clicking on a node will highlight that node in flow.
 
 ### GetFlows
 
@@ -108,6 +80,37 @@ The context in which the code is exected includes:
 - `node.send(payload)` where `payload` becomes the output the node on the server side
 - `node.error("msg")` where msg is shown as a notification within the editor
 - `msg.payload` contains the payload sent to the node.
+
+
+### ~~IsMobile~~
+
+*Deprecated without replacement.*
+
+Is a palette-only node meaning that it should not be included in any flows. It's single purpose is to remove the palette and sidebars on devices which have a screen width less that 890px. Node-RED has both bars open by default, that makes the mobile experience not so nice. This node is a simple hack that uses `onpaletteadd` callback to close both bars if the device is detected to have "small" width.
+
+If this functionality is not desired, then disable this node in the palette manager.
+
+### ~~Navigator~~
+
+*Deprecated without replacement.*
+
+~~Is a palette-only node meaning that it should not be included in any flows. What it does is to highlight nodes if they are referenced in the URL. This node will check the hash value of the URL and if it contains a node id, it will jump to the workspace and focus on the node in question. The node id should be given in the form of `/n/<node id>`, for example: [`.../#flow/878170e6f86c502b/n/b3baf3ca092064a9`](https://demo.openmindmap.org/omm/#flow/878170e6f86c502b/n/b3baf3ca092064a9). Any flow id that is given will be ignored and instead the flow of the node will be shown.~~
+
+This functionality will be part of Node-RED 3.1.x upon release, so this node only makes sense for Node-RED 3.0.x versions.
+
+This now also support `/n/<node id>/edit` which is also part of the 3.1.x release.
+
+One final feature of this node is path highlighting, this is done by appeanding a `/p/<node1Id>,<node2Id>,<node3Id>,...` to the URL. Whether this will be natively supported in Node-RED is the author unclear.
+
+This is a hack that uses the `onpaletteadd` callback to do its magic. If this functionality is not desired, then disable this node in the palette manager.
+
+### ~~DrawSVG~~
+
+*Deprecated with ClientCode replacement.*
+
+A node for inserting an SVG image into the workspace. The image is layered above the grid but below nodes and their connections. The input message must contain SVG data (in string form) in the `payload` attribute.
+
+**Update**: See this [flow](https://flowhub.org/f/141037dcda5b69fd) for doing this with a client code node (see below for explanation of ClientCode node.)
 
 
 ## Node-RED Versions
