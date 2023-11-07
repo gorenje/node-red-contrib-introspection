@@ -79,9 +79,16 @@ The context in which the code is exected includes:
 
 - `payload` which is the the `msg.payload` value
 - `topic` which is the `msg.topic` value
+- `msg.payload` contains the payload sent to the node.
+- `node.id` and `nodeid` are the id of the current node
+
+Functionality which interacts with the flow: 
+
 - `node.send(payload)` where `payload` becomes the output the node on the server side
 - `node.error("msg")` where msg is shown as a notification within the editor
-- `msg.payload` contains the payload sent to the node.
+- `node.status({fill: 'red', shape: 'dot', text: 'hello world'})` - generate a status for the node.
+
+An example if the client code node is this [flow](https://flowhub.org/f/01920991a09b7e95) where the node generates an in browser notification.
 
 ## Deprecated Nodes
 
