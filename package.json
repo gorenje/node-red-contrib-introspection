@@ -4,15 +4,21 @@
   "dependencies": {
     "got": "latest"
   },
+
   "keywords": [
-    "node-red", "introspection", "selfreflection"
+    "node-red", 
+    "introspection", 
+    "selfreflection",
+    "node-red-editor"
   ],
-  "homepage": "https://github.com/gorenje/node-red-contrib-introspection#README.md",
+
+  "homepage": "https://github.com/gorenje/node-red-contrib-introspection#readme",
   "license": "SEE LICENSE IN https://github.com/gorenje/node-red-contrib-introspection/blob/main/LICENSE",
   "author": "Gerrit Riessen <nodered@spreads-the.love> (https://spread-the.love)",
   "engines": {
-    "node": ">=16"
+    "node": ">=8"
   },
+
   "node-red": {
     "version": ">=2.0.0",
     "plugins": {
@@ -27,17 +33,18 @@
       "clientcode":    "nodes/60-client-code.js"
     }
   },
+  
   "description": "Node-RED Editor-only nodes for introspecting with flows in the frontend.",
-  "directories": {
-    "example": "examples"
-  },
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/gorenje/node-red-contrib-introspection.git"
   },
+
   "bugs": {
     "url": "https://github.com/gorenje/node-red-contrib-introspection/issues"
   }
