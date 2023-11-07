@@ -15,7 +15,7 @@
          url:         "ClientCode/" + nodeid,
          type:        "POST",
          contentType: "application/json; charset=utf-8",
-         data: JSON.stringify(data),
+         data:        JSON.stringify(data),
 
          success: function (resp) {
          },
@@ -30,6 +30,27 @@
          }
        });
      };
+
+    var doStatus = (sts, nodeid, _msg) => {
+       $.ajax({
+         url:         "ClientCode/" + nodeid + "/status",
+         type:        "POST",
+         contentType: "application/json; charset=utf-8",
+         data:        JSON.stringify(sts),
+
+         success: function (resp) {
+         },
+
+         error: function (jqXHR, textStatus, errorThrown) {
+           RED.notify("ClientCode Communcation Failure: " +
+                      nodeid + ": " + textStatus, {
+             type: "error",
+             id: nodeid,
+             timeout: 3000
+           });
+         }
+       });
+     }
 
      var doError = (msg, nodeid, _msg) => {
        RED.notify("ClientCode Failed: " + nodeid + ": " + msg, {
@@ -46,13 +67,10 @@
      var msg = data._msg;
 
      var node = {
-       send: (dt) => {
-         doSend(dt, nodeid, _msg)
-       },
-       error: (mg) => {
-         doError(mg, nodeid, _msg)
-       },
-       id: data.nodeid
+       id:     data.nodeid,
+       send:   (dt)  => { doSend(dt, nodeid, _msg)     },
+       error:  (mg)  => { doError(mg, nodeid, _msg)    },
+       status: (sts) => { doStatus(sts, nodeid, _msg)  }
      };
 
      var payload = data.payload;
@@ -106,8 +124,19 @@
 
       this.editor = RED.editor.createEditor({
         id: 'node-input-clientcode-editor',
-        mode: 'ace/mode/javascript',
+        mode: 'ace/mode/nrjavascript',
         stateId: stateId,
+        globals: {
+          msg:true,          
+          RED: true,
+          node: true,
+          console: true,
+          Buffer: true,
+          setTimeout: true,
+          clearTimeout: true,
+          setInterval: true,
+          clearInterval: true
+        },
         value: $("#node-input-clientcode").val()
       });
 

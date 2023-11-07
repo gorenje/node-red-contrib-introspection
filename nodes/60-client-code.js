@@ -47,4 +47,27 @@ module.exports = function(RED) {
                        }
                      });
 
+
+  RED.httpAdmin.post("/ClientCode/:id/status",
+    RED.auth.needsPermission("ClientCode.write"),
+    (req, res) => {
+      var node = RED.nodes.getNode(req.params.id);
+      if (node != null) {
+        try {
+          if (req.body && node.type == "ClientCode") {
+            node.status(req.body);
+            res.sendStatus(200);
+          } else {
+            res.sendStatus(404);
+          }
+        } catch (err) {
+          res.sendStatus(500);
+          node.error("ClientCode: Submission failed: " +
+            err.toString())
+        }
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
 }
