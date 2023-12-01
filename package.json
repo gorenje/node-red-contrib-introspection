@@ -2,14 +2,15 @@
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
   "version": "0.5.3",
   "dependencies": {
-    "got": "latest"
+    "got": ">=13.0.0"
   },
 
   "keywords": [
     "node-red", 
     "introspection", 
     "selfreflection",
-    "node-red-editor"
+    "node-red-editor",
+    "screenshot"
   ],
 
   "homepage": "https://github.com/gorenje/node-red-contrib-introspection#readme",
@@ -22,8 +23,7 @@
   "node-red": {
     "version": ">=2.0.0",
     "plugins": {
-      "screenshot": "plugins/screenshot.html",
-      "orphans": "plugins/orphans.html"
+      "screenshot": "plugins/sidebar.html"
     },
     "nodes": {
       "seeker":        "nodes/05-seeker.js",
