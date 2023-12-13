@@ -1,6 +1,6 @@
 {
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "dependencies": {
     "got": ">=13.0.0"
   },
