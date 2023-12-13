@@ -122,6 +122,20 @@
 
           switch( node.type ) {
 
+          case "link call":
+              RED.nodes.getNodeLinks(node).forEach( function(l) {
+                traverse( l.target, [...nodeIds, node.id] );
+              });
+
+              node.links.forEach( function(lnkNdeId) {
+                var dNode = RED.nodes.node(lnkNdeId);
+                if ( !dNode ) { return }
+
+                traverse( dNode, [...nodeIds, node.id] );
+              });
+              
+              break;
+
           case "link out":
               node.links.forEach( function(lnkNdeId) {
                 var dNode = RED.nodes.node(lnkNdeId);
