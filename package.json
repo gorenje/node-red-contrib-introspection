@@ -2,7 +2,7 @@
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
   "version": "0.5.5",
   "dependencies": {
-    "got": ">=13.0.0"
+    "got": "^13"
   },
 
   "keywords": [
