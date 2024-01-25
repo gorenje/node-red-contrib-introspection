@@ -1,6 +1,6 @@
 {
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "dependencies": {
     "got": "^13",
     "uglify-js": "^3.17.4"
