@@ -49,6 +49,16 @@ Disappointments:
 
 Clicking on a node will highlight that node in the workspace. The nodes shown are across all flows and tabs. 
 
+### Obfuscate
+
+![img](https://cdn.openmindmap.org/content/1706184273430_Screen_Shot_2024-01-25_at_13.04.17.png)
+
+Sidebar for visually obfuscating flows:
+
+![img](https://cdn.openmindmap.org/content/1706183691592_obsfucate3.gif)
+
+The plugin replaces the name with the node Id, resets the nodes info content to empty and moves all nodes to the same location. The intention is to having a *working* flow but not an *understandable* flow. The generated flow is meant to be only usable and not modifiable nor maintainable.
+
 ## Palette Nodes
 
 ### Sink & Seeker
