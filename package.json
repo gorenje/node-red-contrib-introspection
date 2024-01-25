@@ -2,7 +2,8 @@
   "name": "@gregoriusrippenstein/node-red-contrib-introspection",
   "version": "0.5.8",
   "dependencies": {
-    "got": "^13"
+    "got": "^13",
+    "uglify-js": "^3.17.4"
   },
 
   "keywords": [
