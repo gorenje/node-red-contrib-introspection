@@ -59,7 +59,11 @@ The Link Calls button will highlight all *link call* nodes with a dot to indicat
 
 Clicking on the green dot will take the user to the corresponding link-in node which will then also be highlighted by a green dot. That dot brings the user back to the original link-call node.
 
-The Undocumented button will highlight all nodes that have documentation and list all those that don't.
+![img](https://cdn.openmindmap.org/content/1706811100344_linkcall.gif)
+
+The green dot on the link-in node brings the clickee back to the original link-call node (i.e. the first green dot clicked). Also, to remove the green dots, switch between flow tabs. It can be tried out in the [crash-test dummy Node-RED](https://cdn.flowhub.org/?fhid=c520d9da20ad7f1d&t=0&sb=Introspection).
+
+The Undocumented button will highlight all nodes that *have* documentation with a yellow dot (think sun) and list all those node that don't have any documentation.
 
 ### Obfuscate
 
