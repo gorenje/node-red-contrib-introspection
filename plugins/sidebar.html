@@ -115,6 +115,8 @@
          setupTreelistInfoness();
       })
 
+      RED.actions.add( "introspection:show-link-call-links", highlightAllLinkCalls)
+      
       $('#node-input-linkcalls-find-btn').on('click', (e) => {
          if ( e ) { e.preventDefault() }
          highlightAllLinkCalls()
