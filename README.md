@@ -49,6 +49,18 @@ Disappointments:
 
 Clicking on a node will highlight that node in the workspace. The nodes shown are across all flows and tabs. 
 
+### Link Calls & Undocumented
+
+![img](https://cdn.openmindmap.org/content/1706777864298_Screen_Shot_2024-02-01_at_09.56.51.png)
+
+The Link Calls button will highlight all *link call* nodes with a dot to indicate whether the link call is valid, i.e., there is an existing link-in node to which it links:
+
+![img](https://cdn.openmindmap.org/content/1706778030283_Screen_Shot_2024-02-01_at_10.00.27.png)
+
+Clicking on the green dot will take the user to the corresponding link-in node which will then also be highlighted by a green dot. That dot brings the user back to the original link-call node.
+
+The Undocumented button will highlight all nodes that have documentation and list all those that don't.
+
 ### Obfuscate
 
 ![img](https://cdn.openmindmap.org/content/1706184273430_Screen_Shot_2024-01-25_at_13.04.17.png)
