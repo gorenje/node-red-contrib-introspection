@@ -74,38 +74,39 @@ module.exports = function(RED) {
   RED.httpAdmin.post("/ClientCode/:id/ugify",
     RED.auth.needsPermission("ClientCode.write"),
     (req, res) => {
-      var node = RED.nodes.getNode(req.params.id);
-      if (node != null) {
-        try {
-          if (req.body ) {
-            req.body.nodes.forEach( n => {
+      try {
+        if (req.body ) {
+          req.body.nodes.forEach( n => {
 
-              if ( n.format == "javascript") { 
-                /* this handles PkgFile nodes and template nodes */
-                let result = UglifyJS.minify(n.template, req.body.cfg)
-                if ( result.code && !result.error) {               
-                  n.template = result.code
-                }
+            if ( n.format == "javascript") { 
+              /* this handles PkgFile nodes and template nodes */
+              let result = UglifyJS.minify(n.template, req.body.cfg)
+              if ( result.code && !result.error) {               
+                n.template = result.code
+              } else { 
+                n._error = result.error
+                n._code = result.code
               }
+            }
 
-              if (n.type == "function") {
-                let result = UglifyJS.minify(n.func, req.body.cfg)
-                if (result.code && !result.error) {
-                  n.func = result.code
-                }
+            if (n.type == "function") {
+              let result = UglifyJS.minify(n.func, req.body.cfg)
+              if (result.code && !result.error) {
+                n.func = result.code                
+              } else {
+                n._error = result.error
+                n._code = result.code
               }
-            })
-            res.status(200).send(req.body.nodes);
-          } else {
-            res.sendStatus(404);
-          }
-        } catch (err) {
-          res.sendStatus(500);
-          node.error("ClientCode: Submission failed: " +
-            err.toString())
+            }
+          })
+          res.status(200).send(req.body.nodes);
+        } else {
+          res.sendStatus(404);
         }
-      } else {
-        res.sendStatus(404);
+      } catch (err) {
+        res.sendStatus(500);
+        node.error("ClientCode: Submission failed: " +
+          err.toString())
       }
     });
 
