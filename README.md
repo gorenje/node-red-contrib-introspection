@@ -177,7 +177,3 @@ Please here at GitHub via issues.
 - [GitHub Repository](https://github.com/gorenje/node-red-contrib-introspection)
 - [Flow that maintains this package](https://flowhub.org/f/d73d76db3df96ba2)
 - [Node-RED node package](https://flows.nodered.org/node/@gregoriusrippenstein/node-red-contrib-introspection)
-
-
-
-

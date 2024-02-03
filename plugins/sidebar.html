@@ -2,7 +2,7 @@
 (function() {
    var globalRefToSvgData;
 
-   let obfuscateHelpers={getFlowDataFromCurrentWorkspace:e=>{var e=e||RED.workspaces.active(),o=RED.nodes.groups(e),e=(o=(o=o.concat(RED.nodes.junctions(e))).concat(RED.nodes.filterNodes({z:e})),RED.nodes.eachConfig(function(e){e.z===RED.workspaces.active()&&!1===e._def.hasUsers&&o.push(e)}),RED.nodes.workspace(e)||RED.nodes.subflow(e));return o.unshift(e),RED.nodes.createExportableNodeSet(o)},openImportDialog:e=>{RED.clipboard.import();let o=e;setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(o)).trigger("paste")},300)}};function obfuscatieCurrentFlow(o){let t=obfuscateHelpers.getFlowDataFromCurrentWorkspace();t=t.filter(e=>"group"!=e.type);let r={},a=[];console.log("CFG",o),t.forEach(e=>{r[e.id]=e,o.name&&(e.name=e.id),o.info&&(e.info=""),o.position&&(e.x=150,e.y=150),!o.javascript||"javascript"!=e.format&&"function"!=e.type||a.push(e)}),0<a.length?$.ajax({url:"ClientCode/"+a[0].id+"/ugify",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodes:a,cfg:{parse:{},compress:{},mangle:{reserved:["$","export","require"]},output:null,sourceMap:null,nameCache:null,toplevel:!1,warnings:!1}}),success:function(e){e.forEach(e=>{var o=r[e.id];"function"==o.type?o.func=e.func:"javascript"==o.format&&(o.template=e.template)}),obfuscateHelpers.openImportDialog(t)},error:function(e,o,t){RED.notify("ClientCode Communcation Failure: "+n.id+": "+o,{type:"error",timeout:3e3})}}):obfuscateHelpers.openImportDialog(t)}
+   let obfuscateHelpers={getFlowDataFromCurrentWorkspace:e=>{var e=e||RED.workspaces.active(),t=RED.nodes.groups(e),e=(t=(t=t.concat(RED.nodes.junctions(e))).concat(RED.nodes.filterNodes({z:e})),RED.nodes.eachConfig(function(e){e.z===RED.workspaces.active()&&!1===e._def.hasUsers&&t.push(e)}),RED.nodes.workspace(e)||RED.nodes.subflow(e));return t.unshift(e),RED.nodes.createExportableNodeSet(t)},openImportDialog:e=>{RED.clipboard.import();let t=e;setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(t)).trigger("paste")},300)}};function obfuscatieCurrentFlow(t){let o=obfuscateHelpers.getFlowDataFromCurrentWorkspace();o=o.filter(e=>"group"!=e.type);let r={},a=[],i={};o.forEach(e=>{r[e.id]=e,t.name&&(e.name=e.id),t.info&&(e.info=""),t.position&&(e.x=150,e.y=150),"junction"==e.type&&(i[e.id]=e.wires[0]),!t.javascript||"javascript"!=e.format&&"function"!=e.type||a.push(e)}),t.remove_junctions&&(Object.keys(i).forEach(r=>{o.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var o=t.wires[e].indexOf(r);-1<o&&(t.wires[e].splice(o,1),t.wires[e].push(...i[r]))}})}),o=o.filter(e=>"junction"!=e.type)),0<a.length?$.ajax({url:"ClientCode/"+a[0].id+"/ugify",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodes:a,cfg:{parse:{},compress:{},mangle:{reserved:["$","export","require"]},output:null,sourceMap:null,nameCache:null,toplevel:!1,warnings:!1}}),success:function(e){e.forEach(e=>{var t=r[e.id];"function"==t.type?t.func=e.func:"javascript"==t.format&&(t.template=e.template)}),obfuscateHelpers.openImportDialog(o)},error:function(e,t,o){RED.notify("ClientCode Communcation Failure: "+n.id+": "+t,{type:"error",timeout:3e3})}}):obfuscateHelpers.openImportDialog(o)}
    
    function setupTreelist(){var e=collectOrphans();if(0==e.length){RED.notify("No Orphans Found",{type:"warning",timeout:2e3});try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){}}else{try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){$("#node-input-orphan-target-container-div").css({width:"100%",height:"calc(100%)"}).treeList({multi:!1}).on("treelistitemmouseover",function(e,t){}).on("treelistitemmouseout",function(e,t){}).on("treelistselect",function(e,t){t.node&&(RED.workspaces.show(t.node.z,!1,!1,!0),RED.view.reveal(t.node.id,!0),RED.view.redraw())}).on("treelistconfirm",function(e,t){var n;t.node&&(n=t.node.id,setTimeout(()=>{var e=RED.nodes.node(n);e&&(RED.view.reveal(e.id),RED.view.select(e.id),RED.editor.edit(e)),n==RED.workspaces.active()&&RED.workspaces.edit()},50))}),$("#node-input-orphan-target-filter").show();var n=$("#node-input-orphan-target-filter").searchBox({style:"compact",delay:300,change:function(){var e,t=$(this).val().trim().toLowerCase();""===t?($("#node-input-orphan-target-container-div").treeList("filter",null),n.searchBox("count","")):(e=$("#node-input-orphan-target-container-div").treeList("filter",function(e){return-1<e.label.toLowerCase().indexOf(t)||-1<e.node.type.toLowerCase().indexOf(t)}),n.searchBox("count",e+" / "+$("#node-input-orphan-target-container-div").treeList("data").length))}})}$("#node-input-orphan-target-container-div").treeList("data",e.sort((e,t)=>e.node.z>t.node.z))}}function collectOrphans(){const t=new Set;var n=[],i=(RED.nodes.eachLink(e=>{t.add(e.source),t.add(e.target)}),RED.nodes.eachNode(e=>{t.has(e)||n.push(e)}),[]),r={};return n.forEach(function(e){var t=RED.nodes.getType(e.type);if(t){var n=t.label,n=("function"==typeof n?n.call(e):n)||"",o=e.type;if(0===o.indexOf("subflow:"))return}t&&n||(n=e.type),r[e.id]={node:e,label:n,sublabel:o,selected:!1,checkbox:!1},i.push(r[e.id])}),i}
    
@@ -67,6 +67,7 @@
             info: $('#node-input-obfuscate-info').is(":checked"),
             position: $('#node-input-obfuscate-position').is(":checked"),
             javascript: $('#node-input-obfuscate-javascript').is(":checked"),
+            remove_junctions: $('#node-input-obfuscate-remove-junctions').is(":checked"),
          })
       })
 
@@ -233,6 +234,14 @@
                         <span>Obfuscate Javascript?</span>
             </label>         
             <input type="checkbox" checked=checked id="node-input-obfuscate-javascript"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+         </div>
+         <div class="form-row">
+            <label for="node-input-obfuscate-remove-junctions" class="w-30">
+                        <i class="fa fa-sitemap"></i>
+                        <span>Remove Junctions?</span>
+            </label>         
+            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-junctions"
                               style="display:inline-block; width:15px; vertical-align:baseline;">
          </div>
    </div>
