@@ -1,5 +1,6 @@
 module.exports = function(RED) {
-  let UglifyJS = require('uglify-js')
+  let UglifyJS = require('uglify-js');
+  let CleanCSS = require('clean-css');
 
   function ClientCodeFunctionality(config) {
     RED.nodes.createNode(this,config);
@@ -78,9 +79,36 @@ module.exports = function(RED) {
         if (req.body ) {
           req.body.nodes.forEach( n => {
 
+            if ( n.format == "css") {
+              let output = new CleanCSS(req.body.csscfg).minify(n.template);
+              if ( output.styles && (output.errors || []).length == 0 ) {
+                n.template = output.styles
+              } else {
+                n._error = output.errors
+                n._cssoutput = output
+              }
+            }
+
+            if (n.format == "json") {
+              let result = {}
+              try {
+                result.code = JSON.stringify(JSON.parse(n.template))
+              } catch (ex) {
+                result.error = ex
+              }
+
+              if (result.code && !result.error) {
+                n.template = result.code
+              } else {
+                n._error = result.error
+                n._code = result.code
+              }
+            }
+
             if ( n.format == "javascript") { 
               /* this handles PkgFile nodes and template nodes */
-              let result = UglifyJS.minify(n.template, req.body.cfg)
+              let result = UglifyJS.minify(n.template, req.body.jscfg)
+
               if ( result.code && !result.error) {               
                 n.template = result.code
               } else { 
@@ -90,7 +118,8 @@ module.exports = function(RED) {
             }
 
             if (n.type == "function") {
-              let result = UglifyJS.minify(n.func, req.body.cfg)
+              let result = UglifyJS.minify(n.func, req.body.jscfg)
+
               if (result.code && !result.error) {
                 n.func = result.code                
               } else {
@@ -98,6 +127,7 @@ module.exports = function(RED) {
                 n._code = result.code
               }
             }
+            
           })
           res.status(200).send(req.body.nodes);
         } else {

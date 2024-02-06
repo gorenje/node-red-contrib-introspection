@@ -3,7 +3,8 @@
   "version": "0.6.5",
   "dependencies": {
     "got": "^13",
-    "uglify-js": "^3.17.4"
+    "uglify-js": "^3.17.4",
+    "clean-css": "^5.3.3"
   },
 
   "keywords": [
