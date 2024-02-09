@@ -79,7 +79,7 @@ module.exports = function(RED) {
         if (req.body ) {
           req.body.nodes.forEach( n => {
 
-            if ( n.format == "css") {
+            if (n.format == "css" && !/[@]obfuscate-ignore/.test(n.template) ) {
               let output = new CleanCSS(req.body.csscfg).minify(n.template);
               if ( output.styles && (output.errors || []).length == 0 ) {
                 n.template = output.styles
@@ -89,7 +89,7 @@ module.exports = function(RED) {
               }
             }
 
-            if (n.format == "json") {
+            if (n.format == "json" && !/[@]obfuscate-ignore/.test(n.template)) {
               let result = {}
               try {
                 result.code = JSON.stringify(JSON.parse(n.template))
@@ -105,7 +105,7 @@ module.exports = function(RED) {
               }
             }
 
-            if ( n.format == "javascript") { 
+            if (n.format == "javascript" && !/[@]obfuscate-ignore/.test(n.template)) { 
               /* this handles PkgFile nodes and template nodes */
               let result = UglifyJS.minify(n.template, req.body.jscfg)
 
@@ -117,7 +117,7 @@ module.exports = function(RED) {
               }
             }
 
-            if (n.type == "function") {
+            if (n.type == "function" && !/[@]obfuscate-ignore/.test(n.func)) {
               let result = UglifyJS.minify(n.func, req.body.jscfg)
 
               if (result.code && !result.error) {
