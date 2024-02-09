@@ -212,15 +212,6 @@
 
       <div id="func-introspection-tab-obfuscation" style="display:none; min-height: calc(100%);">
 
-         <div class="form-row">
-            <div class="col-100">
-               <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
-                  <button id="node-input-obfuscation-generate-btn"
-                                class="red-ui-button"><i class="fa fa-low-vision"></i> Obfuscate</button>
-               </div>
-            </div>
-         </div>
-
          <div class="form-row col-100">
             <label for="node-input-obfuscate-name" class="w-30">
                <i class="fa fa-tag"></i>
@@ -242,7 +233,7 @@
          <div class="form-row">
             <label for="node-input-obfuscate-shrink-size" class="w-30">
                         <i class="fa fa-angle-down"></i>
-                        <span>Shrink Node?</span>
+                        <span>Shrink Nodes?</span>
                      </label>
             <input type="checkbox" checked=checked id="node-input-obfuscate-shrink-size"
                             style="display:inline-block; width:15px; vertical-align:baseline;">
@@ -295,6 +286,7 @@
 
          <div class="form-row">
             <label class='w-30'>
+               <i class="fa fa-refresh"></i>
                <span>Replace Nodes:</span>
             </label>
          </div>
@@ -326,7 +318,7 @@
 
          <div class="form-row">
             <label for="node-input-obfuscate-remove-linknodes" class="w-30">
-               <i class="fa fa-link"></i>
+               <i class="fa fa-unlink"></i>
                <span>Coalesce Link Out Nodes?</span>
             </label>         
             <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linknodes"
@@ -337,24 +329,29 @@
             <label for="node-input-obfuscate-copy-linkin-nodes" class="ml-30">
                <span>Copy Link-In Nodes?</span>
             </label>         
-            <input type="checkbox" checked=checked id="node-input-obfuscate-copy-linkin-nodes"
-                              style="display:inline-block; width:15px; vertical-align:baseline;">
+            <input type="checkbox" checked=checked id="node-input-obfuscate-copy-linkin-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
          </div>
-
 
          <div class="form-row">
             <label for="node-input-obfuscate-remove-linkcall-nodes" class="w-30">
-               <i class="fa fa-link"></i>
+               <i class="fa fa-unlink"></i>
                <span>Coalesce Link Call Nodes?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linkcall-nodes"
-                                       style="display:inline-block; width:15px; vertical-align:baseline;">
+            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linkcall-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
          </div>
 
+         <div class="form-row">
+            <div class="col-100">
+               <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
+                  <button id="node-input-obfuscation-generate-btn"
+                                         class="red-ui-button"><i class="fa fa-low-vision"></i> Obfuscate</button>
+               </div>
+            </div>
+         </div>
 
          <div class="form-row" style="margin-left: 10px">
             <b>Warning</b>: No guarantee is made that the obfuscated flow still works. This has not be 
-            thoroughly tested or promises to fulfil any purpose - good or bad.
+            thoroughly tested. Ensure correctness by completely testing the resultant obfuscated flow.
          </div>
    </div>
 
