@@ -16,7 +16,7 @@
   ],
 
   "homepage": "https://github.com/gorenje/node-red-contrib-introspection#readme",
-  "license": "SEE LICENSE IN https://github.com/gorenje/node-red-contrib-introspection/blob/main/LICENSE",
+  "license": "Don't do Evil.",
   "author": "Gerrit Riessen <nodered@spreads-the.love> (https://spread-the.love)",
   "engines": {
     "node": ">=8"

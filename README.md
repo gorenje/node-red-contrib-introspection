@@ -63,6 +63,8 @@ Clicking on the green dot will take the user to the corresponding link-in node w
 
 The green dot on the link-in node brings the clickee back to the original link-call node (i.e. the first green dot clicked). Also, to remove the green dots, switch between flow tabs. It can be tried out in the [crash-test dummy Node-RED](https://cdn.flowhub.org/?fhid=c520d9da20ad7f1d&t=0&sb=Introspection).
 
+This functionality can also be bound to a key-shortcut in the settings by using the `Show Link Call Links` action.
+
 The Undocumented button will highlight all nodes that *have* documentation with a yellow dot (think sun) and list all those node that don't have any documentation.
 
 ### Obfuscate
