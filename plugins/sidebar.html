@@ -2,7 +2,7 @@
 (function() {
    var globalRefToSvgData;
 
-   let obfuscateHelpers={getFlowDataFromCurrentWorkspace:e=>{var e=e||RED.workspaces.active(),t=RED.nodes.groups(e),e=(t=(t=t.concat(RED.nodes.junctions(e))).concat(RED.nodes.filterNodes({z:e})),RED.nodes.eachConfig(function(e){e.z===RED.workspaces.active()&&!1===e._def.hasUsers&&t.push(e)}),RED.nodes.workspace(e)||RED.nodes.subflow(e));return t.unshift(e),RED.nodes.createExportableNodeSet(t)},openImportDialog:e=>{RED.clipboard.import();let t=e;setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(t)).trigger("paste")},300)}};function obfuscatieCurrentFlow(t){let i=obfuscateHelpers.getFlowDataFromCurrentWorkspace(),l=(t.remove_groups&&(i=i.filter(e=>"group"!=e.type)).forEach(e=>{delete e.g}),{}),r={},p={},f={},o=[],d={},u={};if(i.forEach(e=>{"subflow"==(l[e.id]=e).type&&(u[e.id]=e),"junction"==e.type&&(r[e.id]=e),"link out"==e.type&&(f[e.id]=e),"link in"==e.type&&(p[e.id]=e),"link call"==e.type&&o.push(e.id),"catch"==e.type&&(d[e.id]=(e.wires||[])[0]||[])}),t.remove_junctions&&(Object.keys(r).forEach(s=>{let n=r[s];u[n.z]||i.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r=t.wires[e].indexOf(s);-1<r&&(t.wires[e].splice(r,1),t.wires[e].push(...n.wires[0]))}})}),i=i.filter(e=>!("junction"==e.type&&!u[e.z]))),t.remove_linkout_nodes||t.remove_linkcall_nodes){let s=[],r=[],u=[],a=(t.remove_linkout_nodes&&!t.copy_linkin_nodes&&Object.keys(f).forEach(n=>{var e=f[n],t=e.links||[];t.reduce((e,t)=>e&&!!p[t],!0)&&"return"!=e.mode&&(s.push(n),t.forEach(s=>{i.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r=t.wires[e].indexOf(n);-1<r&&(t.wires[e].splice(r,1),t.wires[e].push(...p[s].wires[0]))}})}))}),(n,e)=>{if(!e)return!1;let t=[],o=[],r=[];function u(e){if(r.indexOf(e.id)<0)switch(r.push(e.id),t.push(e),e.type){case"link out":if("return"!=e.mode)throw"not handable";break;case"link call":throw"unhandled";default:RED.nodes.getNodeLinks(e).forEach(function(e){u(e.target)})}}try{RED.nodes.getNodeLinks(e).forEach(function(e){u(e.target),o.push(e.target.id)});if(Object.keys(d).forEach(e=>{((t,e)=>{try{return e.map(e=>e.id).forEach(e=>{if(t.includes(e))throw"yes"}),!1}catch(e){return!0}})(d[e],t)&&t.push(l[e])}),0==t.length)return!1;let r={};var a=t[0];let s={x:n.x-a.x,y:n.y-a.y};var i=t.map(e=>{var t=structuredClone(l[e.id]);return t||console.log("WARNING: nodeid not found",[e.id,l[e.id]]),t.id=RED.nodes.id(),t.x+=s.x,t.y+=s.y,r[e.id]=t});return i.forEach(e=>{"catch"==e.type&&Array.isArray(e.scope)&&(e.scope=e.scope.map(e=>{var t=r[e];return t&&t.id||e})),e.wires&&(e.wires=e.wires.map(e=>e.map(e=>{var t=r[e];return t&&"link out"==t.type?[...n.wires[0],(t||{}).id||e]:(t||{}).id||e}).flat()))}),{nodes:i.filter(e=>"link out"!=e.type),entryNodes:o.map(e=>r[e])}}catch(e){return!1}});t.remove_linkout_nodes&&t.copy_linkin_nodes&&Object.keys(f).forEach(o=>{let r=f[o];var e=r.links||[];"return"!=r.mode&&(e=e.map(e=>{var t=p[e],t=a(r,t);if(t)return[e,t]})).reduce((e,t)=>e&&!!t,!0)&&(s.push(o),e.forEach(([,n])=>{i.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r,s=t.wires[e].indexOf(o);-1<s&&(r=n.entryNodes.map(e=>e.id),t.wires[e].splice(s,1),t.wires[e].push(...r),u.push(...n.nodes))}})}))}),t.remove_linkcall_nodes&&o.forEach(n=>{var e=l[n],t=p[e.links[0]];let o=a(e,t);t&&o&&(r.push(e.id),i.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r,s=t.wires[e].indexOf(n);-1<s&&(r=o.entryNodes.map(e=>e.id),t.wires[e].splice(s,1),t.wires[e].push(...r),u.push(...o.nodes))}}))}),(i=i.filter(e=>s.indexOf(e.id)<0&&r.indexOf(e.id)<0)).push(...u)}if((i=t.remove_debugs?i.filter(e=>"debug"!=e.type&&"comment"!=e.type):i).forEach(e=>{t.name&&(e.name=RED.nodes.id()),t.shrink_node&&(e.l=!1),t.info&&(e.info="",delete e.outputLabels,delete e.inputLabels),t.position&&(e.x=150,e.y=150),t.remove_icons&&delete e.icon}),t.replace_switch){let s=(t,r)=>{for(let e=0;e<r.rules.length;e++){var s=r.rules[e];if("nnull"==s.t)t.push("if ( _propValue != null ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("null"==s.t)t.push("if ( _propValue == null ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("eq"==s.t&&"str"==s.vt){n=s.v;n=btoa(encodeURIComponent(n).replace(/%([0-9A-F]{2})/g,function(e,t){return String.fromCharCode("0x"+t)}));t.push("if ( _propValue === Buffer.from('"+n+"', 'base64').toString('utf-8') ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }")}else if("gt"==s.t&&"num"==s.vt)t.push("if ( _propValue > "+s.v+" ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("eq"==s.t&&"num"==s.vt)t.push("if ( _propValue == "+s.v+" ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("empty"==s.t)t.push('let p = _propValue ;  if (  (Array.isArray(p) && p.length == 0) || ((typeof p === "object") && p != null && Object.keys(p).length == 0) || ((typeof p === "string") && p.length == 0) ) { _returnValue.push(msg) ; return node.send(_returnValue) } else {  _returnValue.push(undefined) }');else if("nempty"==s.t)t.push('let p = _propValue ;  if (  (Array.isArray(p) && p.length > 0) || ((typeof p === "object") && p != null && Object.keys(p).length > 0) || ((typeof p === "string") && p.length > 0) ) { _returnValue.push(msg) ; return node.send(_returnValue) } else {  _returnValue.push(undefined) }');else{if("else"!=s.t)throw"unhandled";t.push("_returnValue.push(msg)","return node.send(_returnValue)")}}var n};i=i.map(t=>{if("switch"!=t.type)return t;var e={id:t.id,name:t.name,type:"function",x:t.x,y:t.y,func:"",outputs:t.outputs,timeout:"",noerr:0,initialize:"",finalize:"",libs:[{var:"process",module:"process"},{var:"jsonata",module:"jsonata"}],wires:t.wires};t.hasOwnProperty("z")&&(e.z=t.z),t.hasOwnProperty("l")&&(e.l=t.l);try{var r=[];if(t.checkAll)throw"unhandled";if("msg"==t.propertyType)r.push("((msg,node) => {","let _propValue = undefined","try { _propValue = RED.util.getMessageProperty(msg, '"+t.property+"') } catch (ex) {}","let _returnValue = []"),s(r,t),r.push("})(msg,node);");else{if("jsonata"!=t.propertyType)throw"unhandled";r.push("jsonata('"+t.property+"').evaluate(msg).then(_propValue => {","let _returnValue = []"),s(r,t),r.push("})")}return e.func=r.join("\n"),e}catch(e){return t}})}if(t.replace_change){let n=e=>btoa(encodeURIComponent(e).replace(/%([0-9A-F]{2})/g,function(e,t){return String.fromCharCode("0x"+t)}));i=i.map(t=>{if("change"!=t.type)return t;var e={id:t.id,name:t.name,type:"function",x:t.x,y:t.y,func:"",outputs:1,timeout:"",noerr:0,initialize:"",finalize:"",libs:[{var:"process",module:"process"},{var:"jsonata",module:"jsonata"}],wires:t.wires};t.hasOwnProperty("z")&&(e.z=t.z),t.hasOwnProperty("l")&&(e.l=t.l);try{var r=["(async (msg,node) => {","let __s = RED.util.setMessageProperty","let __g = RED.util.getMessageProperty"];for(let e=0;e<t.rules.length;e++){var s=t.rules[e];if("set"==s.t){if(s.dc)throw"unhandled";if("msg"==s.pt&&"str"==s.tot)r.push("__s(msg,'"+s.p+"', Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8') )");else if("msg"==s.pt&&"bool"==s.tot)r.push("__s(msg,'"+s.p+"', "+s.to+")");else if("msg"==s.pt&&"num"==s.tot)r.push("__s(msg,'"+s.p+"', Number(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')))");else if("msg"==s.pt&&"json"==s.tot)r.push("__s(msg,'"+s.p+"', JSON.parse(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')))");else if("msg"==s.pt&&"msg"==s.tot)r.push("try { __s(msg,'"+s.p+"',  __g(msg, '"+s.to+"')) } catch (ex) {}");else if("msg"==s.pt&&"env"==s.tot)r.push("__s(msg,'"+s.p+"',  process.env['"+s.to+"'])");else{if("msg"!=s.pt||"jsonata"!=s.tot||!s.to.startsWith("/* @obfuscate-safe */"))throw"unhandlable";r.push("__s(msg,'"+s.p+"',  await jsonata(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')).evaluate(msg) )")}}else{if("delete"!=s.t||"msg"!=s.pt)throw"unhandlable";r.push("delete msg."+s.p)}}return r.push("node.send(msg) })(msg,node);"),e.func=r.join("\n"),e}catch(e){return console.log(e),t}})}if(t.javascript){let r={},t=[];i.forEach(e=>{"javascript"!=(r[e.id]=e).format&&"function"!=e.type&&"css"!=e.format&&"json"!=e.format||t.push(e)});var e={parse:{bare_returns:!0,expression:!1},compress:{},mangle:{reserved:["$","export","require"]},output:null,sourceMap:null,nameCache:null,toplevel:!1,warnings:!1},s={compatibility:"*",level:2};$.ajax({url:"ClientCode/"+RED.nodes.id()+"/ugify",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodes:t,jscfg:e,csscfg:s}),success:function(e){e.forEach(e=>{var t=r[e.id];e._error&&console.log("ERROR NODE",e),"function"==t.type?t.func=e.func:"javascript"!=t.format&&"css"!=t.format&&"json"!=t.format||(t.template=e.template)}),obfuscateHelpers.openImportDialog(i)},error:function(e,t,r){RED.notify("ClientCode Communcation Failure: "+n.id+": "+t,{type:"error",timeout:3e3})}})}else obfuscateHelpers.openImportDialog(i)}
+   let obfuscateHelpers={getFlowDataFromCurrentWorkspace:e=>{var e=e||RED.workspaces.active(),t=RED.nodes.groups(e),e=(t=(t=t.concat(RED.nodes.junctions(e))).concat(RED.nodes.filterNodes({z:e})),RED.nodes.eachConfig(function(e){e.z===RED.workspaces.active()&&!1===e._def.hasUsers&&t.push(e)}),RED.nodes.workspace(e)||RED.nodes.subflow(e));return t.unshift(e),RED.nodes.createExportableNodeSet(t)},openImportDialog:e=>{RED.clipboard.import();let t=e;setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(t)).trigger("paste")},300)}};function obfuscatieCurrentFlow(t){let a=obfuscateHelpers.getFlowDataFromCurrentWorkspace(),l=(t.remove_groups&&(a=a.filter(e=>"group"!=e.type)).forEach(e=>{delete e.g}),{}),r={},p={},f={},o=[],d={},u={};if(a.forEach(e=>{"subflow"==(l[e.id]=e).type&&(u[e.id]=e),"junction"==e.type&&(r[e.id]=e),"link out"==e.type&&(f[e.id]=e),"link in"==e.type&&(p[e.id]=e),"link call"==e.type&&o.push(e.id),"catch"==e.type&&(d[e.id]=(e.wires||[])[0]||[])}),t.remove_junctions&&(Object.keys(r).forEach(s=>{let n=r[s];u[n.z]||a.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r=t.wires[e].indexOf(s);-1<r&&(t.wires[e].splice(r,1),t.wires[e].push(...n.wires[0]))}})}),a=a.filter(e=>!("junction"==e.type&&!u[e.z]))),t.remove_linkout_nodes||t.remove_linkcall_nodes){let s=[],r=[],u=[],i=(t.remove_linkout_nodes&&!t.copy_linkin_nodes&&Object.keys(f).forEach(n=>{var e=f[n],t=e.links||[];t.reduce((e,t)=>e&&!!p[t],!0)&&"return"!=e.mode&&(s.push(n),t.forEach(s=>{a.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r=t.wires[e].indexOf(n);-1<r&&(t.wires[e].splice(r,1),t.wires[e].push(...p[s].wires[0]))}})}))}),(n,e)=>{if(!e)return!1;let t=[],o=[],r=[];function u(e){if(r.indexOf(e.id)<0)switch(r.push(e.id),t.push(e),e.type){case"link out":if("return"!=e.mode)throw"not handable";break;case"link call":throw"unhandled";default:RED.nodes.getNodeLinks(e).forEach(function(e){u(e.target)})}}try{RED.nodes.getNodeLinks(e).forEach(function(e){u(e.target),o.push(e.target.id)});if(Object.keys(d).forEach(e=>{((t,e)=>{try{return e.map(e=>e.id).forEach(e=>{if(t.includes(e))throw"yes"}),!1}catch(e){return!0}})(d[e],t)&&t.push(l[e])}),0==t.length)return!1;let r={};var i=t[0];let s={x:n.x-i.x,y:n.y-i.y};var a=t.map(e=>{var t=structuredClone(l[e.id]);return t||console.log("WARNING: nodeid not found",[e.id,l[e.id]]),t.id=RED.nodes.id(),t.x+=s.x,t.y+=s.y,r[e.id]=t});return a.forEach(e=>{"catch"==e.type&&Array.isArray(e.scope)&&(e.scope=e.scope.map(e=>{var t=r[e];return t&&t.id||e})),e.wires&&(e.wires=e.wires.map(e=>e.map(e=>{var t=r[e];return t&&"link out"==t.type?[...n.wires[0],(t||{}).id||e]:(t||{}).id||e}).flat()))}),{nodes:a.filter(e=>"link out"!=e.type),entryNodes:o.map(e=>r[e])}}catch(e){return!1}});t.remove_linkout_nodes&&t.copy_linkin_nodes&&Object.keys(f).forEach(o=>{let r=f[o];var e=r.links||[];"return"!=r.mode&&(e=e.map(e=>{var t=p[e],t=i(r,t);if(t)return[e,t]})).reduce((e,t)=>e&&!!t,!0)&&(s.push(o),e.forEach(([,n])=>{a.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r,s=t.wires[e].indexOf(o);-1<s&&(r=n.entryNodes.map(e=>e.id),t.wires[e].splice(s,1),t.wires[e].push(...r),u.push(...n.nodes))}})}))}),t.remove_linkcall_nodes&&o.forEach(n=>{var e=l[n],t=p[e.links[0]];let o=i(e,t);t&&o&&(r.push(e.id),a.forEach(t=>{for(let e=0;e<(t.wires||[]).length;e++){var r,s=t.wires[e].indexOf(n);-1<s&&(r=o.entryNodes.map(e=>e.id),t.wires[e].splice(s,1),t.wires[e].push(...r),u.push(...o.nodes))}}))}),(a=a.filter(e=>s.indexOf(e.id)<0&&r.indexOf(e.id)<0)).push(...u)}if((a=t.remove_debugs?a.filter(e=>"debug"!=e.type&&"comment"!=e.type):a).forEach(e=>{t.name&&(e.name=RED.nodes.id()),t.shrink_node&&(e.l=!1),t.info&&(e.info="",delete e.outputLabels,delete e.inputLabels),t.add_license&&(e.info=t.license_text),t.position&&(e.x=150,e.y=150),t.remove_icons&&delete e.icon}),t.replace_switch){let s=(t,r)=>{for(let e=0;e<r.rules.length;e++){var s=r.rules[e];if("nnull"==s.t)t.push("if ( _propValue != null ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("null"==s.t)t.push("if ( _propValue == null ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("eq"==s.t&&"str"==s.vt){n=s.v;n=btoa(encodeURIComponent(n).replace(/%([0-9A-F]{2})/g,function(e,t){return String.fromCharCode("0x"+t)}));t.push("if ( _propValue === Buffer.from('"+n+"', 'base64').toString('utf-8') ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }")}else if("gt"==s.t&&"num"==s.vt)t.push("if ( _propValue > "+s.v+" ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("eq"==s.t&&"num"==s.vt)t.push("if ( _propValue == "+s.v+" ) {  _returnValue.push(msg) ; return node.send(_returnValue) } else { _returnValue.push(undefined) }");else if("empty"==s.t)t.push('let p = _propValue ;  if (  (Array.isArray(p) && p.length == 0) || ((typeof p === "object") && p != null && Object.keys(p).length == 0) || ((typeof p === "string") && p.length == 0) ) { _returnValue.push(msg) ; return node.send(_returnValue) } else {  _returnValue.push(undefined) }');else if("nempty"==s.t)t.push('let p = _propValue ;  if (  (Array.isArray(p) && p.length > 0) || ((typeof p === "object") && p != null && Object.keys(p).length > 0) || ((typeof p === "string") && p.length > 0) ) { _returnValue.push(msg) ; return node.send(_returnValue) } else {  _returnValue.push(undefined) }');else{if("else"!=s.t)throw"unhandled";t.push("_returnValue.push(msg)","return node.send(_returnValue)")}}var n};a=a.map(t=>{if("switch"!=t.type)return t;var e={id:t.id,name:t.name,type:"function",x:t.x,y:t.y,func:"",outputs:t.outputs,timeout:"",noerr:0,initialize:"",finalize:"",libs:[{var:"process",module:"process"},{var:"jsonata",module:"jsonata"}],wires:t.wires};t.hasOwnProperty("z")&&(e.z=t.z),t.hasOwnProperty("l")&&(e.l=t.l);try{var r=[];if(t.checkAll)throw"unhandled";if("msg"==t.propertyType)r.push("((msg,node) => {","let _propValue = undefined","try { _propValue = RED.util.getMessageProperty(msg, '"+t.property+"') } catch (ex) {}","let _returnValue = []"),s(r,t),r.push("})(msg,node);");else{if("jsonata"!=t.propertyType)throw"unhandled";r.push("jsonata('"+t.property+"').evaluate(msg).then(_propValue => {","let _returnValue = []"),s(r,t),r.push("})")}return e.func=r.join("\n"),e}catch(e){return t}})}if(t.replace_change){let n=e=>btoa(encodeURIComponent(e).replace(/%([0-9A-F]{2})/g,function(e,t){return String.fromCharCode("0x"+t)}));a=a.map(t=>{if("change"!=t.type)return t;var e={id:t.id,name:t.name,type:"function",x:t.x,y:t.y,func:"",outputs:1,timeout:"",noerr:0,initialize:"",finalize:"",libs:[{var:"process",module:"process"},{var:"jsonata",module:"jsonata"}],wires:t.wires};t.hasOwnProperty("z")&&(e.z=t.z),t.hasOwnProperty("l")&&(e.l=t.l);try{var r=["(async (msg,node) => {","let __s = RED.util.setMessageProperty","let __g = RED.util.getMessageProperty"];for(let e=0;e<t.rules.length;e++){var s=t.rules[e];if("set"==s.t){if(s.dc)throw"unhandled";if("msg"==s.pt&&"str"==s.tot)r.push("__s(msg,'"+s.p+"', Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8') )");else if("msg"==s.pt&&"bool"==s.tot)r.push("__s(msg,'"+s.p+"', "+s.to+")");else if("msg"==s.pt&&"num"==s.tot)r.push("__s(msg,'"+s.p+"', Number(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')))");else if("msg"==s.pt&&"json"==s.tot)r.push("__s(msg,'"+s.p+"', JSON.parse(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')))");else if("msg"==s.pt&&"msg"==s.tot)r.push("try { __s(msg,'"+s.p+"',  __g(msg, '"+s.to+"')) } catch (ex) {}");else if("msg"==s.pt&&"env"==s.tot)r.push("__s(msg,'"+s.p+"',  process.env['"+s.to+"'])");else{if("msg"!=s.pt||"jsonata"!=s.tot||!s.to.startsWith("/* @obfuscate-safe */"))throw"unhandlable";r.push("__s(msg,'"+s.p+"',  await jsonata(Buffer.from('"+n(s.to)+"', 'base64').toString('utf-8')).evaluate(msg) )")}}else{if("delete"!=s.t||"msg"!=s.pt)throw"unhandlable";r.push("delete msg."+s.p)}}return r.push("node.send(msg) })(msg,node);"),e.func=r.join("\n"),e}catch(e){return console.log(e),t}})}if(t.javascript){let r={},t=[];a.forEach(e=>{"javascript"!=(r[e.id]=e).format&&"function"!=e.type&&"css"!=e.format&&"json"!=e.format||t.push(e)});var e={parse:{bare_returns:!0,expression:!1},compress:{},mangle:{reserved:["$","export","require"]},output:null,sourceMap:null,nameCache:null,toplevel:!1,warnings:!1},s={compatibility:"*",level:2};$.ajax({url:"ClientCode/"+RED.nodes.id()+"/ugify",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodes:t,jscfg:e,csscfg:s}),success:function(e){e.forEach(e=>{var t=r[e.id];e._error&&console.log("ERROR NODE",e),"function"==t.type?t.func=e.func:"javascript"!=t.format&&"css"!=t.format&&"json"!=t.format||(t.template=e.template)}),obfuscateHelpers.openImportDialog(a)},error:function(e,t,r){RED.notify("ClientCode Communcation Failure: "+n.id+": "+t,{type:"error",timeout:3e3})}})}else obfuscateHelpers.openImportDialog(a)}
    
    function setupTreelist(){var e=collectOrphans();if(0==e.length){RED.notify("No Orphans Found",{type:"warning",timeout:2e3});try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){}}else{try{$("#node-input-orphan-target-container-div").treeList("empty")}catch(e){$("#node-input-orphan-target-container-div").css({width:"100%",height:"calc(100%)"}).treeList({multi:!1}).on("treelistitemmouseover",function(e,t){}).on("treelistitemmouseout",function(e,t){}).on("treelistselect",function(e,t){t.node&&(RED.workspaces.show(t.node.z,!1,!1,!0),RED.view.reveal(t.node.id,!0),RED.view.redraw())}).on("treelistconfirm",function(e,t){var n;t.node&&(n=t.node.id,setTimeout(()=>{var e=RED.nodes.node(n);e&&(RED.view.reveal(e.id),RED.view.select(e.id),RED.editor.edit(e)),n==RED.workspaces.active()&&RED.workspaces.edit()},50))}),$("#node-input-orphan-target-filter").show();var n=$("#node-input-orphan-target-filter").searchBox({style:"compact",delay:300,change:function(){var e,t=$(this).val().trim().toLowerCase();""===t?($("#node-input-orphan-target-container-div").treeList("filter",null),n.searchBox("count","")):(e=$("#node-input-orphan-target-container-div").treeList("filter",function(e){return-1<e.label.toLowerCase().indexOf(t)||-1<e.node.type.toLowerCase().indexOf(t)}),n.searchBox("count",e+" / "+$("#node-input-orphan-target-container-div").treeList("data").length))}})}$("#node-input-orphan-target-container-div").treeList("data",e.sort((e,t)=>e.node.z>t.node.z))}}function collectOrphans(){const t=new Set;var n=[],i=(RED.nodes.eachLink(e=>{t.add(e.source),t.add(e.target)}),RED.nodes.eachNode(e=>{t.has(e)||n.push(e)}),[]),r={};return n.forEach(function(e){var t=RED.nodes.getType(e.type);if(t){var n=t.label,n=("function"==typeof n?n.call(e):n)||"",o=e.type;if(0===o.indexOf("subflow:"))return}t&&n||(n=e.type),r[e.id]={node:e,label:n,sublabel:o,selected:!1,checkbox:!1},i.push(r[e.id])}),i}
    
@@ -81,7 +81,18 @@
 
             replace_switch: $('#node-input-obfuscate-replace-switch').is(":checked"),
             replace_change: $('#node-input-obfuscate-replace-change').is(":checked"),
+
+            add_license: $('#node-input-obfuscate-add-license-text').is(":checked"),
+            license_text: $('#node-input-obfuscate-license-text').val(),
          })
+      })
+
+      $('#node-input-obfuscate-add-license-text').on('change', (e) => {
+         if ( $('#node-input-obfuscate-add-license-text').is(":checked") ) {
+            $('#node-input-obfuscate-add-license-text-row').fadeIn(300)
+         } else {
+            $('#node-input-obfuscate-add-license-text-row').fadeOut(300)
+         }
       })
 
       $('#node-screenshot-capture-btn').on("click", function (e) {
@@ -160,199 +171,212 @@
 
 <!-- The html for the right sidebar plugin screen -->
 <script type="text/x-red" data-template-name="Screenshot">
+<div class="form-row func-introspection-tabs-row">
+   <ul style="min-width: 600px; margin-bottom: 20px;" id="func-introspection-tabs"></ul>
+</div>
 
-   <div class="form-row func-introspection-tabs-row">
-      <ul style="min-width: 600px; margin-bottom: 20px;" id="func-introspection-tabs"></ul>
+<div id="func-introspection-tabs-content" style="min-height: calc(100% - 95px);">
+   <div id="func-introspection-tab-screenshot" style="display:none; min-height: calc(100%);">
+      <div class="form-row">
+         <div class="col-100">
+
+            <div class="form-row" style="margin-left: 10px; margin-top: 30px;">
+               <button type="button" id="node-screenshot-capture-btn"
+                          class="red-ui-button red-ui-button-large"><i class="fa fa-camera"></i> Capture</button>
+
+               <button type="button" id="node-screenshot-download-svg" style="margin-left: 30px;"
+                          class="red-ui-button red-ui-button-large"><i class="fa fa-download"></i> Download</button>
+               <button type="button" id="node-screenshot-copy-to-clipboard-svg"
+                           class="red-ui-button red-ui-button-large"><i class="fa fa-clipboard"></i> Copy to Clipboard</button>
+            </div>
+
+            <div class="form-row"
+               style="min-height: 300px; height: 450px; overflow: hidden; margin-left: 10px; margin-right: 15px; border: 1px rgb(196, 196, 196) solid; border-radius: 5px;">
+               <div id="node-input-screenshot-svgcontainer"></div>
+            </div>
+         </div>
+      </div>
    </div>
 
-   <div id="func-introspection-tabs-content" style="min-height: calc(100% - 95px);">
-      <div id="func-introspection-tab-screenshot" style="display:none; min-height: calc(100%);">
-         <div class="form-row">
-            <div class="col-100">
-
-               <div class="form-row" style="margin-left: 10px; margin-top: 30px;">
-                  <button type="button" id="node-screenshot-capture-btn" 
-                          class="red-ui-button red-ui-button-large"><i class="fa fa-camera"></i> Capture</button>
-                          
-                  <button type="button" id="node-screenshot-download-svg" style="margin-left: 30px;"
-                          class="red-ui-button red-ui-button-large"><i class="fa fa-download"></i> Download</button>
-                  <button type="button" id="node-screenshot-copy-to-clipboard-svg" 
-                           class="red-ui-button red-ui-button-large"><i class="fa fa-clipboard"></i> Copy to Clipboard</button>            
-               </div>
-
-               <div class="form-row" style="min-height: 300px; height: 450px; overflow: hidden; margin-left: 10px; margin-right: 15px; border: 1px rgb(196, 196, 196) solid; border-radius: 5px;">
-                  <div id="node-input-screenshot-svgcontainer"></div>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <div id="func-introspection-tab-orphans" style="display:none; min-height: calc(100%);">
-         <div class="form-row">
-            <div class="col-100">
-               <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
-                  <button id="node-input-orphan-find-btn"
+   <div id="func-introspection-tab-orphans" style="display:none; min-height: calc(100%);">
+      <div class="form-row">
+         <div class="col-100">
+            <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
+               <button id="node-input-orphan-find-btn"
                           class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
-                  <button id="node-input-documentation-find-btn"
+               <button id="node-input-documentation-find-btn"
                           class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
-                  <button id="node-input-linkcalls-find-btn"
+               <button id="node-input-linkcalls-find-btn"
                           class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
+            </div>
+
+            <div class="form-row node-input-target-row node-input-target-list-row"
+               style="margin-left: 10px; position: relative; min-height: 200px; height: 450px; margin-right: 15px; ">
+               <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+                  <input type="text" id="node-input-orphan-target-filter" style="display: none;">
                </div>
-               
-               <div class="form-row node-input-target-row node-input-target-list-row"
-                  style="margin-left: 10px; position: relative; min-height: 200px; height: 450px; margin-right: 15px; ">
-                  <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
-                     <input type="text" id="node-input-orphan-target-filter" style="display: none;">
-                  </div>
-                  <div id="node-input-orphan-target-container-div"></div>
-               </div>
+               <div id="node-input-orphan-target-container-div"></div>
             </div>
          </div>
       </div>
+   </div>
 
-      <div id="func-introspection-tab-obfuscation" style="display:none; min-height: calc(100%);">
+   <div id="func-introspection-tab-obfuscation" style="display:none; min-height: calc(100%);">
 
-         <div class="form-row col-100">
-            <label for="node-input-obfuscate-name" class="w-30">
+      <div class="form-row col-100">
+         <label for="node-input-obfuscate-name" class="w-30">
                <i class="fa fa-tag"></i>
                <span>Obfuscate Name?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-name"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-name"
                      style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-position" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-position" class="w-30">
                <i class="fa fa-map-pin"></i>
                <span>Obfuscate Position?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-position"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-position"
                    style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-shrink-size" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-shrink-size" class="w-30">
                         <i class="fa fa-angle-down"></i>
                         <span>Shrink Nodes?</span>
                      </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-shrink-size"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-shrink-size"
                             style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-javascript" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-javascript" class="w-30">
                <i class="fa fa-code"></i>
                <span>Obfuscate Javascript?</span>
-            </label>         
-            <input type="checkbox" checked=checked id="node-input-obfuscate-javascript"
+            </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-javascript"
                               style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row col-100">
-            <label for="node-input-obfuscate-remove-icons" class="w-30">
+      <div class="form-row col-100">
+         <label for="node-input-obfuscate-remove-icons" class="w-30">
                <i class="fa fa-adjust"></i>
                <span>Remove Icon?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-icons"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-icons"
                               style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-info" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-info" class="w-30">
                <i class="fa fa-info"></i>
                <span>Remove Info?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-info"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-info"
                               style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-remove-groups" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-remove-groups" class="w-30">
                <i class="fa fa-object-group"></i>
                <span>Remove Groups?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-groups"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-groups"
                               style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-remove-debugs" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-remove-debugs" class="w-30">
                <i class="fa fa-bug"></i>
                <span>Remove comment & debugs?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-debugs"
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-debugs"
                                        style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      </div>
 
-         <div class="form-row">
-            <label class='w-30'>
-               <i class="fa fa-refresh"></i>
-               <span>Replace Nodes:</span>
-            </label>
-         </div>
+      <div class="form-row">
+         <label for="node-input-obfuscate-remove-junctions" class="w-30">
+                        <i class="fa fa-sitemap"></i>
+                        <span>Coalesce Junctions?</span>
+                     </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-junctions"
+                                       style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-replace-switch" class="ml-30">
-               <span>Switch</span>
-            </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-replace-switch"
-                   style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+      <div class="form-row">
+         <label for="node-input-obfuscate-remove-linkcall-nodes" class="w-30">
+                        <i class="fa fa-unlink"></i>
+                        <span>Coalesce Link Call Nodes?</span>
+                     </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linkcall-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
 
-         <div class="form-row">
-            <label for="node-input-obfuscate-replace-change" class="ml-30">
-              <span>Change</span>
-            </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-replace-change"
-                               style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
-
-         <div class="form-row">
-            <label for="node-input-obfuscate-remove-junctions" class="w-30">
-               <i class="fa fa-sitemap"></i>
-               <span>Coalesce Junctions?</span>
-            </label>         
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-junctions"
-                              style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
-
-         <div class="form-row">
-            <label for="node-input-obfuscate-remove-linknodes" class="w-30">
+      <div class="form-row">
+         <label for="node-input-obfuscate-remove-linknodes" class="w-30">
                <i class="fa fa-unlink"></i>
                <span>Coalesce Link Out Nodes?</span>
-            </label>         
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linknodes"
-                              style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
-
-         <div class="form-row">
-            <label for="node-input-obfuscate-copy-linkin-nodes" class="ml-30">
-               <span>Copy Link-In Nodes?</span>
-            </label>         
-            <input type="checkbox" checked=checked id="node-input-obfuscate-copy-linkin-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
-
-         <div class="form-row">
-            <label for="node-input-obfuscate-remove-linkcall-nodes" class="w-30">
-               <i class="fa fa-unlink"></i>
-               <span>Coalesce Link Call Nodes?</span>
             </label>
-            <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linkcall-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
-         </div>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-remove-linknodes"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
 
-         <div class="form-row">
-            <div class="col-100">
-               <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
-                  <button id="node-input-obfuscation-generate-btn"
+      <div class="form-row">
+         <label for="node-input-obfuscate-copy-linkin-nodes" class="ml-30">
+               <span>Copy Link-In Nodes?</span>
+            </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-copy-linkin-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+
+      <div class="form-row">
+         <label class='w-30'>
+                        <i class="fa fa-refresh"></i>
+                        <span>Replace Nodes:</span>
+                     </label>
+      </div>
+
+      <div class="form-row">
+         <label for="node-input-obfuscate-replace-switch" class="ml-30">
+                        <span>Switch</span>
+                     </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-replace-switch"
+                            style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+
+      <div class="form-row">
+         <label for="node-input-obfuscate-replace-change" class="ml-30">
+                       <span>Change</span>
+                     </label>
+         <input type="checkbox" checked=checked id="node-input-obfuscate-replace-change"
+                                        style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+
+      <div class="form-row">
+         <label for="node-input-obfuscate-add-license-text" class="w-30">
+                        <i class="fa fa-gavel"></i>
+                        <span>Replace info with license?</span>
+                     </label>
+         <input type="checkbox" id="node-input-obfuscate-add-license-text" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+
+      <div id="node-input-obfuscate-add-license-text-row" class="form-row" style="margin-left: 10px; display: none;">
+         <textarea id="node-input-obfuscate-license-text"
+                placeholder="License Text"></textarea>
+      </div>
+
+      <div class="form-row">
+         <div class="col-100">
+            <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
+               <button id="node-input-obfuscation-generate-btn"
                                          class="red-ui-button"><i class="fa fa-low-vision"></i> Obfuscate</button>
-               </div>
             </div>
          </div>
+      </div>
 
-         <div class="form-row" style="margin-left: 10px">
-            <b>Warning</b>: No guarantee is made that the obfuscated flow still works. This has not be 
-            thoroughly tested. Ensure correctness by completely testing the resultant obfuscated flow.
-         </div>
+      <div class="form-row" style="margin-left: 10px">
+         <b>Warning</b>: No guarantee is made that the obfuscated flow still works. This has not be
+         thoroughly tested. Ensure correctness by completely testing the resultant obfuscated flow.
+         No warranty of success is provided, implied or expressed.
+      </div>
    </div>
-
 </script>
