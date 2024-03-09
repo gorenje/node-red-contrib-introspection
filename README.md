@@ -164,6 +164,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [GetFlows](https://flowhub.org/f/0b1bfbf6e540be66)
 - [Orphans](https://flowhub.org/f/2401c255b056e0e1)
 - [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
+- [Obfuscation](https://flowhub.org/f/825ddf24d98eb011)
 
 ## License
 
