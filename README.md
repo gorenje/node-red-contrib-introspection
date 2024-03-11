@@ -99,6 +99,12 @@ Inspired by the [dsm](https://flows.nodered.org/node/node-red-contrib-dsm) packa
 
 Send a flow to another Node-RED instance. This will replace **any existing** flows on the other server, use with care. Under the hood this uses the [Node-RED API](https://nodered.org/docs/api/admin/methods/post/flows/) to post a new flow to the server. This node also supports authentication if the other server happens to have some.
 
+### InstallPackage
+
+Node used to install packages on other Node-RED installations. Can be used to install existing modules using or .tgz files that can installed on the instance. To install an existing package, use `msg.payload = { module: '@fubar/example' }` with an optional `version`, this defaults to 'latest'.
+
+To install a package on the fly, generate a .tgz as a Buffer and set the the payload to: `msg.payload = { data: Buffer[...]}` where buffer contains the .tgz contents.
+
 ### ClientCode
 
 ClientCode is a node for executing client side, i.e., in the editor, Javascript code triggered by a server side event. Any code that can be executed in the browseer console can be executed in the ClientCode node. A ClientCode node can also send a message back to the server using `node.send(...)` which becomes the server side output of the node.
@@ -165,6 +171,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [Orphans](https://flowhub.org/f/2401c255b056e0e1)
 - [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
 - [Obfuscation](https://flowhub.org/f/825ddf24d98eb011)
+- [InstallPackage](https://flowhub.org/f/6dcbd2643ea80615)
 
 ## License
 

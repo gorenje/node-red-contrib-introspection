@@ -28,11 +28,12 @@
       "screenshot": "plugins/sidebar.html"
     },
     "nodes": {
-      "seeker":        "nodes/05-seeker.js",
-      "sink":          "nodes/10-sink.js",
-      "getflows":      "nodes/45-get-flows.js",
-      "sendflow":      "nodes/50-send-flow.js",
-      "clientcode":    "nodes/60-client-code.js"
+      "seeker":         "nodes/05-seeker.js",
+      "sink":           "nodes/10-sink.js",
+      "getflows":       "nodes/45-get-flows.js",
+      "sendflow":       "nodes/50-send-flow.js",
+      "installpackage": "nodes/51-install-package.js",
+      "clientcode":     "nodes/60-client-code.js"
     }
   },
   
