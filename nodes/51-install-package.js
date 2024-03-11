@@ -40,7 +40,7 @@ module.exports = function(RED) {
           return node.error("msg.payload not well defined", msg)
         }
 
-        got.post( cfg.hostUrl + "/nodes", {
+        got.post( (cfg.hostUrl || msg.hostUrl) + "/nodes", {
           headers: {
             ...headers,
             ...hdrs
@@ -97,7 +97,7 @@ module.exports = function(RED) {
                 }
 
                 import('got').then( (module) => {
-                  module.got.post( cfg.hostUrl + "/auth/token", {
+                  module.got.post( (cfg.hostUrl || msg.hostUrl) + "/auth/token", {
                     json: data
                   }).then( res => {
                     node.status({

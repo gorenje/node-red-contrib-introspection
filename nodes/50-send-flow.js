@@ -11,7 +11,7 @@ module.exports = function(RED) {
 
     node.on("input", function(msg, send, done) {
       var sendFlow = (hdrs, got) => {
-        got.post( cfg.hostUrl + "/flows", {
+        got.post( (cfg.hostUrl || msg.hostUrl) + "/flows", {
           headers: {
             "Node-RED-API-Version":     cfg.flowVersion,
             "Content-type":	            "application/json",
@@ -20,8 +20,6 @@ module.exports = function(RED) {
           },
           body: JSON.stringify(msg.payload)
         }).then( res => {
-          var bodySize = res.body.length;
-
           send({
             ...msg,
             payload: res.body
@@ -72,7 +70,7 @@ module.exports = function(RED) {
                 }
 
                 import('got').then( (module) => {
-                  module.got.post( cfg.hostUrl + "/auth/token", {
+                  module.got.post( (cfg.hostUrl || msg.hostUrl) + "/auth/token", {
                     json: data
                   }).then( res => {
                     node.status({
