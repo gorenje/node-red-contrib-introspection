@@ -42,8 +42,6 @@ module.exports = function(RED) {
           }
         } catch(err) {
           res.sendStatus(500);
-          node.error("ClientCode: Submission failed: " +
-                    err.toString())
         }
       } else {
         res.sendStatus(404);
@@ -64,8 +62,6 @@ module.exports = function(RED) {
           }
         } catch (err) {
           res.sendStatus(500);
-          node.error("ClientCode: Submission failed: " +
-            err.toString())
         }
       } else {
         res.sendStatus(404);
@@ -135,8 +131,6 @@ module.exports = function(RED) {
         }
       } catch (err) {
         res.sendStatus(500);
-        node.error("ClientCode: Submission failed: " +
-          err.toString())
       }
     });
 

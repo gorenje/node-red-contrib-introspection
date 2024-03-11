@@ -12,7 +12,7 @@ module.exports = function(RED) {
     node.on("input", function(msg, send, done) {
 
       if (!msg.payload || Object.prototype.toString.call(msg.payload) !== '[object Object]') {
-        return node.error("msg.payload missing or payload not hash")
+        return node.error("msg.payload missing or payload not hash", msg)
       }
 
       var installPackage = (hdrs, got) => {
@@ -37,7 +37,7 @@ module.exports = function(RED) {
           body = body.getBuffer()
 
         } else {
-          return node.error("msg.payload not well defined")
+          return node.error("msg.payload not well defined", msg)
         }
 
         got.post( cfg.hostUrl + "/nodes", {
@@ -59,7 +59,7 @@ module.exports = function(RED) {
 
         }).catch( err => {
           node.status({fill:"red",shape:"dot",text:"Failed"});
-          node.error(err)
+          node.error("error occurred", { ...msg, _err: err })
         });
       };
 
@@ -76,7 +76,7 @@ module.exports = function(RED) {
                                       node, msg, (err, result) => {
           if (err) {
             node.status({fill:"red",shape:"dot",text:"Failed"});
-            node.error(err)
+            node.error("error occurred", { ...msg, _err: err})
           } else {
             username = result;
 
@@ -84,7 +84,7 @@ module.exports = function(RED) {
                                           node, msg, (err, result) => {
               if (err) {
                 node.status({fill:"red",shape:"dot",text:"Failed"});
-                node.error(err)
+                node.error("error occurred", { ...msg, _err: err} )
               } else {
                 password = result;
 
@@ -114,7 +114,7 @@ module.exports = function(RED) {
 
                   }).catch((err) => {
                     node.status({fill:"red",shape:"dot",text:"Failed"});
-                    node.error( err );
+                    node.error( "error occured", { ...msg, _err: err } );
                   });
                 });
               }

@@ -42,7 +42,7 @@ module.exports = function(RED) {
 
         }).catch( err => {
           node.status({fill:"red",shape:"dot",text:"Failed"});
-          node.error(err)
+          node.error("error occurred", { ...msg, _err: err})
         });
       };
 
@@ -56,7 +56,7 @@ module.exports = function(RED) {
                                       node, msg, (err, result) => {
           if (err) {
             node.status({fill:"red",shape:"dot",text:"Failed"});
-            node.error(err)
+            node.error("error occurred", {...msg, _err:err})
           } else {
             username = result;
 
@@ -64,7 +64,7 @@ module.exports = function(RED) {
                                           node, msg, (err, result) => {
               if (err) {
                 node.status({fill:"red",shape:"dot",text:"Failed"});
-                node.error(err)
+                node.error("error occurred", { ...msg, _err: err })
               } else {
                 password = result;
 
@@ -94,7 +94,7 @@ module.exports = function(RED) {
 
                   }).catch((err) => {
                     node.status({fill:"red",shape:"dot",text:"Failed"});
-                    node.error( err );
+                    node.error( "error occurred", {...msg, _err: err });
                   });
                 });
               }
