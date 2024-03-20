@@ -3,6 +3,7 @@
     color: '#e5e4ef',
     icon: "introspesubflow.svg",
     category: 'introspection',
+    paletteLabel: "InstallPkg",
     defaults: {
       name: {
         value:"",
@@ -25,6 +26,9 @@
       apiPasswordType: {
         value: "env",
       },
+      locally: {
+        value: false
+      }
     },
     inputs:1,
     outputs:1,
@@ -60,6 +64,20 @@
           $('#useAuthentication-input-fields').hide()
         }
       });
+
+      if ( $('#node-input-locally').is(":checked") ) {
+        $('.hostUrl-row').hide();
+      } else {
+        $('.hostUrl-row').show();
+      }
+
+      $('#node-input-locally').on( 'change', function() {
+        if ( $('#node-input-locally').is(":checked") ) {
+          $('.hostUrl-row').hide();
+        } else {
+          $('.hostUrl-row').show();
+        }
+      });
     },
   });
 </script>
@@ -70,19 +88,27 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
+<!--
     <div class="form-row">
+      <input type="checkbox" id="node-input-locally"
+             style="display:inline-block; width:15px; vertical-align:baseline;">
+      <label for="node-input-locally"><i class="fa fa-home"></i> Locally?</label>
+    </div>
+-->
+
+    <div class="form-row hostUrl-row">
         <label for="node-input-hostUrl"><i class="fa fa-tag"></i> Host</label>
         <input type="text" id="node-input-hostUrl" placeholder="Host URL">
     </div>
 
     <div class="form-row">
-      <label for="node-input-useAuthentication">
-        <i class="fa "></i>
-        <span>Use Authentication?</span>
-      </label>
-
       <input type="checkbox" id="node-input-useAuthentication"
              style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <label for="node-input-useAuthentication">
+        <i class="fa fa-key"></i>
+        <span>Use Authentication?</span>
+      </label>
     </div>
 
     <div id="useAuthentication-input-fields" class="hidden">
@@ -107,5 +133,5 @@
 </script>
 
 <script type="text/html" data-help-name="InstallPackage">
-  <p>Send flow to another Node-RED instance.</p>
+  <p>Install package on another Node-RED instance.</p>
 </script>

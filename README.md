@@ -172,6 +172,7 @@ There are [example flows](/examples) contained in the package, examples can also
 - [Sink and Seeker](https://flowhub.org/f/139a816449acd89f)
 - [Obfuscation](https://flowhub.org/f/825ddf24d98eb011)
 - [InstallPackage](https://flowhub.org/f/6dcbd2643ea80615)
+- [Complete deployment](https://flowhub.org/f/7e50047a51586752)
 
 ## License
 

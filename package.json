@@ -30,10 +30,10 @@
     "nodes": {
       "seeker":         "nodes/05-seeker.js",
       "sink":           "nodes/10-sink.js",
+      "clientcode":     "nodes/60-client-code.js",
       "getflows":       "nodes/45-get-flows.js",
       "sendflow":       "nodes/50-send-flow.js",
-      "installpackage": "nodes/51-install-package.js",
-      "clientcode":     "nodes/60-client-code.js"
+      "installpackage": "nodes/51-install-package.js"
     }
   },
   
