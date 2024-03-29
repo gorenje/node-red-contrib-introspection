@@ -321,39 +321,31 @@
    </div>
 
    <div id="func-introspection-tab-orphans" style="display:none; min-height: calc(100%);">
-      <div class="form-row">
-         <div class="col-100">
-            <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
-               <button id="node-input-orphan-find-btn"
-                          class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
-               <button id="node-input-documentation-find-btn"
-                          class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
-               <button id="node-input-linkcalls-find-btn"
-                          class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
-               <button id="node-input-linkin-nodes-find-btn"
-                          class="red-ui-button"><i class="fa fa-link"></i> Link Ins</button>
-            </div>
+      <div class="form-row" style="margin-left: 10px; margin-top: 30px">
+         <button id="node-input-orphan-find-btn"
+                     class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
+         <button id="node-input-documentation-find-btn"
+                     class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
+         <button id="node-input-linkcalls-find-btn"
+                     class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
+         <button id="node-input-linkin-nodes-find-btn"
+                     class="red-ui-button"><i class="fa fa-link"></i> Link Ins</button>
+         <button id="node-input-orphan-clear-workspace-btn"
+                     class="red-ui-button">Clear dots</button>
+      </div>
 
-            <div class="form-row" style="margin-left: 10px;">
-               <button id="node-input-orphan-clear-workspace-btn"
-                                      class="red-ui-button">Clear dots</button>
-            </div>
-
-            <div class="form-row node-input-target-row node-input-target-list-row"
-               style="margin-left: 10px; position: relative; min-height: 200px; height: 450px; margin-right: 15px; ">
-               <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
-                  <input type="text" id="node-input-orphan-target-filter" style="display: none;">
-               </div>
-               <div id="node-input-orphan-target-container-div"></div>
-            </div>
-
+      <div class="form-row"
+         style="margin-left: 10px; position: relative; min-height: 200px; height: 450px; margin-right: 15px; ">
+         <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+            <input type="text" id="node-input-orphan-target-filter" style="display: none;">
          </div>
+         <div id="node-input-orphan-target-container-div"></div>
       </div>
    </div>
 
    <div id="func-introspection-tab-obfuscation" style="display:none; min-height: calc(100%);">
 
-      <div class="form-row col-100">
+      <div class="form-row">
          <label for="node-input-obfuscate-name" class="w-30">
                <i class="fa fa-tag"></i>
                <span>Obfuscate Name?</span>
