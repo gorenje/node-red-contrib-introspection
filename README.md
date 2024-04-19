@@ -12,13 +12,16 @@ Orphans node many or many not have their reasons, sometimes nodes aren't meant t
 
 Sometimes I found myself having extremely complex flows, flows that went over multiple tabs via the link-in/out nodes. I was lost as to how specific nodes were ever reached. The birth of the Sink & Seeker nodes was inevitable.
 
+## Screencast
+
+For an introduction to these nodes, check out the [introduction screencasts](https://blog.openmindmap.org/blog/introspection).
+
+
 ## Sidebar Nodes
 
 There is no need nor requirement to deploy these nodes. Which implies that they also work in read-only mode of Node-RED. Since these nodes only provide information and make no changes, this should not be an issue.
 
 ### Screenshot
-
-**Update**: Screenshot node has become a sidebar node. This means it can no longer be triggered by external forces.
 
 ![img](https://cdn.openmindmap.org/content/1699269615464_Screen_Shot_2023-11-06_at_12.20.09.png)
 
@@ -40,8 +43,6 @@ Disappointments:
 - No error checking - network requests are assumed to work
 
 ### Orphans
-
-**Update**: This is now a sidebar plugin which shows all unconnected nodes across alls flow tabs.
 
 ~~Drag the Orphan node into a flow, double click and all nodes that have no connections are shown in the tray. Click on a node to highlight its location in the flow.~~
 
@@ -159,7 +160,7 @@ A node for inserting an SVG image into the workspace. The image is layered above
 
 ## Node-RED Versions
 
-These nodes have been tested and found to work on Node-RED 3.0.2 and 3.1.0.beta.4.
+These nodes have been tested and found to work with: Node-RED 3.0.2, 3.1.0 to 3.1.6 and 4.0.0.beta.2.
 
 ## Examples
 
@@ -178,13 +179,10 @@ There are [example flows](/examples) contained in the package, examples can also
 
 [*Do whatever but don't do evil* license](/LICENSE)
 
-## Contribution & Ideas
-
-Please here at GitHub via issues.
-
 ## Artifacts
 
 - [NPMjs Package](https://www.npmjs.com/package/@gregoriusrippenstein/node-red-contrib-introspection)
 - [GitHub Repository](https://github.com/gorenje/node-red-contrib-introspection)
 - [Flow that maintains this package](https://flowhub.org/f/d73d76db3df96ba2)
 - [Node-RED node package](https://flows.nodered.org/node/@gregoriusrippenstein/node-red-contrib-introspection)
+- [Contact Author](https://blog.openmindmap.org/author.vcf)
