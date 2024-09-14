@@ -13,6 +13,14 @@ module.exports = function(RED) {
     });
 
     node.on("input", function(msg, send, done) {
+      // msg object may cause problem if there are circular references, so
+      // do a pre-stringify before erroring out.
+      try {
+        JSON.stringify(msg)
+      } catch (e) {
+        msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
+      }
+
       RED.comms.publish(
         "introspect:client-code-perform",
         RED.util.encodeObject({
