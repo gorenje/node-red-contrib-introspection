@@ -238,6 +238,28 @@
          $('.red-ui-linkcall-link-indicator').remove()
       })
 
+      $('#node-input-msgtracer-toggle').on("change", function (e) {
+        $.ajax({
+            url:         "ClientCode/msgtracer/" + ($('#node-input-msgtracer-toggle').is(":checked") ? "on" : "off"),
+            type:        "POST",
+            contentType: "application/json; charset=utf-8",
+            data:        {},
+            success: function (resp) {
+               RED.notify("Message tracing succeed", {
+                  type: "success",
+                  timeout: 3000
+               })
+            },
+
+            error: function (jqXHR, textStatus, errorThrown) {
+              RED.notify("Message tracing failed: " +textStatus, {
+                type: "error",
+                timeout: 3000
+              });
+            }
+       });
+      })
+
       RED.actions.add( "introspection:show-link-call-links", highlightAllLinkCalls)
       
       $('#node-input-linkcalls-find-btn').on('click', (e) => {
@@ -357,6 +379,15 @@
                            class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
          <button id="node-input-orphan-clear-workspace-btn"
                            class="red-ui-button">Clear dots</button>
+      </div>
+
+      <div class="form-row" style="margin-left: 10px; margin-top: 40px">
+         <label for="node-input-msgtracer-toggle" class="w-30">
+                        <i class="fa fa-tag"></i>
+                        <span>Trace Messages?</span>
+         </label>
+         <input type="checkbox" id="node-input-msgtracer-toggle"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
       </div>
    </div>
 

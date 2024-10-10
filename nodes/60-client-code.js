@@ -2,6 +2,19 @@ module.exports = function(RED) {
   let UglifyJS = require('uglify-js');
   let CleanCSS = require('clean-css');
 
+  const OnReceiveHookName = "onReceive.introspectionMsgTracer"
+  const OnPreuninstallHookName = "preUninstall.introspectionMsgTracer"
+
+  function msgTracerOnReceiveHook(evnt) {
+    try {
+      let nde = RED.nodes.getNode(evnt.destination.id)
+      nde.status({ fill: "green", shape: "ring", text: "msg received" })
+      setTimeout(() => { nde.status({}) }, 1000)
+    } catch (ex) {
+      console.error(ex)
+    }
+  }
+
   function ClientCodeFunctionality(config) {
     RED.nodes.createNode(this,config);
 
@@ -35,6 +48,44 @@ module.exports = function(RED) {
     });
   }
   RED.nodes.registerType("ClientCode", ClientCodeFunctionality);
+
+
+  RED.httpAdmin.post("/ClientCode/msgtracer/on",
+    RED.auth.needsPermission("ClientCode.write"),
+    (req, res) => {
+      try {
+        RED.hooks.remove(OnReceiveHookName)
+        RED.hooks.add(OnReceiveHookName, msgTracerOnReceiveHook)
+
+        // add hook on uninstall package so that the hook for the
+        // message tracer is removed on uninstall of this package.
+        RED.hooks.remove(OnPreuninstallHookName)
+        RED.hooks.add(OnPreuninstallHookName, (evnt) => {
+          if (evnt.module == "@gregoriusrippenstein/node-red-contrib-introspection") {
+            RED.hooks.remove(OnReceiveHookName)
+            RED.hooks.remove(OnPreuninstallHookName)
+          }
+        })
+
+        res.sendStatus(200);
+      } catch (err) {
+        res.sendStatus(500);
+      }
+    });
+
+  RED.httpAdmin.post("/ClientCode/msgtracer/off",
+    RED.auth.needsPermission("ClientCode.write"),
+    (req, res) => {
+      try {
+
+        RED.hooks.remove(OnReceiveHookName)
+        RED.hooks.remove(OnPreuninstallHookName)
+
+        res.sendStatus(200);
+      } catch (err) {
+        res.sendStatus(500);
+      }
+    });
 
   RED.httpAdmin.post("/ClientCode/:id",
     RED.auth.needsPermission("ClientCode.write"),
