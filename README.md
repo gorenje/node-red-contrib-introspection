@@ -78,6 +78,18 @@ Sidebar for visually obfuscating flows:
 
 The plugin replaces the name with the node Id, resets the nodes info content to empty and moves all nodes to the same location. The intention is to having a *working* flow but not an *understandable* flow. The generated flow is meant to be only usable and not modifiable nor maintainable.
 
+### Message tracing
+
+Sometimes it would be nice to observe the flow of messages through a flow. This is possible by using 'Trace Messages' found at the bottom of the 'Lint' tab:
+
+![img](https://cdn.openmindmap.org/content/1728588310213_msgtrace.gif)
+
+Message tracing can be toggled on & off *without* redeploying the flow. So this can be used as a quick check for observing tricky situation.
+
+The nodes status will be replaced by 'msg received', so if the status should be showing something else, that is lost.
+
+Also this is an experimental feature liable to be [improved](https://discourse.nodered.org/t/message-tracing-for-beginners/92287).
+
 ## Palette Nodes
 
 ### Sink & Seeker
