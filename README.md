@@ -82,7 +82,7 @@ The plugin replaces the name with the node Id, resets the nodes info content to 
 
 Sometimes it would be nice to observe the flow of messages through a flow. This is possible by using 'Trace Messages' found at the bottom of the 'Lint' tab:
 
-![img](https://cdn.openmindmap.org/content/1728649055817_msgtracer2.gif)
+![img](https://cdn.openmindmap.org/content/1728655611060_msgtracer6.gif)
 
 Message tracing can be toggled on & off *without* redeploying the flow. So this can be used as a quick check for observing tricky situations.
 
@@ -90,7 +90,19 @@ The nodes status will be replaced by 'msg received', so if the status should be 
 
 Also this is an experimental feature liable to be [enhanced](https://discourse.nodered.org/t/message-tracing-for-beginners/92287).
 
-*UPDATE*: This now has a [treeList](https://nodered.org/docs/api/ui/treeList/) of nodes and how often they received a message. Clicking on the node in the list will highlight the node, double-click will open the nodes edit panel.
+*UPDATE*: 
+
+This now has a [treeList](https://nodered.org/docs/api/ui/treeList/) of nodes and how often they received a message. Clicking on the node in the list will highlight the node, double-click will open the nodes edit panel.
+
+*UPDATE2*: 
+
+It is now possible to send all messages to the debug panel. By toggling the 'msg to debug' checkbox, *all messages* will be sent to the Node-RED debug panel. This can be toggled on and off independently of the message tracing. That is, as long as message tracing is activated. It is therefore possible (as shown in the animation above) to active message tracing, then activate msg to debug to have msg appear in the debug panel and then deactive the msg to debug. The message tracing continues unabated.
+
+This makes it possible to trace messages, if something critical happens, to activate the msg to debug and then deactivate again. Only those messages that occured in that timeframe are logged.
+
+**But remember** all messages are logged to the debug panel, every single message that is sent within Node-RED will be set to the debug panel. This will cause major disappointments for those wishing to have a responsive editor.
+
+Also this feature causes **no extra overhead** on the backend server if it is *not in use* - the hooks for capturing the data are removed if this feature is deactivated.
 
 ## Palette Nodes
 

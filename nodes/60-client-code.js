@@ -4,10 +4,12 @@ module.exports = function(RED) {
 
   const OnReceiveHookName = "onReceive.introspectionMsgTracer"
   const OnPreuninstallHookName = "preUninstall.introspectionMsgTracer"
+  const debugLength = RED.settings.debugMaxLength || 1000 
 
   function msgTracerOnReceiveHook(evnt) {
     try {
       let nde = RED.nodes.getNode(evnt.destination.id)
+
       nde.status({ fill: "green", shape: "ring", text: "msg received" })
       setTimeout(() => { nde.status({}) }, 1000)
 
@@ -16,6 +18,31 @@ module.exports = function(RED) {
           nodeid: evnt.destination.id
         })
       )
+
+      return nde
+    } catch (ex) {
+      console.error(ex)
+    }
+  }
+
+  function msgTracerOnReceiveHookWithDebug(evnt) {
+    try {
+      let nde = msgTracerOnReceiveHook(evnt)
+
+      // taken from the [debug node](https://github.com/node-red/node-red/blob/2854351909dee9f92597faba3f37239134294eec/packages/node_modules/%40node-red/nodes/core/common/21-debug.js#L227)
+      let msg = { 
+        id:     nde.id, 
+        z:      nde.z, 
+        _alias: nde._alias,  
+        path:   nde._flow.path, 
+        name:   nde.name, 
+        topic:  evnt.msg.topic, 
+        msg:    evnt.msg
+      }
+
+      msg = RED.util.encodeObject(msg, { maxLength: debugLength });
+      RED.comms.publish("debug",msg);
+      
     } catch (ex) {
       console.error(ex)
     }
@@ -55,13 +82,22 @@ module.exports = function(RED) {
   }
   RED.nodes.registerType("ClientCode", ClientCodeFunctionality);
 
-
-  RED.httpAdmin.post("/ClientCode/msgtracer/on",
+  /**
+   * These are the two endpoints for the message tracer functionality.
+   * Rather badly placed in the ClientCode node code but the author
+   * didn't find a better place. The world is confusing, why should 
+   * this codebase be any different.
+   */
+  RED.httpAdmin.post("/MsgTracer/msgtracing/on",
     RED.auth.needsPermission("ClientCode.write"),
     (req, res) => {
       try {
         RED.hooks.remove(OnReceiveHookName)
-        RED.hooks.add(OnReceiveHookName, msgTracerOnReceiveHook)
+        if ( req.body.withDebug ) {
+          RED.hooks.add(OnReceiveHookName, msgTracerOnReceiveHookWithDebug)
+        } else {
+          RED.hooks.add(OnReceiveHookName, msgTracerOnReceiveHook)
+        }
 
         // add hook on uninstall package so that the hook for the
         // message tracer is removed on uninstall of this package.
@@ -79,7 +115,7 @@ module.exports = function(RED) {
       }
     });
 
-  RED.httpAdmin.post("/ClientCode/msgtracer/off",
+  RED.httpAdmin.post("/MsgTracer/msgtracing/off",
     RED.auth.needsPermission("ClientCode.write"),
     (req, res) => {
       try {
