@@ -240,6 +240,12 @@
          $('.red-ui-linkcall-link-indicator').remove()
       })
 
+      $('#node-input-msgtrace-clear-debug-btn').on('click', (e) => {
+         if ( e ) { e.preventDefault() }
+         // from [debug node](https://github.com/node-red/node-red/blob/2854351909dee9f92597faba3f37239134294eec/packages/node_modules/%40node-red/nodes/core/common/21-debug.html#L437)
+         RED.actions.invoke("core:clear-debug-messages")
+      })
+
       $('#node-input-msgtrace-clear-trace-btn').on('click', (e) => {
          if ( e ) { e.preventDefault() }
          setupTreeMsgTracerlist()
@@ -392,6 +398,8 @@
 
          <button id="node-input-msgtrace-clear-trace-btn" style="margin-left: 10px;"
                        class="red-ui-button">Clear Trace</button>
+         <button id="node-input-msgtrace-clear-debug-btn" style="margin-left: 10px;"
+                       class="red-ui-button">Clear Debug</button>
       </div>
 
       <div class="form-row"
