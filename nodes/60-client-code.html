@@ -1,5 +1,45 @@
 <script type="text/javascript">
 
+ RED.comms.subscribe('msgtracer:node-received', (event,data) => {
+   if ( data.nodeid) {
+     let node = RED.nodes.node(data.nodeid)
+     let olddata = $("#node-input-msgtracer-trace-treelist").treeList('data')
+     let foundItem = false;
+
+     olddata.forEach( itm => {
+       if ( itm.id == node.id ) {
+        foundItem = true
+        itm.sublabel = "" + (parseInt(itm.sublabel) + 1)
+       }
+     })
+
+     if ( !foundItem ) {
+        let nodeDef = RED.nodes.getType(node.type);
+        let label;
+
+        if (nodeDef) {
+            let l = nodeDef.label;
+            label = (typeof l === "function" ? l.call(node) : l) || node.type;
+        } else {
+          label = node.type
+        }
+
+       let newitem = {
+        id: node.id,
+        label: label,
+        sublabel: "1",
+        selected: false,
+        checkbox: false,
+        node: node
+      }
+
+      $("#node-input-msgtracer-trace-treelist").treeList('data',[newitem, ...olddata])
+     } else {
+       $("#node-input-msgtracer-trace-treelist").treeList('data',olddata)
+     }
+   }
+ })
+ 
  RED.comms.subscribe('introspect:client-code-perform', (event,data) => {
    if ( data.msg == "execfunc" ) {
 

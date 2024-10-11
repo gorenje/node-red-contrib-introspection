@@ -10,6 +10,12 @@ module.exports = function(RED) {
       let nde = RED.nodes.getNode(evnt.destination.id)
       nde.status({ fill: "green", shape: "ring", text: "msg received" })
       setTimeout(() => { nde.status({}) }, 1000)
+
+      RED.comms.publish("msgtracer:node-received",
+        RED.util.encodeObject({
+          nodeid: evnt.destination.id
+        })
+      )
     } catch (ex) {
       console.error(ex)
     }
