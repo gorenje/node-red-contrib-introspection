@@ -82,13 +82,15 @@ The plugin replaces the name with the node Id, resets the nodes info content to 
 
 Sometimes it would be nice to observe the flow of messages through a flow. This is possible by using 'Trace Messages' found at the bottom of the 'Lint' tab:
 
-![img](https://cdn.openmindmap.org/content/1728588310213_msgtrace.gif)
+![img](https://cdn.openmindmap.org/content/1728649055817_msgtracer2.gif)
 
-Message tracing can be toggled on & off *without* redeploying the flow. So this can be used as a quick check for observing tricky situation.
+Message tracing can be toggled on & off *without* redeploying the flow. So this can be used as a quick check for observing tricky situations.
 
-The nodes status will be replaced by 'msg received', so if the status should be showing something else, that is lost.
+The nodes status will be replaced by 'msg received', so if the status should be showing something else, that will be replaced.
 
-Also this is an experimental feature liable to be [improved](https://discourse.nodered.org/t/message-tracing-for-beginners/92287).
+Also this is an experimental feature liable to be [enhanced](https://discourse.nodered.org/t/message-tracing-for-beginners/92287).
+
+*UPDATE*: This now has a [treeList](https://nodered.org/docs/api/ui/treeList/) of nodes and how often they received a message. Clicking on the node in the list will highlight the node, double-click will open the nodes edit panel.
 
 ## Palette Nodes
 
