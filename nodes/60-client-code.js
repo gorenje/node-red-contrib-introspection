@@ -29,6 +29,10 @@ module.exports = function(RED) {
     try {
       let nde = msgTracerOnReceiveHook(evnt)
 
+      // don't publish debug messages for junctions because they 
+      // cause errors in handleDebugMessages in the client.
+      if ( nde.type == "junction") { return }
+
       // taken from the [debug node](https://github.com/node-red/node-red/blob/2854351909dee9f92597faba3f37239134294eec/packages/node_modules/%40node-red/nodes/core/common/21-debug.js#L227)
       let msg = { 
         id:     nde.id, 
