@@ -1,44 +1,6 @@
 <script type="text/javascript">
 
- RED.comms.subscribe('msgtracer:node-received', (event,data) => {
-   if ( data.nodeid) {
-     let node = RED.nodes.node(data.nodeid)
-     let olddata = $("#node-input-msgtracer-trace-treelist").treeList('data')
-     let foundItem = false;
-
-     olddata.forEach( itm => {
-       if ( itm.id == node.id ) {
-        foundItem = true
-        itm.sublabel = "" + (parseInt(itm.sublabel) + 1)
-       }
-     })
-
-     if ( !foundItem ) {
-        let nodeDef = RED.nodes.getType(node.type);
-        let label;
-
-        if (nodeDef) {
-            let l = nodeDef.label;
-            label = (typeof l === "function" ? l.call(node) : l) || node.type;
-        } else {
-          label = node.type
-        }
-
-       let newitem = {
-        id: node.id,
-        label: label,
-        sublabel: "1",
-        selected: false,
-        checkbox: false,
-        node: node
-      }
-
-      $("#node-input-msgtracer-trace-treelist").treeList('data',[newitem, ...olddata])
-     } else {
-       $("#node-input-msgtracer-trace-treelist").treeList('data',olddata)
-     }
-   }
- })
+function handleMsgTracePacket(e,r){if(r.nodeid){let a=RED.nodes.node(r.nodeid);if(a){r=$("#node-input-msgtracer-trace-treelist").treeList("data");let t=!1;if(r.forEach(e=>{e.id==a.id&&(t=!0,e.sublabel=""+(parseInt(e.sublabel)+1))}),t)$("#node-input-msgtracer-trace-treelist").treeList("data",r);else{var c=RED.nodes.getType(a.type);let e;e=c&&("function"==typeof(c=c.label)?c.call(a):c)||a.type;c={id:a.id,label:e,sublabel:"1",selected:!1,checkbox:!1,node:a};$("#node-input-msgtracer-trace-treelist").treeList("data",[c,...r])}}}}RED.comms.subscribe("msgtracer:node-received",(e,t)=>{try{handleMsgTracePacket(e,t)}catch(e){console.error(e)}});
  
  RED.comms.subscribe('introspect:client-code-perform', (event,data) => {
    if ( data.msg == "execfunc" ) {
