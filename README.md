@@ -94,7 +94,7 @@ Also this is an experimental feature liable to be [enhanced](https://discourse.n
 
 This now has a [treeList](https://nodered.org/docs/api/ui/treeList/) of nodes and how often they received a message. Clicking on the node in the list will highlight the node, double-click will open the nodes edit panel.
 
-*UPDATE2*: 
+*UPDATE TWO*: 
 
 It is now possible to send all messages to the debug panel. By toggling the 'msg to debug' checkbox, *all messages* will be sent to the Node-RED debug panel. This can be toggled on and off independently of the message tracing. That is, as long as message tracing is activated. It is therefore possible (as shown in the animation above) to active message tracing, then activate msg to debug to have msg appear in the debug panel and then deactive the msg to debug. The message tracing continues unabated.
 
@@ -103,6 +103,12 @@ This makes it possible to trace messages, if something critical happens, to acti
 **But remember** all messages are logged to the debug panel, every single message that is sent within Node-RED will be set to the debug panel. This will cause major disappointments for those wishing to have a responsive editor.
 
 Also this feature causes **no extra overhead** on the backend server if it is *not in use* - the hooks for capturing the data are removed if this feature is deactivated.
+
+*UPDATE THREE*:
+
+Tracing and debug-message tracing are now separate operations and neither works on *all* nodes by default. To use either feature, a selection of nodes must now be made beforehand (in the flow editor window) and then tracing activated. If you really want to trace **all** nodes, then select none in the editor (deselect all nodes) and check the corresponding "All?" checkbox - there is one for debug messages and one for message tracing.
+
+Tracing or debugging **all**  nodes is **no longer** the default action.
 
 ## Palette Nodes
 
