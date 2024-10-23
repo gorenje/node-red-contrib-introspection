@@ -16,6 +16,8 @@
 
    function setupTreeMsgTracerlist(){try{$("#node-input-msgtracer-trace-treelist").treeList("empty"),$("#node-input-msgtracer-trace-treelist").treeList("data",[])}catch(e){$("#node-input-msgtracer-trace-treelist").css({width:"100%",height:"calc(100%)"}).treeList({multi:!1}).on("treelistitemmouseover",function(e,t){}).on("treelistitemmouseout",function(e,t){}).on("treelistselect",function(e,t){t.node&&(RED.workspaces.show(t.node.z,!1,!1,!0),RED.view.reveal(t.node.id,!0),RED.view.redraw(),$("#node-input-msgtracer-toggle").is(":checked")||($(".red-ui-debug-msg").css("background-color",""),$(".red-ui-debug-msg-node-"+t.node.id).css("background-color","red")))}).on("treelistconfirm",function(e,t){var o;t.node&&(o=t.node.id,setTimeout(()=>{var e=RED.nodes.node(o);e&&(RED.view.reveal(e.id),RED.view.select(e.id),RED.editor.edit(e)),o==RED.workspaces.active()&&RED.workspaces.edit()},50))}),$("#node-input-msgtracer-trace-treelist-filter").show();var o=$("#node-input-msgtracer-trace-treelist-filter").searchBox({style:"compact",delay:300,change:function(){var e,t=$(this).val().trim().toLowerCase();""===t?($("#node-input-msgtracer-trace-treelist").treeList("filter",null),o.searchBox("count","")):(e=$("#node-input-msgtracer-trace-treelist").treeList("filter",function(e){return-1<e.label.toLowerCase().indexOf(t)||-1<e.node.type.toLowerCase().indexOf(t)||-1<e.node.id.toLowerCase().indexOf(t)}),o.searchBox("count",e+" / "+$("#node-input-msgtracer-trace-treelist").treeList("data").length))}})}}function toggleDebugTracingInBackend(e){let t=$("#node-input-msgtracer-msgtodebug").is(":checked");var o=$("#node-input-msgtracer-msgtodebug-all").is(":checked"),r=RED.view.selection().nodes;r||o||!t?r&&0<r.length&&o&&t?($("#node-input-msgtracer-msgtodebug").prop("checked",!1),$("#node-input-msgtracer-msgtodebug-all").prop("checked",!1),RED.notify("Debug Messages not toggled, both nodes selected and all nodes is on.",{type:"error",timeout:3e3})):(t||$("#node-input-msgtracer-msgtodebug-all").prop("checked",!1),$.ajax({url:"MsgTracer/debug/"+(t?"on":"off"),type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodesSelected:(RED.view.selection().nodes||[]).map(e=>e.id),allIsOn:o}),success:function(e){RED.notify("Message debugging is <b>"+(t?"on":"off")+"</b>",{type:"success",timeout:3e3})},error:function(e,t,o){RED.notify("Message tracing failed: "+t,{type:"error",timeout:3e3})}})):($("#node-input-msgtracer-msgtodebug").prop("checked",!1),RED.notify("Debug Messages not toggled, first select nodes to be debugged <b>or</b> toggle 'all nodes' to on.",{type:"error",timeout:3e3}))}function toggleMsgTracingInBackend(e){let t=$("#node-input-msgtracer-toggle").is(":checked");var o=$("#node-input-msgtracer-toggle-all").is(":checked"),r=RED.view.selection().nodes;r||o||!t?r&&0<r.length&&o&&t?($("#node-input-msgtracer-toggle-all").prop("checked",!1),$("#node-input-msgtracer-toggle").prop("checked",!1),RED.notify("Message tracing not toggled, nodes are selected <b>and</b> all nodes is checked.",{type:"error",timeout:3e3})):(t||$("#node-input-msgtracer-toggle-all").prop("checked",!1),t&&setupTreeMsgTracerlist(),$.ajax({url:"MsgTracer/msgtracing/"+(t?"on":"off"),type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify({nodesSelected:(RED.view.selection().nodes||[]).map(e=>e.id),allIsOn:o}),success:function(e){RED.notify("Message tracing is <b>"+(t?"on":"off")+"</b>",{type:"success",timeout:3e3})},error:function(e,t,o){RED.notify("Message tracing failed: "+t,{type:"error",timeout:3e3})}})):($("#node-input-msgtracer-toggle").prop("checked",!1),RED.notify("Message tracing not toggled, first select nodes to be traced <b>or</b> toggle 'all nodes' to on.",{type:"error",timeout:3e3}))}
 
+   function transformInjectToChangeNode(t){t&&t.preventDefault();t=[...(RED.view.selection().nodes||[]).filter(e=>"inject"==e.type),...(RED.view.selection().nodes||[]).filter(e=>"group"==e.type).map(e=>e.nodes.filter(e=>"inject"==e.type))].flat();if(0==(t=RED.nodes.createExportableNodeSet(t)).length)RED.notify("No inject nodes found in node selection",{type:"warning"});else{let e=t.map(o=>{var e={id:RED.nodes.id(),type:"change",name:o.name,action:"",property:"",from:"",to:"",reg:!1,x:0,y:0,wires:[[]]};return e.rules=o.props.map(e=>{var t={t:"set",p:e.p,pt:"msg",to:e.v,tot:e.vt};return"payload"==e.p?(t.to=o.payload,t.tot=o.payloadType):"topic"==e.p&&(t.to=o.topic),t}),e});setTimeout(()=>{RED.clipboard.import(),setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(e)).trigger("paste")},300)},400)}}
+
    // Add your plugin as a new tabsheet in the right sidebar AFTER the flow editor is completely started
    var initialiseConfigNodeOnce = () => {
       RED.events.off('runtime-state', initialiseConfigNodeOnce);
@@ -273,6 +275,7 @@
          */
       })
 
+      $('#node-input-transform-inject-to-change-btn').on( 'click', transformInjectToChangeNode)
       $('#node-input-statistics-btn').on('click', (e) => {
          if ( e ) { e.preventDefault() }
          setupTreeListForNodeStats()
@@ -370,8 +373,10 @@
                      class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
          <button id="node-input-orphan-clear-workspace-btn"
                      class="red-ui-button">Clear dots</button>
+         <button id="node-input-transform-inject-to-change-btn"
+                     class="red-ui-button"><i class="fa fa-retweet"></i> Inj-&gt;Chg</button>
          <button id="node-input-statistics-btn"
-                     class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
+                    class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
       </div>
 
       <div class="form-row"
