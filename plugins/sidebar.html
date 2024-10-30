@@ -304,7 +304,18 @@
    .ml-30 {
       margin-left: 30px !important;
    }
-
+   .icon-button {
+      height: 24px;
+      width: 18px;
+      display: inline-block;
+      background-size: 100% 100%;
+      top: 4px;
+      position: relative;
+   }
+   .icon-button-text {
+      position: relative;
+      top: -4px;
+   }
 </style>
 
 <!-- The html for the right sidebar plugin screen -->
@@ -374,7 +385,7 @@
          <button id="node-input-orphan-clear-workspace-btn"
                      class="red-ui-button">Clear dots</button>
          <button id="node-input-transform-inject-to-change-btn"
-                     class="red-ui-button"><i class="fa fa-retweet"></i> Inj-&gt;Chg</button>
+                     class="red-ui-button"><i class='icon-button' style="background-image: url('icons/@gregoriusrippenstein/node-red-contrib-introspection/swap-inject-to-change.svg');"></i><span class='icon-button-text'>Inj-&gt;Chg</span></button>
          <button id="node-input-statistics-btn"
                     class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
       </div>
