@@ -77,13 +77,14 @@ module.exports = function (RED) {
           msg:     "execfunc",
           payload: msg.payload,
           topic:   msg.topic,
-          func:    cfg.clientcode,
+          func:    msg.clientcode || cfg.clientcode,
           nodeid:  node.id,
           _msg:    msg
         })
       );
     });
   }
+  
   RED.nodes.registerType("ClientCode", ClientCodeFunctionality);
 
   /**
