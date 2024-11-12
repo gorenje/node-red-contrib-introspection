@@ -281,6 +281,14 @@
          if ( e ) { e.preventDefault() }
          setupTreeListForNodeStats()
       })
+
+      RED.panels.create({
+        id: 'func-introspection-tab-lint',
+        resize: (topSze,botSze) => {
+            $('#node-input-msgtracer-trace-treelist').parent().css("height", `calc(${botSze}px - 13vh)`)
+            $('#node-input-orphan-target-container-div').parent().css('height', `calc(${topSze}px - 15vh)`)
+        }
+      })
    };
    RED.events.on('runtime-state', initialiseConfigNodeOnce);
 })();
@@ -402,80 +410,83 @@
    <!-- Lint Tab in Sidebar -->
 
    <div id="func-introspection-tab-lint" style="display:none; min-height: calc(100%);">
-      <div class="form-row" style="margin-left: 10px; margin-top: 30px">
-         <button id="node-input-orphan-find-btn"
-                     class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
-         <button id="node-input-documentation-find-btn"
-                     class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
-         <button id="node-input-linkin-nodes-find-btn"
-                     class="red-ui-button"><i class="fa fa-link"></i> Link Ins</button>
-         <button id="node-input-linkcalls-find-btn"
-                     class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
-         <button id="node-input-orphan-clear-workspace-btn"
-                     class="red-ui-button">Clear dots</button>
-         <button id="node-input-transform-inject-to-change-btn"
-                     class="red-ui-button"><i class='icon-button' style="background-image: url('icons/@gregoriusrippenstein/node-red-contrib-introspection/swap-inject-to-change.svg');"></i><span class='icon-button-text'>Inj-&gt;Chg</span></button>
-         <button id="node-input-statistics-btn"
-                    class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
-      </div>
-
-      <div class="form-row"
-         style="margin-left: 10px; position: relative; min-height: 200px; height: 430px; margin-right: 15px;">
-         <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
-            <input type="text" id="node-input-orphan-target-filter" style="display: none;">
+      <div>
+         <div class="form-row" style="margin-left: 10px; margin-top: 30px">
+            <button id="node-input-orphan-find-btn"
+                        class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
+            <button id="node-input-documentation-find-btn"
+                        class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
+            <button id="node-input-linkin-nodes-find-btn"
+                        class="red-ui-button"><i class="fa fa-link"></i> Link Ins</button>
+            <button id="node-input-linkcalls-find-btn"
+                        class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
+            <button id="node-input-orphan-clear-workspace-btn"
+                        class="red-ui-button">Clear dots</button>
+            <button id="node-input-transform-inject-to-change-btn"
+                        class="red-ui-button"><i class='icon-button' style="background-image: url('icons/@gregoriusrippenstein/node-red-contrib-introspection/swap-inject-to-change.svg');"></i><span class='icon-button-text'>Inj-&gt;Chg</span></button>
+            <button id="node-input-statistics-btn"
+                       class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
          </div>
-         <div id="node-input-orphan-target-container-div"></div>
-      </div>
-
-      <!-- message tracing stuff -->
-
-      <div class="form-row" style="margin-left: 10px; margin-top: 40px">
-         <label for="node-input-msgtracer-toggle"  class="w-25">
-            <i class="fa fa-stethoscope"></i>
-            <span>Trace selected nodes?</span>
-         </label>
-         <input type="checkbox" id="node-input-msgtracer-toggle"
-                style="display:inline-block; width:15px; vertical-align:baseline;">
-
-         <label for="node-input-msgtracer-toggle-all"  class="w-25">
-            <i class="fa fa-warning"></i>
-            <span>All nodes?</span>
-         </label>
-         <input type="checkbox" id="node-input-msgtracer-toggle-all"
-                style="display:inline-block; width:15px; vertical-align:baseline;">
-
-         <button id="node-input-msgtrace-clear-trace-btn" style="margin-left: 10px;"
-                       class="red-ui-button">Clear Trace</button>
-      </div>
-
-      <div class="form-row"
-         style="margin-left: 10px; position: relative; min-height: 200px; height: 430px; margin-right: 15px;">
-         <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
-            <input type="text" id="node-input-msgtracer-trace-treelist-filter" style="display: none;">
+   
+         <div class="form-row"
+            style="margin-left: 10px; position: relative; min-height: 5vh; height: 20vh; margin-right: 15px;">
+            <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+               <input type="text" id="node-input-orphan-target-filter" style="display: none;">
+            </div>
+            <div id="node-input-orphan-target-container-div"></div>
          </div>
-         <div id="node-input-msgtracer-trace-treelist"></div>
       </div>
-
-      <div class="form-row" style="margin-left: 10px; margin-top: 40px;">
-         <label for="node-input-msgtracer-msgtodebug" class="w-25">
-                     <i class="fa fa-bug"></i>
-                     <span>Msgs from selected nodes to Debug?</span>
-               </label>
-         <input type="checkbox" id="node-input-msgtracer-msgtodebug"
-                      style="display:inline-block; width:15px; vertical-align:baseline;">
       
-         <label for="node-input-msgtracer-msgtodebug-all" class="w-25">
-                     <i class="fa fa-warning"></i>
-                     <span>All nodes?</span>
-               </label>
-         <input type="checkbox" id="node-input-msgtracer-msgtodebug-all"
-                      style="display:inline-block; width:15px; vertical-align:baseline;">
-      
-         <button id="node-input-msgtrace-clear-debug-btn" style="margin-left: 10px;"
-                                   class="red-ui-button">Clear Debug</button>
+      <div>
+         <!-- message tracing stuff -->
+   
+         <div class="form-row" style="margin-left: 10px; margin-top: 40px">
+            <label for="node-input-msgtracer-toggle"  class="w-25">
+               <i class="fa fa-stethoscope"></i>
+               <span>Trace selected nodes?</span>
+            </label>
+            <input type="checkbox" id="node-input-msgtracer-toggle"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+   
+            <label for="node-input-msgtracer-toggle-all"  class="w-25">
+               <i class="fa fa-warning"></i>
+               <span>All nodes?</span>
+            </label>
+            <input type="checkbox" id="node-input-msgtracer-toggle-all"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+   
+            <button id="node-input-msgtrace-clear-trace-btn" style="margin-left: 10px;"
+                          class="red-ui-button">Clear Trace</button>
+         </div>
+   
+         <div class="form-row"
+            style="margin-left: 10px; position: relative; min-height: 5vh; height: 20vh; margin-right: 15px;">
+            <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+               <input type="text" id="node-input-msgtracer-trace-treelist-filter" style="display: none;">
+            </div>
+            <div id="node-input-msgtracer-trace-treelist"></div>
+         </div>
+   
+         <div class="form-row" style="margin-left: 10px; margin-top: 40px;">
+            <label for="node-input-msgtracer-msgtodebug" class="w-25">
+                        <i class="fa fa-bug"></i>
+                        <span>Msgs from selected nodes to Debug?</span>
+                  </label>
+            <input type="checkbox" id="node-input-msgtracer-msgtodebug"
+                         style="display:inline-block; width:15px; vertical-align:baseline;">
+   
+            <label for="node-input-msgtracer-msgtodebug-all" class="w-25">
+                        <i class="fa fa-warning"></i>
+                        <span>All nodes?</span>
+                  </label>
+            <input type="checkbox" id="node-input-msgtracer-msgtodebug-all"
+                         style="display:inline-block; width:15px; vertical-align:baseline;">
+   
+            <button id="node-input-msgtrace-clear-debug-btn" style="margin-left: 10px;"
+                                      class="red-ui-button">Clear Debug</button>
+         </div>
       </div>
    </div>
-
    <!-- Obfuscation Tab in Sidebar -->
 
    <div id="func-introspection-tab-obfuscation" style="display:none; min-height: calc(100%);">
