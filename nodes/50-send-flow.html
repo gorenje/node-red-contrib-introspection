@@ -7,9 +7,15 @@
       name: {
         value:"",
       },
+
       hostUrl: {
-        value: ""
+        value:"hostUrl", 
+        required:true
       },
+      hostUrlType: {
+        value:"str"
+      },
+
       flowVersion: {
         value: "v1"
       },
@@ -29,6 +35,7 @@
         value: "env",
       },
     },
+    
     inputs:1,
     outputs:1,
 
@@ -39,6 +46,7 @@
     labelStyle: function() {
       return this.name?"node_label_italic":"";
     },
+
     oneditprepare: function() {
       $("#node-input-apiUsername").typedInput({
         types:["env", "msg", "flow","global", "cred"],
@@ -46,8 +54,13 @@
       });
 
       $("#node-input-apiPassword").typedInput({
-        types:["env", "msg", "flow","global", "env", "cred"],
+        types:["env", "msg", "flow","global", "cred"],
         typeField: "#node-input-apiPasswordType"
+      });
+
+      $("#node-input-hostUrl").typedInput({
+        types:["str", "msg", "flow", "global", "env"],
+        typeField: "#node-input-hostUrlType"
       });
 
       if ( $('#node-input-useAuthentication').is(":checked") ) {
@@ -75,7 +88,8 @@
 
     <div class="form-row">
         <label for="node-input-hostUrl"><i class="fa fa-tag"></i> Host</label>
-        <input type="text" id="node-input-hostUrl" placeholder="Host URL">
+        <input type="text" id="node-input-hostUrl" placeholder="hostUrl">
+        <input type="hidden" id="node-input-hostUrlType" value="str">
     </div>
 
     <div class="form-row">
@@ -123,4 +137,6 @@
 
 <script type="text/html" data-help-name="SendFlow">
   <p>Send flow to another Node-RED instance.</p>
+
+  Payload is assumed to be a Javascript array containing flow data.
 </script>

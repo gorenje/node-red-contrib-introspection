@@ -114,5 +114,8 @@
 </script>
 
 <script type="text/html" data-help-name="GetFlows">
-  <p>Retrieves the current flow file from the server. This uses the Node-RED API and is therefore storage-method independent. Return value is a JSON.</p>
+  <p>Retrieves the current flow file from this server. This uses the Node-RED API and is therefore storage-method independent. Payload becomes a Json string.</p>
+
+  If the response is to sent to another host, then insert a JSON node to convert the response of this node to a Javascript array which can be passed as payload 
+  to the SendFlow node.
 </script>

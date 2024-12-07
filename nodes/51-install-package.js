@@ -15,10 +15,17 @@ module.exports = function(RED) {
         return node.error("msg.payload missing or payload not hash", msg)
       }
 
+      /*
+       * This defines the helper function - installPackage - that is called either with
+       * an authentication token or without. That is determined below.
+       */
       var installPackage = (hdrs, got) => {
         let body = undefined
         let headers = {}
 
+        /*
+         * Check the Payload - either module name or .tgz buffer.
+         */
         if ( msg.payload.module  ) {
           body = JSON.stringify({
             module: msg.payload.module,
@@ -40,27 +47,35 @@ module.exports = function(RED) {
           return node.error("msg.payload not well defined", msg)
         }
 
-        got.post( (cfg.hostUrl || msg.hostUrl) + "/nodes", {
-          headers: {
-            ...headers,
-            ...hdrs
-          },          
-          body: body
-        }).then( res => {
-          send({
-            ...msg,
-            payload: JSON.parse(res.body)
-          });
+        /*
+         * Connect and send to host.
+         */
+        RED.util.evaluateNodeProperty(cfg.hostUrl, cfg.hostUrlType, node, msg, (err, result) => {
+          if (err) {
+            node.status({ fill: "red", shape: "dot", text: "Failed" });
+            node.error("unable to obtain host url", { ...msg, _err: err })
+          } else {
+            got.post( result + "/nodes", {
+              headers: {
+                ...headers,
+                ...hdrs
+              },          
+              body: body
+            }).then( res => {
+              send({
+                ...msg,
+                payload: JSON.parse(res.body)
+              });
 
-          node.status({fill:"green",shape:"dot",text:"Good"});
-          setTimeout( function() {
-            node.status({})
-          }, 450);
+              node.status({fill:"green",shape:"dot",text:"Good"});
+              setTimeout( function() { node.status({}) }, 450);
 
-        }).catch( err => {
-          node.status({fill:"red",shape:"dot",text:"Failed"});
-          node.error("error occurred", { ...msg, _err: err })
-        });
+            }).catch( err => {
+              node.status({fill:"red",shape:"dot",text:"Failed"});
+              node.error("unable to connect to host", { ...msg, _err: err })
+            });
+          }
+        })
       };
 
       /**
@@ -76,7 +91,7 @@ module.exports = function(RED) {
                                       node, msg, (err, result) => {
           if (err) {
             node.status({fill:"red",shape:"dot",text:"Failed"});
-            node.error("error occurred", { ...msg, _err: err})
+            node.error("unable to obtain api username", { ...msg, _err: err})
           } else {
             username = result;
 
@@ -84,7 +99,7 @@ module.exports = function(RED) {
                                           node, msg, (err, result) => {
               if (err) {
                 node.status({fill:"red",shape:"dot",text:"Failed"});
-                node.error("error occurred", { ...msg, _err: err} )
+                node.error("unable to obtain api password", { ...msg, _err: err} )
               } else {
                 password = result;
 
@@ -96,27 +111,34 @@ module.exports = function(RED) {
                       "password":   password
                 }
 
-                import('got').then( (module) => {
-                  module.got.post( (cfg.hostUrl || msg.hostUrl) + "/auth/token", {
-                    json: data
-                  }).then( res => {
-                    node.status({
-                      fill:"blue",
-                      shape:"dot",
-                      text:"Sending flow"
+                RED.util.evaluateNodeProperty(cfg.hostUrl, cfg.hostUrlType, node, msg, (err, result) => {
+                  if (err) {
+                    node.status({ fill: "red", shape: "dot", text: "Failed" });
+                    node.error("unable to obtain api host url", { ...msg, _err: err })
+                  } else {
+                    import('got').then( (module) => {
+                      module.got.post( result + "/auth/token", {
+                        json: data
+                      }).then( res => {
+                        node.status({
+                          fill:"blue",
+                          shape:"dot",
+                          text:"Installing packages"
+                        });
+
+                        var access_token = JSON.parse(res.body).access_token;
+
+                        installPackage({
+                          "Authorization": "Bearer " + access_token
+                        }, module.got);
+
+                      }).catch((err) => {
+                        node.status({fill:"red",shape:"dot",text:"Failed"});
+                        node.error( "error occured", { ...msg, _err: err } );
+                      });
                     });
-
-                    var access_token = JSON.parse(res.body).access_token;
-
-                    installPackage({
-                      "Authorization": "Bearer " + access_token
-                    }, module.got);
-
-                  }).catch((err) => {
-                    node.status({fill:"red",shape:"dot",text:"Failed"});
-                    node.error( "error occured", { ...msg, _err: err } );
-                  });
-                });
+                  }
+                })
               }
             })
           }

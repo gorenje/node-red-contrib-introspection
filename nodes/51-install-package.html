@@ -8,9 +8,15 @@
       name: {
         value:"",
       },
+
       hostUrl: {
-        value: ""
+        value:"hostUrl", 
+        required:true
       },
+      hostUrlType: {
+        value:"str"
+      },
+
       useAuthentication: {
         value:false
       },
@@ -30,6 +36,7 @@
         value: false
       }
     },
+    
     inputs:1,
     outputs:1,
 
@@ -40,6 +47,7 @@
     labelStyle: function() {
       return this.name?"node_label_italic":"";
     },
+
     oneditprepare: function() {
       $("#node-input-apiUsername").typedInput({
         types:["env", "msg", "flow","global", "cred"],
@@ -49,6 +57,11 @@
       $("#node-input-apiPassword").typedInput({
         types:["env", "msg", "flow","global", "env", "cred"],
         typeField: "#node-input-apiPasswordType"
+      });
+
+      $("#node-input-hostUrl").typedInput({
+        types:["str", "msg", "flow", "global", "env"],
+        typeField: "#node-input-hostUrlType"
       });
 
       if ( $('#node-input-useAuthentication').is(":checked") ) {
@@ -97,8 +110,9 @@
 -->
 
     <div class="form-row hostUrl-row">
-        <label for="node-input-hostUrl"><i class="fa fa-tag"></i> Host</label>
-        <input type="text" id="node-input-hostUrl" placeholder="Host URL">
+      <label for="node-input-hostUrl"><i class="fa fa-tag"></i> Host</label>
+      <input type="text" id="node-input-hostUrl" placeholder="hostUrl">
+      <input type="hidden" id="node-input-hostUrlType" value="str">
     </div>
 
     <div class="form-row">
@@ -134,4 +148,22 @@
 
 <script type="text/html" data-help-name="InstallPackage">
   <p>Install package on another Node-RED instance.</p>
+
+  <p>This takes two forms, it can either install a package by name and version (defaults to "latest") or it can 
+  accept a buffer object containing a .tgz package file.</p>
+
+  <p></p>For the first case:
+  <pre>
+    msg.payload = {
+      module: "@gregoriusrippenstein/node-red-contrib-introspection",
+      version: "0.10.0"
+    }
+  </pre>
+
+  <p>To install a .tgz file, read it into a Buffer object and set the payload to:</p>
+  <pre>
+    msg.payload = {
+      data: new Buffer("ddd")
+    }
+  </pre>
 </script>
