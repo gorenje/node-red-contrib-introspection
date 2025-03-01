@@ -69,6 +69,7 @@ module.exports = function (RED) {
         JSON.stringify(msg)
       } catch (e) {
         msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
+        node.error(e)
       }
 
       RED.comms.publish(
