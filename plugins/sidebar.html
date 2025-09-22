@@ -272,7 +272,17 @@
       $('#node-input-msgtracer-toggle').on("change", toggleMsgTracingInBackend)
 
       RED.actions.add( "introspection:show-link-call-links", highlightAllLinkCalls)
-      
+
+      // event is triggered by the unittesting node package, has no affect otherwise.
+      RED.events.on( 'unittesting:server-restarted', () => {
+         if ($('#node-input-msgtracer-toggle').is(":checked") ) {
+            $('#node-input-msgtracer-toggle').trigger('click')
+         }
+         if ($('#node-input-msgtracer-msgtodebug').is(":checked")) {
+            $('#node-input-msgtracer-msgtodebug').trigger('click')
+         }
+      })
+
       $('#node-input-linkcalls-find-btn').on('click', (e) => {
          if ( e ) { e.preventDefault() }
          highlightAllLinkCalls()
