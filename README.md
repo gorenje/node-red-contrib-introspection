@@ -110,6 +110,18 @@ Tracing and debug-message tracing are now separate operations and neither works 
 
 Tracing or debugging **all**  nodes is **no longer** the default action.
 
+*UPDATE FOUR*:
+
+**Clamp Mode**
+
+This idea is 100% from [@AllanOricil](https://discourse.nodered.org/t/should-debug-nodes-be-capable-of-passing-the-message-forwards/95044/97?u=gregorius) and I stole that idea from him - all kudos to him, all bugs to me!
+
+![img](https://cdn.openmindmap.org/content/1760049321253_clamp-trace-2.gif)
+
+Clamp mode allows highlighting individual wires and tracing the messages that go over that wire. Only **single** wires are allowed and unhighlighting the wire will **deactivate** the message trace.
+
+**BE WARNED**: this can and will flood your Node-RED frontend to non-responsiveness, there is **no** inbuilt back-off, message limits or anything else that might or might not prevent bad things from happening.
+
 ## Palette Nodes
 
 ### Sink & Seeker
