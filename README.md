@@ -23,9 +23,9 @@ There is no need nor requirement to deploy these nodes. Which implies that they 
 
 ### Screenshot
 
-![img](https://cdn.openmindmap.org/content/1699269615464_Screen_Shot_2023-11-06_at_12.20.09.png)
+Created with the sidebar plugin.
 
-Drag the node into a flow, double-click on the node and the tray opens -depending on the size of the flow, this might take a moment. Once the tray is opened, the SVG is shown in the editor window (I took the code from the template node hence the syntax dropdown). Below the editor window is the download button. Pressing that will download the SVG as it is in the editor window, so making changes in that window will be reflected in the downloaded content.
+![img](https://cdn.openmindmap.org/content/1699269615464_Screen_Shot_2023-11-06_at_12.20.09.png)
 
 The SVG code can also be copied and pasted into something like [drawsvg.org](https://drawsvg.org/drawsvg.html) hence select-all-copy-paste is provided by having the editor window.
 
