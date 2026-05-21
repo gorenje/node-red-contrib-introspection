@@ -12,7 +12,7 @@ module.exports = function(RED) {
     node.on("input", function(msg, send, done) {
       var os = require('os');
 
-      var baseUrl = "http://" + os.hostname() + ":" + RED.settings.get("uiPort");
+      var baseUrl = `${cfg.useHttps ? "https" : "http"}://` + os.hostname() + ":" + RED.settings.get("uiPort");
       if ( RED.settings.get("httpAdminRoot") != "/" ) {
         baseUrl += RED.settings.get("httpAdminRoot");
       }
@@ -22,6 +22,9 @@ module.exports = function(RED) {
           headers: {
             "Node-RED-API-Version": cfg.flowVersion,
             ...hdrs
+          },
+          https: {
+            rejectUnauthorized: false
           }
         }).then( res => {
           var bodySize = res.body.length;

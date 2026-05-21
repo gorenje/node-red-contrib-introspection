@@ -10,6 +10,9 @@
       flowVersion: {
         value: "v1"
       },
+      useHttps: {
+        value: false
+      },
       useAuthentication: {
         value:false
       },
@@ -83,8 +86,17 @@
     </div>
 
     <div class="form-row">
+      <label for="node-input-useHttps">
+            <i class="fa fa-clown"></i>
+            <span>Use HTTPS?</span>
+      </label>
+      <input type="checkbox" id="node-input-useHttps"
+             style="display:inline-block; width:15px; vertical-align:baseline;">
+    </div>
+
+    <div class="form-row">
       <label for="node-input-useAuthentication">
-        <i class="fa "></i>
+        <i class="fa fa-key"></i>
         <span>Use Authentication?</span>
       </label>
 
