@@ -58,6 +58,49 @@ module.exports = function (RED) {
     var node = this;
     var cfg = config;
 
+    function getToValue(msg, rule, done) {
+      var value = rule.to;
+      
+      if (rule.tot === 'json') {
+        value = JSON.parse(rule.to);
+      } else if (rule.tot === 'bin') {
+        value = Buffer.from(JSON.parse(rule.to))
+      } else if (rule.tot === 'str') {
+        value = rule.to
+      } else if (rule.tot === "num") {
+        value = Number(rule.to)
+      } else if (rule.tot === "bool") {
+        value = /^true$/i.test(rule.to);
+      }
+
+      if (rule.tot === "msg") {
+        value = RED.util.getMessageProperty(msg, rule.to);
+      } else if ((rule.tot === 'flow') || (rule.tot === 'global')) {
+        RED.util.evaluateNodeProperty(rule.to, rule.tot, node, msg, (err, value) => {
+          if (err) {
+            done(undefined, undefined);
+          } else {
+            done(undefined, value);
+          }
+        });
+        return
+      } else if (rule.tot === 'date') {
+        value = RED.util.evaluateNodeProperty(rule.to, rule.tot, node)
+      } else if (rule.tot === 'jsonata') {
+        let jsonExpr = RED.util.prepareJSONataExpression(rule.to, node);
+
+        RED.util.evaluateJSONataExpression(jsonExpr, msg, (err, value) => {
+          if (err) {
+            done(RED._("change.errors.invalid-expr", { error: err.message }))
+          } else {
+            done(undefined, value);
+          }
+        });
+        return;
+      }
+      done(undefined, value);
+    }
+
     node.on('close', function () {
       node.status({});
     });
@@ -72,17 +115,42 @@ module.exports = function (RED) {
         node.error(e)
       }
 
-      RED.comms.publish(
-        "introspect:client-code-perform",
-        RED.util.encodeObject({
-          msg:     "execfunc",
-          payload: msg.payload,
-          topic:   msg.topic,
-          func:    msg.clientcode || cfg.clientcode,
-          nodeid:  node.id,
-          _msg:    msg
-        })
-      );
+      let defaultValues = {}
+      let operationDefValue = {}
+      
+      let stupidLoop = (ruleIdx) => {
+        if ( ruleIdx >= (cfg.rules || []).length) {
+          RED.comms.publish(
+            "introspect:client-code-perform",
+            RED.util.encodeObject({
+              msg: "execfunc",
+              payload: msg.payload,
+              topic: msg.topic,
+              func: msg.clientcode || cfg.clientcode,
+              nodeid: node.id,
+              _msg: msg,
+              _cfg: defaultValues,
+              _ops: operationDefValue
+            })
+          );
+          done()
+        } else {
+          try {
+            let rule = cfg.rules[ruleIdx]
+            let name = rule.p
+            getToValue(msg, rule, (err, value) => {
+              defaultValues[name] = value
+              operationDefValue[name] = rule.t
+              stupidLoop(ruleIdx+1)
+            })
+          } catch (e) {
+            console.log(e)
+            stupidLoop(ruleIdx + 1)
+          }
+        }
+      }
+
+      stupidLoop(0)
     });
   }
   

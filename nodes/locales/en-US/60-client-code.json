@@ -1,0 +1,61 @@
+{
+  "clientcode": {
+    "label": {
+      "statusset": "Status Set",
+      "rules": "Rules",
+      "rule": "rule",
+
+      "set": "set __property__",
+      "change": "change __property__",
+      "delete": "delete __property__",
+      "move": "move __property__",
+
+      "changeCount": "assert: __count__ values",
+      "regex": "Use regular expressions",
+      "deepCopy": "Deep copy value",
+      
+      "notmth": "not match __property__",
+      "mth": "match __property__",
+      "eql": "equal __property__",
+      "noteql": "not equal __property__",
+      "notset": "not set __property__",
+      "debug": "debug __property__",
+      "unsupported": "supported rule __property__",
+
+      "ignore_failure_if_succeed": "Ignore failure if succeed once"
+    },
+    
+    "action": {
+      "default": "Default",
+      "overwrite": "Overwrite",
+      "set": "Defined",
+      "change": "Change",
+      "delete": "Delete",
+      "move": "Move",
+      "toValue": "to the value",
+      "to": "to",
+      "search": "Search for",
+      "replace": "Replace with",
+
+      "notmth": "Not Match",
+      "mth": "Match",
+      "eql": "Equal",
+      "noteql": "Not Equal",
+      "notset": "Not Defined",
+      "debug": "Debug"
+    },
+
+    "errors": {
+      "invalid-from": "Invalid 'from' property: __error__",
+      "invalid-json": "Invalid 'to' JSON property",
+      "invalid-expr": "Invalid JSONata expression: __error__",
+      "no-override": "Cannot set property of non-object type: __property__",
+      "invalid-prop": "Invalid property expression: __property__",
+      "invalid-json-data": "Invalid JSON data: __error__"
+    },
+    "status": {
+      "waiting": "Waiting for Godot",
+      "timeout": "No more time to waiting"
+    }
+  }
+}
