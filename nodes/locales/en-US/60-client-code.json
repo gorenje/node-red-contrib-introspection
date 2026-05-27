@@ -28,6 +28,7 @@
     "action": {
       "default": "Default",
       "overwrite": "Overwrite",
+      "fixed": "Fixed",
       "set": "Defined",
       "change": "Change",
       "delete": "Delete",
