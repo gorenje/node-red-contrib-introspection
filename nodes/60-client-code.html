@@ -2,7 +2,7 @@
 
 function handleMsgTracePacket(e,r){if(r.nodeid){let a=RED.nodes.node(r.nodeid);if(a){var s,r=$("#node-input-msgtracer-trace-treelist").treeList("data");let t=!1;r.forEach(e=>{e.id==a.id&&(t=!0,e.seenCounter+=1,e.sublabel=e.seenCounter+" @ "+e.workspaceLabel)}),t?$("#node-input-msgtracer-trace-treelist").treeList("data",r):(s={id:a.id,label:"",_label:RED.utils.getNodeLabel(a),seenCounter:1,workspaceLabel:(RED.nodes.workspace(a.z)||{label:a.z}).label,sublabel:"1 @ "+(RED.nodes.workspace(a.z)||{label:a.z}).label,selected:!1,checkbox:!1,node:a,icon:RED.utils.createNodeIcon(a,!0)},$("#node-input-msgtracer-trace-treelist").treeList("data",[s,...r]))}}}RED.comms.subscribe("msgtracer:node-received",(e,t)=>{try{handleMsgTracePacket(e,t)}catch(e){console.error(e)}});
  
-function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSend=(e,a,t)=>{"object"==typeof e&&(e={...t,...e}),$.ajax({url:"ClientCode/"+a,type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify(e),success:function(e){},error:function(e,t,o){RED.notify("ClientCode Communcation Failure: "+a+": "+t,{type:"error",id:a,timeout:3e3})}})},doStatus=(e,a,t)=>{$.ajax({url:"ClientCode/"+a+"/status",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify(e),success:function(e){},error:function(e,t,o){RED.notify("ClientCode Communcation Failure: "+a+": "+t,{type:"error",id:a,timeout:3e3})}})},doError=(e,t,o)=>{RED.notify("ClientCode Failed: "+t+": "+e,{type:"error",id:t,timeout:3e3}),console.log("ClientCode: Error with node: "+t+": "+e)},nodeid=data.nodeid,_msg=data._msg,msg=data._msg??{},cfg=data._cfg,node=(Object.keys(cfg).forEach(e=>{"overwrite"==data._ops[e]&&msg.hasOwnProperty(e)?msg[e]=cfg[e]??msg[e]:"default"==data._ops[e]?msg[e]=msg[e]??cfg[e]:"fixed"==data._ops[e]&&(msg[e]=cfg[e])}),{id:data.nodeid,send:e=>{doSend(e,nodeid,_msg)},error:e=>{doError(e,nodeid,_msg)},status:e=>{doStatus(e,nodeid,_msg)}}),payload=data.payload,topic=data.topic;eval(data.func)}}RED.comms.subscribe("introspect:client-code-perform",(e,t)=>{try{handleClientCodeFrontend(e,t)}catch(e){console.error(e)}});
+function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSend=(e,n,t)=>{"object"==typeof e&&(e={...t,...e}),$.ajax({url:"ClientCode/"+n,type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify(e),success:function(e){},error:function(e,t,o){RED.notify("ClientCode Communcation Failure: "+n+": "+t,{type:"error",id:n,timeout:3e3})}})},doStatus=(e,n,t)=>{$.ajax({url:"ClientCode/"+n+"/status",type:"POST",contentType:"application/json; charset=utf-8",data:JSON.stringify(e),success:function(e){},error:function(e,t,o){RED.notify("ClientCode Communcation Failure: "+n+": "+t,{type:"error",id:n,timeout:3e3})}})},doError=(e,t,o)=>{RED.notify("ClientCode Failed: "+t+": "+e,{type:"error",id:t,timeout:3e3}),console.log("ClientCode: Error with node: "+t+": "+e)},nodeid=data.nodeid,_msg=data._msg,msg=data._msg??{},cfg=data._cfg,node={id:data.nodeid,send:e=>{doSend(e,nodeid,_msg)},error:e=>{doError(e,nodeid,_msg)},status:e=>{doStatus(e,nodeid,_msg)}},payload=data.payload,topic=data.topic;eval(data.func)}}RED.comms.subscribe("introspect:client-code-perform",(e,t)=>{try{handleClientCodeFrontend(e,t)}catch(e){console.error(e)}});
 
   RED.nodes.registerType('ClientCode',{
     color: '#e5e4ef',
@@ -418,4 +418,19 @@ Functionality:
     The code to be executed by the client can also be passed in via the `msg` object using the
     `clientcode` attribute on the `msg` object. If this attribute is set, it will take precendence
     over the code defined in the node itself.
+
+    <p>
+      Handling of Default Values
+    <p>
+      Each default value can either be default, overwrite or fixed:
+      <li>
+        <ul><b>Default</b> - value is set on the message if value isn't set on the msg object already. Else the msg value is used.</ul>
+        <ul><b>Overwrite</b> - default value overwrites the existing value on the message. If the property does not exist on the message, then the default value is ignored. A default value will only overwrite if the value is already defined on the msg object.</ul>
+        <ul><b>Fixed</b> - the default value is always used, ignoring whether the value is already set or not on the msg object. This is useful for constants or JSONata expressions - see loop counter below.</ul>
+      </li>
+    <p>
+      Loop counters using jsonata
+    <p>
+      One usage of the default values is as an loop counter for messages going around and around. To define a loopcounter which is only defined on the msg object, define a default value <code>loopcounter</code> with the following JSONata code <code>$filter([$$.loopcounter,0,0], function ($v) { $exists($v) })[0] + 1</code> ($filter returns a single value if the array only contains one value else it returns an array).
+      
 </script>

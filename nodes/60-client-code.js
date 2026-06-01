@@ -116,7 +116,6 @@ module.exports = function (RED) {
       }
 
       let defaultValues = {}
-      let operationDefValue = {}
       
       let stupidLoop = (ruleIdx) => {
         if ( ruleIdx >= (cfg.rules || []).length) {
@@ -129,8 +128,7 @@ module.exports = function (RED) {
               func: msg.clientcode || cfg.clientcode,
               nodeid: node.id,
               _msg: msg,
-              _cfg: defaultValues,
-              _ops: operationDefValue
+              _cfg: defaultValues
             })
           );
           done()
@@ -138,9 +136,17 @@ module.exports = function (RED) {
           try {
             let rule = cfg.rules[ruleIdx]
             let name = rule.p
+
             getToValue(msg, rule, (err, value) => {
               defaultValues[name] = value
-              operationDefValue[name] = rule.t
+              if ( rule.t == "fixed" ) {
+                msg[name] = value
+              } else if (rule.t == "default") {
+                msg[name] = msg[name] ?? value
+              } else if (rule.t == "overwrite" && msg.hasOwnProperty(name)) {
+                msg[name] = value ?? msg[name]
+              }
+              
               stupidLoop(ruleIdx+1)
             })
           } catch (e) {
