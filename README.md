@@ -122,6 +122,20 @@ Clamp mode allows highlighting individual wires and tracing the messages that go
 
 **BE WARNED**: this can and will flood your Node-RED frontend to non-responsiveness, there is **no** inbuilt back-off, message limits or anything else that might or might not prevent bad things from happening.
 
+## Message Tracing in Node-RED 5.x
+
+Node-RED version 5 offers a split-pane view, which is particularly advantageous for message tracing. Now it is possible to open the message tracer pane to see the individual nodes receiving messages and at the same time open the debug pane to see the debug notices from those nodes. 
+
+![img](https://cdn.openmindmap.org/content/1781361322080_Screen_Recording_2026-06-13_at_16.27.07-2.gif)
+
+It is possible to trace nodes and have their messages, as they receive them, pushed to the debug panel. This works really nice in Node-RED 5.x because there the two panels can be opened at the same time. That is not possible in Node-RED 4 or 3, so you end up constantly switching between the panels - the debug and introspection panels.
+
+A BIG caveat here is that it's very easy to flood the Node-RED editor with excessive messages. If there are flows that are generating a lot of messages, be aware of using debug or trace *ALL* nodes - that can lead to flooding. If in doubt, start with one or two nodes or a small selection of nodes, and trace those first. Then gradually increase the number of nodes being traced.
+
+This is something that I can not say strenuously enough!!! It is all too easy, if you do select all nodes, to be surprised by flows that you have working in the background and that generate *lots* of messages. I've been there many a time and have had to reload my editor after switching off the message tracing so that it didn't flood my editor. So it's always good to deactivate the message tracing as quickly as possible and not to leave that on.
+
+That's also another thing that I've noticed: sometimes I would leavethe message tracing on for too long, and only I realize that once the editor got flooded. That is also simpler in Node-RED 5.x because you can keep that panel open while switching between the debug nodes. This is what always happened to me because I switched between the debug and the message tracer panel and then forgot that I left the tracing on, as I had headed off to the debug panel. So in Node-RED 5, that's a little bit nicer because you can keep that panel with the message tracing open and then switch off tracing as needed.
+
 ## Palette Nodes
 
 ### Sink & Seeker
