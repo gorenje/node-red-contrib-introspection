@@ -65,6 +65,11 @@
             label: 'Obfuscation'
       });
 
+      // used to feature deactivate stuff
+      let isNodeRedFive = () => {
+         return RED.settings.version.split(".")[0] == "5"
+      }
+
       let callObfuscatieCurrentFlow = (copy_or_import) => {
          obfuscatieCurrentFlow({
             name: $('#node-input-obfuscate-name').is(":checked"),
@@ -285,6 +290,14 @@
             msgTracerTracingOff()
             msgTracerDebugOff()
       })
+
+      // NR 5.x has a debug pausing feature that others don't. If so, then the convenience 
+      // button in the tracer is activated else hidden.
+      if (isNodeRedFive()) {
+         $('#node-input-msgtrace-pause-debug-btn').on('click', RED.debug.toggleDebugMessages)
+      } else {
+         $('#node-input-msgtrace-pause-debug-btn').hide()
+      }
 
       RED.actions.add( "introspection:show-link-call-links", highlightAllLinkCalls)
 
@@ -537,6 +550,8 @@
    
             <button id="node-input-msgtrace-clear-debug-btn" style="margin-left: 10px;"
                                       class="red-ui-button">Clear Debug</button>
+            <button id="node-input-msgtrace-pause-debug-btn" style="margin-left: 10px;"
+                                      class="red-ui-button">Pause Debug</button>
          </div>
       </div>
    </div>
