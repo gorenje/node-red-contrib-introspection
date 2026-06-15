@@ -19,9 +19,7 @@
    function transformInjectToChangeNode(t){t&&t.preventDefault();t=[...(RED.view.selection().nodes||[]).filter(e=>"inject"==e.type),...(RED.view.selection().nodes||[]).filter(e=>"group"==e.type).map(e=>e.nodes.filter(e=>"inject"==e.type))].flat();if(0==(t=RED.nodes.createExportableNodeSet(t)).length)RED.notify("No inject nodes found in node selection",{type:"warning"});else{let e=t.map(o=>{var e={id:RED.nodes.id(),type:"change",name:o.name,action:"",property:"",from:"",to:"",reg:!1,x:0,y:0,wires:[[]]};return e.rules=o.props.map(e=>{var t={t:"set",p:e.p,pt:"msg",to:e.v,tot:e.vt};return"payload"==e.p?(t.to=o.payload,t.tot=o.payloadType):"topic"==e.p&&(t.to=o.topic),t}),e});setTimeout(()=>{RED.clipboard.import(),setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(e)).trigger("paste")},300)},400)}}
 
    // Add your plugin as a new tabsheet in the right sidebar AFTER the flow editor is completely started
-   var initialiseConfigNodeOnce = () => {
-      RED.events.off('runtime-state', initialiseConfigNodeOnce);
-
+   var setupSidebarForIntrospection = () => {
       // The html content of the sidebar has been specified below as a data-template, from where it can be loaded:
       var content = $($('script[type="text/x-red"][data-template-name="Screenshot"]').i18n().html());
     
@@ -291,14 +289,6 @@
             msgTracerDebugOff()
       })
 
-      // NR 5.x has a debug pausing feature that others don't. If so, then the convenience 
-      // button in the tracer is activated else hidden.
-      if (isNodeRedFive()) {
-         $('#node-input-msgtrace-pause-debug-btn').on('click', RED.debug.toggleDebugMessages)
-      } else {
-         $('#node-input-msgtrace-pause-debug-btn').hide()
-      }
-
       RED.actions.add( "introspection:show-link-call-links", highlightAllLinkCalls)
 
       // event is triggered by the unittesting node package, has no affect otherwise.
@@ -336,8 +326,22 @@
             $('#node-input-orphan-target-container-div').parent().css('height', `calc(${topSze}px - 15vh)`)
         }
       })
+
+      // RED.debug isn't yet available
+      let fillInSiderBarForm = () => {
+         RED.events.off('flows:loaded', fillInSiderBarForm);
+         // NR 5.x has a debug pausing feature that others don't. If so, then the convenience 
+         // button in the tracer is activated else hidden.
+         if (isNodeRedFive()) {
+            $('#node-input-msgtrace-pause-debug-btn').on('click', RED.debug.toggleDebugMessages)
+         } else {
+            $('#node-input-msgtrace-pause-debug-btn').hide()
+         }
+      }
+      RED.events.on('flows:loaded', fillInSiderBarForm);
    };
-   RED.events.on('runtime-state', initialiseConfigNodeOnce);
+
+   RED.plugins.registerPlugin("intro-spection-sidebar-plugin", { onadd: setupSidebarForIntrospection });
 })();
 </script>
 
