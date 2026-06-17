@@ -47,6 +47,7 @@ module.exports = function (RED) {
 
       msg = RED.util.encodeObject(msg, { maxLength: debugLength });
       RED.comms.publish("debug", msg);
+      RED.comms.publish("msgtracer:debug-sent", {})
     } catch (ex) {
       console.error(ex)
     }

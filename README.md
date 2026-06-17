@@ -136,6 +136,16 @@ This is something that I can not say strenuously enough!!! It is all too easy, i
 
 That's also another thing that I've noticed: sometimes I would leavethe message tracing on for too long, and only I realize that once the editor got flooded. That is also simpler in Node-RED 5.x because you can keep that panel open while switching between the debug nodes. This is what always happened to me because I switched between the debug and the message tracer panel and then forgot that I left the tracing on, as I had headed off to the debug panel. So in Node-RED 5, that's a little bit nicer because you can keep that panel with the message tracing open and then switch off tracing as needed.
 
+### Message Tracing Fail Safe
+
+![img](https://cdn.openmindmap.org/content/1781685274202_Screenshot_2026-06-17_at_10.33.27.png)
+
+Because of the risk to freezing the editor, a fail safe in message generation has been added.
+
+If the message tracing detects more than 100 messages per second, then the message tracing is deactivated automatically. One hundred messages per second is a default value and can be modifed in the browser console using `window.msgTracer_MAX_MSG_PER_SECOND = 100`.
+
+Message counts include the debug message generated and the message tracing shown in the sidebar. 
+
 ## Palette Nodes
 
 ### Sink & Seeker
