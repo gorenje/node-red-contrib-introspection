@@ -17,6 +17,17 @@ Sometimes I found myself having extremely complex flows, flows that went over mu
 For an introduction to these nodes, check out the [introduction screencasts](https://blog.openmindmap.org/blog/introspection).
 
 
+## Sidebar Update for Node-RED Version 5
+
+As Node-RED v5 introduces better sidebar management, there are now four separate sidebars definded by this package: 
+
+- **Introspection Capture** for generating SVG images from flows
+- **Introspection MsgTrace** for message tracing
+- **Introspection Obfuscation** for export flows as obfuscated blobs
+- **Introspection Lint** for analysing flows
+
+Node-RED version 4 still just as one sidebar with three tabs.
+
 ## Sidebar Nodes
 
 There is no need nor requirement to deploy these nodes. Which implies that they also work in read-only mode of Node-RED. Since these nodes only provide information and make no changes, this should not be an issue.

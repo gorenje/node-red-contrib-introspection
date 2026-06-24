@@ -18,8 +18,45 @@
 
    function transformInjectToChangeNode(t){t&&t.preventDefault();t=[...(RED.view.selection().nodes||[]).filter(e=>"inject"==e.type),...(RED.view.selection().nodes||[]).filter(e=>"group"==e.type).map(e=>e.nodes.filter(e=>"inject"==e.type))].flat();if(0==(t=RED.nodes.createExportableNodeSet(t)).length)RED.notify("No inject nodes found in node selection",{type:"warning"});else{let e=t.map(o=>{var e={id:RED.nodes.id(),type:"change",name:o.name,action:"",property:"",from:"",to:"",reg:!1,x:0,y:0,wires:[[]]};return e.rules=o.props.map(e=>{var t={t:"set",p:e.p,pt:"msg",to:e.v,tot:e.vt};return"payload"==e.p?(t.to=o.payload,t.tot=o.payloadType):"topic"==e.p&&(t.to=o.topic),t}),e});setTimeout(()=>{RED.clipboard.import(),setTimeout(()=>{$("#red-ui-clipboard-dialog-import-text").val(JSON.stringify(e)).trigger("paste")},300)},400)}}
 
-   // Add your plugin as a new tabsheet in the right sidebar AFTER the flow editor is completely started
-   var setupSidebarForIntrospection = () => {
+   // used to feature deactivate stuff
+   let isNodeRedFive = () => {
+      return RED.settings.version.split(".")[0] == "5"
+   }
+
+   let sidebarInitNRv5 = () => {
+      [
+         ["MsgTrace", "fa-eyedropper"],
+         ["Obfuscation", "fa-user-secret"],
+         ["Lint", "fa-magic"],
+         ["Capture", "fa-camera"],
+      ].forEach((d) => {
+         RED.sidebar.addTab({
+               id: `Introspection${d[0]}`,
+               label: `intro-${d[0]}`, // short name for the tab
+               name: `Introspection ${d[0]}`, // long name for the menu
+               content: $($(`script[type="text/x-red"][data-template-name="ScreenshotSidebar${d[0]}"]`).i18n().html()),
+               closeable: true,
+               enableOnEdit: true,
+               iconClass: `fa ${d[1]}`,
+               onchange: () => { 
+                  setTimeout(() => { RED.events.emit(`introspection:onchange-${d[0].toLowerCase() }`) }, 150) 
+               }
+         });
+      })
+
+      RED.events.on("sidebar:resize", (d) => { 
+        let containerHeight = $('#node-input-msgtracer-trace-treelist').parents('.red-ui-sidebar-content').height()
+        $('#node-input-msgtracer-trace-treelist').parent().css("height", `calc(${containerHeight}px - 20vh)`)
+
+        containerHeight = $('#node-input-orphan-target-container-div').parents('.red-ui-sidebar-content').height()
+        $('#node-input-orphan-target-container-div').parent().css('height', `calc(${containerHeight}px - 13vh)`)
+
+        containerHeight = $('#node-input-screenshot-svgcontainer').parents('.red-ui-sidebar-content').height()
+        $('#node-input-screenshot-svgcontainer').parent().css('height', `calc(${containerHeight}px - 20vh)`)
+      })
+   }
+
+   let sidebarInitNRv4 = () => {
       // The html content of the sidebar has been specified below as a data-template, from where it can be loaded:
       var content = $($('script[type="text/x-red"][data-template-name="Screenshot"]').i18n().html());
     
@@ -63,9 +100,22 @@
             label: 'Obfuscation'
       });
 
-      // used to feature deactivate stuff
-      let isNodeRedFive = () => {
-         return RED.settings.version.split(".")[0] == "5"
+      RED.panels.create({
+        id: 'func-introspection-tab-lint',
+        resize: (topSze,botSze) => {
+            $('#node-input-msgtracer-trace-treelist').parent().css("height", `calc(${botSze}px - 13vh)`)
+            $('#node-input-orphan-target-container-div').parent().css('height', `calc(${topSze}px - 15vh)`)
+        }
+      })      
+   }
+
+   // Add your plugin as a new tabsheet in the right sidebar AFTER the flow editor is completely started
+   var setupSidebarForIntrospection = () => {
+
+      if (isNodeRedFive()) {
+         sidebarInitNRv5()
+      } else {
+         sidebarInitNRv4()
       }
 
       let callObfuscatieCurrentFlow = (copy_or_import) => {
@@ -204,7 +254,6 @@
                };
             },
          });
-         
       })
 
       // handle the download button under the editor window.
@@ -318,15 +367,7 @@
          if ( e ) { e.preventDefault() }
          setupTreeListForNodeStats()
       })
-
-      RED.panels.create({
-        id: 'func-introspection-tab-lint',
-        resize: (topSze,botSze) => {
-            $('#node-input-msgtracer-trace-treelist').parent().css("height", `calc(${botSze}px - 13vh)`)
-            $('#node-input-orphan-target-container-div').parent().css('height', `calc(${topSze}px - 15vh)`)
-        }
-      })
-
+      
       // RED.debug isn't yet available
       let fillInSiderBarForm = () => {
          RED.events.off('flows:loaded', fillInSiderBarForm);
@@ -347,12 +388,13 @@
 
 <style>
    .col-100 .red-ui-typedInput-container {
-   width: 70% !important;
+     width: 70% !important;
    }
    
    .col-100.no-label .red-ui-typedInput-container {
-   width: 100% !important;
+     width: 100% !important;
    }
+
    .w-30 {
       width: 40% !important;
       margin-left: 10px;
@@ -736,5 +778,342 @@
          No warranty of success is neither provided, nor implied nor expressed.
       </div>
    </div>
+  </div>
+</script>
+
+<script type="text/x-red" data-template-name="ScreenshotSidebarObfuscation">
+   <div style="position: relative; height: 100%; overflow-y: auto;">
+    <!-- Obfuscation Tab in Sidebar -->
+
+<div id="func-introspection-tab-obfuscation">
+
+   <div class="form-row" style="margin-top: 10px">
+      <label for="node-input-obfuscate-name" class="w-30">
+               <i class="fa fa-tag"></i>
+               <span>Obfuscate Name?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-name"
+                     style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-position" class="w-30">
+               <i class="fa fa-map-pin"></i>
+               <span>Obfuscate Position?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-position"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-shrink-size" class="w-30">
+                        <i class="fa fa-angle-down"></i>
+                        <span>Shrink Nodes?</span>
+                     </label>
+      <input type="checkbox" id="node-input-obfuscate-shrink-size"
+                            style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-javascript" class="w-30">
+               <i class="fa fa-code"></i>
+               <span>Obfuscate Javascript?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-javascript"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row col-100">
+      <label for="node-input-obfuscate-remove-icons" class="w-30">
+               <i class="fa fa-adjust"></i>
+               <span>Remove Icon?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-icons"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-info" class="w-30">
+               <i class="fa fa-info"></i>
+               <span>Remove Info?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-info"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-remove-groups" class="w-30">
+               <i class="fa fa-object-group"></i>
+               <span>Remove Groups?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-groups"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-remove-debugs" class="w-30">
+               <i class="fa fa-bug"></i>
+               <span>Remove comment & debugs?</span>
+            </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-debugs"
+                                       style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-remove-junctions" class="w-30">
+                        <i class="fa fa-sitemap"></i>
+                        <span>Coalesce Junctions?</span>
+                     </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-junctions"
+                                       style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-remove-linkcall-nodes" class="w-30">
+                        <i class="fa fa-unlink"></i>
+                        <span>Coalesce Link Call Nodes?</span>
+                     </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-linkcall-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-remove-linknodes" class="w-30">
+               <i class="fa fa-unlink"></i>
+               <span>Coalesce Link Out Nodes?</span>
+         </label>
+      <input type="checkbox" id="node-input-obfuscate-remove-linknodes"
+                              style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div id="node-input-obfuscate-coalesce-link-out-options" style="display: none;">
+      <div class="form-row">
+         <label for="node-input-obfuscate-copy-linkin-nodes" class="ml-30" style="width: 150px;">
+                  <span>Copy Link-In Nodes?</span>
+            </label>
+         <input type="checkbox" id="node-input-obfuscate-copy-linkin-nodes" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+      <div class="form-row">
+         <label for="node-input-obfuscate-ignore-off-flow-links" class="ml-30" style="width: 150px;">
+                  <span>Ignore off-flow links?</span>
+            </label>
+         <input type="checkbox" id="node-input-obfuscate-ignore-off-flow-links" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+   </div>
+
+   <div class="form-row">
+      <label class='w-30'>
+                        <i class="fa fa-refresh"></i>
+                        <span>Replace Nodes:</span>
+                     </label>
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-replace-switch" class="ml-30">
+                        <span>Switch</span>
+                     </label>
+      <input type="checkbox" id="node-input-obfuscate-replace-switch"
+                            style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-replace-change" class="ml-30">
+                       <span>Change</span>
+                     </label>
+      <input type="checkbox" id="node-input-obfuscate-replace-change"
+                                        style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div class="form-row">
+      <label for="node-input-obfuscate-add-license-text" class="w-30">
+            <i class="fa fa-gavel"></i>
+            <span>Replace info with license?</span>
+         </label>
+      <input type="checkbox" id="node-input-obfuscate-add-license-text" style="display:inline-block; width:15px; vertical-align:baseline;">
+   </div>
+
+   <div id="node-input-obfuscate-add-license-text-row" style="display: none;">
+      <div class="form-row ml-30">
+         <label for="node-input-obfuscate-append-license-text" style="width: 150px">
+               <span>Append to info?</span>
+            </label>
+         <input type="checkbox" id="node-input-obfuscate-append-license-text" style="display:inline-block; width:15px; vertical-align:baseline;">
+      </div>
+      <div class="form-row ml-30">
+         <textarea id="node-input-obfuscate-license-text" placeholder="License Text"></textarea>
+      </div>
+   </div>
+
+   <div class="form-row">
+      <div class="col-100">
+         <div class="form-row node-input-target-row" style="margin-left: 10px; margin-top: 30px">
+            <button id="node-input-obfuscation-generate-btn"
+                                         class="red-ui-button"><i class="fa fa-download"></i> Obfuscate and Import</button>
+            <button id="node-input-obfuscation-generate-and-copy-btn"
+                                         class="red-ui-button"><i class="fa fa-copy"></i> Obfuscate and Copy</button>
+         </div>
+      </div>
+   </div>
+
+   <div class="form-row" style="margin-left: 10px">
+      <b>Warning</b>: No guarantee is made that the obfuscated flow works as the original. This functionality
+      has not been thoroughly tested. Ensure correctness by completely testing the resultant obfuscated flow.
+      No warranty of success is neither provided, nor implied nor expressed.
+   </div>
+</div>
+  </div>
+</script>
+
+<script type="text/x-red" data-template-name="ScreenshotSidebarMsgTrace">
+   <div style="position: relative; height: 100%; overflow-y: auto;">
+    <div id="func-introspection-tab-msgtrace">
+   <!-- message tracing stuff -->
+   <div class="form-row" style="margin-left: 10px; margin-top: 10px">
+      <label for="node-input-msgtracer-clamp-mode"  class="w-25">
+               <i class="fa fa-bolt"></i>
+               <span>Clamp Mode?</span>
+            </label>
+      <input type="checkbox" id="node-input-msgtracer-clamp-mode"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <label for="node-input-msgtracer-clamp-mode-with-debug"  class="w-25">
+               <i class="fa fa-bug"></i>
+               <span>With Debug?</span>
+            </label>
+      <input type="checkbox" id="node-input-msgtracer-clamp-mode-with-debug"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <label id="node-input-msgtracer-clamp-mode-status"  style="display: none;" class="w-25">
+               <i class="fa fa-check"></i> <span>On</span>
+            </label>
+   </div>
+
+   <div class="form-row" style="margin-left: 10px; margin-top: 40px">
+      <label for="node-input-msgtracer-toggle"  class="w-25">
+               <i class="fa fa-stethoscope"></i>
+               <span>Trace selected nodes?</span>
+            </label>
+      <input type="checkbox" id="node-input-msgtracer-toggle"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <label for="node-input-msgtracer-toggle-all"  class="w-25">
+               <i class="fa fa-warning"></i>
+               <span>All nodes?</span>
+            </label>
+      <input type="checkbox" id="node-input-msgtracer-toggle-all"
+                   style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <button id="node-input-msgtrace-clear-trace-btn" style="margin-left: 10px;"
+                          class="red-ui-button">Clear Trace</button>
+   </div>
+
+   <div class="form-row"
+      style="margin-left: 10px; position: relative; min-height: 5vh; height: 20vh; margin-right: 15px;">
+      <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+         <input type="text" id="node-input-msgtracer-trace-treelist-filter" style="display: none;">
+      </div>
+      <div id="node-input-msgtracer-trace-treelist"></div>
+   </div>
+
+   <div class="form-row" style="margin-left: 10px; margin-top: 40px;">
+      <label for="node-input-msgtracer-msgtodebug" class="w-25">
+                        <i class="fa fa-bug"></i>
+                        <span>Msgs from selected nodes to Debug?</span>
+                  </label>
+      <input type="checkbox" id="node-input-msgtracer-msgtodebug"
+                         style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <label for="node-input-msgtracer-msgtodebug-all" class="w-25">
+                        <i class="fa fa-warning"></i>
+                        <span>All nodes?</span>
+                  </label>
+      <input type="checkbox" id="node-input-msgtracer-msgtodebug-all"
+                         style="display:inline-block; width:15px; vertical-align:baseline;">
+
+      <button id="node-input-msgtrace-clear-debug-btn" style="margin-left: 10px;"
+                                      class="red-ui-button">Clear Debug</button>
+      <button id="node-input-msgtrace-pause-debug-btn" style="margin-left: 10px;"
+                                      class="red-ui-button">Pause Debug</button>
+   </div>
+</div>
+  </div>
+</script>
+
+<script type="text/x-red" data-template-name="ScreenshotSidebarLint">
+   <div style="position: relative; height: 100%; overflow-y: auto;">
+    <!-- Lint Tab in Sidebar -->
+
+<div id="func-introspection-tab-lint">
+   <div class="form-row" style="margin-left: 10px; margin-top: 10px">
+      <button id="node-input-orphan-find-btn"
+                        class="red-ui-button"><i class="fa fa-life-ring"></i> Unconnected</button>
+      <button id="node-input-documentation-find-btn"
+                        class="red-ui-button"><i class="fa fa-cc"></i> Undocumented</button>
+      <button id="node-input-linkin-nodes-find-btn"
+                        class="red-ui-button"><i class="fa fa-link"></i> Link Ins</button>
+      <button id="node-input-linkcalls-find-btn"
+                        class="red-ui-button"><i class="fa fa-link"></i> Link Calls</button>
+      <button id="node-input-orphan-clear-workspace-btn"
+                        class="red-ui-button">Clear dots</button>
+      <button id="node-input-transform-inject-to-change-btn"
+                        class="red-ui-button"><i class='icon-button' style="background-image: url('icons/@gregoriusrippenstein/node-red-contrib-introspection/swap-inject-to-change.svg');"></i><span class='icon-button-text'>Inj-&gt;Chg</span></button>
+      <button id="node-input-statistics-btn"
+                       class="red-ui-button"><i class="fa fa-pie-chart"></i> Stats</button>
+      <button id="node-input-highlight-debug-nodes-btn"
+                       class="red-ui-button"><i class="fa fa-bug"></i> Highlight Debug Msg</button>
+   </div>
+
+   <div class="form-row"
+      style="margin-left: 10px; position: relative; min-height: 5vh; height: 20vh; margin-right: 15px;">
+      <div style="margin-bottom: 5px; width: 35%; padding-left: 60%;">
+         <input type="text" id="node-input-orphan-target-filter" style="display: none;">
+      </div>
+      <div id="node-input-orphan-target-container-div"></div>
+   </div>
+</div>
+  </div>
+</script>
+
+<script type="text/x-red" data-template-name="ScreenshotSidebarCapture">
+   <div style="position: relative; height: 100%; overflow-y: auto;">
+    <!-- Screenshot Tab in Sidebar -->
+
+<div id="func-introspection-tab-screenshot">
+   <div class="form-row">
+      <div class="col-100">
+
+         <div class="form-row" style="margin-left: 10px; margin-top: 10px;">
+            <button type="button" id="node-screenshot-capture-btn"
+                       class="red-ui-button red-ui-button-large"><i class="fa fa-camera"></i> Capture</button>
+         </div>
+
+         <div class="form-row" style="margin-left: 10px;">
+            <label for="node-input-screenshot-remove-classes-and-ids" style="width: 200px">
+                  <span>Remove Classes and Ids?</span>
+               </label>
+            <input type="checkbox" checked="checked" id="node-input-screenshot-remove-classes-and-ids"
+                      style="display:inline-block; width:15px; vertical-align:baseline;">
+         </div>
+
+         <div class="form-row"
+            style="min-height: 300px; height: 65vh; overflow: hidden; margin-left: 10px; margin-right: 15px; border: 1px rgb(196, 196, 196) solid; border-radius: 5px;">
+            <div id="node-input-screenshot-svgcontainer"></div>
+         </div>
+
+         <div class="form-row" style="margin-left: 10px; margin-top: 30px;">
+            <button type="button" id="node-screenshot-download-svg"
+                          class="red-ui-button red-ui-button-large"><i class="fa fa-download"></i> Download</button>
+            <button type="button" id="node-screenshot-copy-to-clipboard-svg"
+                           class="red-ui-button red-ui-button-large"><i class="fa fa-clipboard"></i> Copy to Clipboard</button>
+         </div>
+
+         <div class="form-row" style="margin-left: 10px; margin-top: 30px;">
+            <input type="text" id="node-input-svgpost-endpoint" placeholder="/screenshot" style="width: 40% !important;">
+            <button type="button" id="node-screenshot-post-svg-to-endpoint"
+                       class="red-ui-button red-ui-button-large"><i class="fa fa-send-o"></i> Post to Endpoint</button>
+         </div>
+
+      </div>
+   </div>
+</div>
   </div>
 </script>
