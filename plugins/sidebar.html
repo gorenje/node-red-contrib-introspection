@@ -378,6 +378,68 @@
          } else {
             $('#node-input-msgtrace-pause-debug-btn').hide()
          }
+
+         (function () {
+    let msgtracingpresentermode = () => {
+        // show the right sidebar
+        if (!$("#red-ui-sidebar-separator").is(":visible")) {
+            RED.actions.invoke("core:toggle-right-sidebar")
+        }
+
+        // show the left sidebar
+        if (!$("#red-ui-sidebar-left-separator").is(":visible")) {
+            RED.actions.invoke("core:toggle-left-sidebar")
+        }
+
+        // introspection sidebar assumed to be on top
+        if (!$('#func-introspection-tab-msgtrace').is(":visible")) {
+            $('[data-tab-id=IntrospectionMsgTrace]').trigger('click')
+        }
+
+        // debug container is assumed to be the bottom sidebar
+        if (!$('.red-ui-debug-container').is(":visible")) {
+            $('[data-tab-id=debug]').trigger('click')
+        }
+
+        if (!$('#red-ui-palette').is(":visible")) {
+            $('[data-tab-id=palette]').trigger('click')
+        }
+
+        if (!$('.red-ui-info-outline').is(":visible")) {
+            $('[data-tab-id=explorer]').trigger('click')
+        }
+        
+        // if coming from presentor more, footer might be hidden
+        if (!$('#red-ui-workspace-footer').is(":visible")) {
+            $('#red-ui-workspace-footer').toggle()
+            $('#red-ui-workspace-scroll-h').css('bottom', '36px')
+        }
+    }
+
+    let actionName = "presenter-mode:introspection-message-tracing"
+    let modeName = "Message Tracing"
+
+    RED.actions.remove(actionName)
+
+    if (RED.presenterMode) {
+        RED.presenterMode.add(modeName, msgtracingpresentermode)
+
+        RED.actions.add(actionName, () => {
+            msgtracingpresentermode()
+            RED.notify(`Activated ${modeName} mode`, { type: "success" })
+        })
+    } else {
+        RED.events.on("presenter-mode:initialised", () => {
+            RED.actions.add(actionName, () => {
+                msgtracingpresentermode()
+                RED.notify(`Activated ${modeName} mode`, { type: "success" })
+            })
+
+            RED.presenterMode.add(modeName, msgtracingpresentermode)
+        })
+    }
+})();
+
       }
       RED.events.on('flows:loaded', fillInSiderBarForm);
    };
