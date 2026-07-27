@@ -11,16 +11,17 @@ module.exports = function (RED) {
 
   function msgTracerOnReceiveHook(evnt) {
     try {
-      let nde = RED.nodes.getNode(evnt.destination.id)
-
-      nde.status({ fill: "green", shape: "ring", text: "msg received" })
-      setTimeout(() => { nde.status({}) }, 1000)
-
       RED.comms.publish("msgtracer:node-received",
         RED.util.encodeObject({
           nodeid: evnt.destination.id
         })
       )
+
+      let nde = RED.nodes.getNode(evnt.destination.id)
+      if (nde) {
+        nde.status({ fill: "green", shape: "ring", text: "msg received" })
+        setTimeout(() => { nde.status({}) }, 1000)
+      }
     } catch (ex) {
       console.error(ex)
     }
@@ -29,6 +30,12 @@ module.exports = function (RED) {
   function msgTracerOnReceiveHookWithDebug(evnt) {
     try {
       let nde = RED.nodes.getNode(evnt.destination.id)
+
+      if (!nde) {
+        console.log(`MsgTracer: ignoring event, node '${evnt.destination.id}' not found`)
+        console.log(evnt)
+        return
+      }
 
       // don't publish debug messages for junctions because they 
       // cause errors in handleDebugMessages in the client.
