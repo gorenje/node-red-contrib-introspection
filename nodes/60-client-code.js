@@ -114,15 +114,24 @@ module.exports = function (RED) {
     });
 
     node.on("input", function (msg, send, done) {
+      // these cause an circular "Converting circular structure to JSON" error when 
+      // encoding to JSON, so remove them before doing the JSONification.
+      if (cfg.removereqres) {
+        delete msg.req
+        delete msg.res
+      }
+
       // msg object may cause problem if there are circular references, so
       // do a pre-stringify before erroring out.
       try {
         JSON.stringify(msg)
       } catch (e) {
+        // overwrite msg because calling node.error(..) will failure with the same error!!!
+        // worse still, it will fail silently and cause Node-RED to stop.
         msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
         node.error(e)
       }
-
+      
       let defaultValues = {}
       
       let stupidLoop = (ruleIdx) => {
@@ -164,7 +173,14 @@ module.exports = function (RED) {
         }
       }
 
-      stupidLoop(0)
+      try {
+        stupidLoop(0)
+      } catch(e) {
+        // overwrite msg because calling node.error(..) will failure with the same error!!!
+        // worse still, it will fail silently and cause Node-RED to stop.
+        msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
+        node.error(e)
+      }
     });
   }
   

@@ -19,6 +19,9 @@ function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSen
       format: {
         value: "javascript"
       },
+      removereqres: {
+        value: false
+      },
       rules: {
           value: [{ t: "default", p: "payload", pt: "msg", to: "", tot: "str" }]
       }
@@ -117,7 +120,7 @@ function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSen
       tabs.activateTab("client-code-tabs-code-editor");
 
 
-      $('#node-inpclientcode-defaults-container').css('min-height', '150px').css('min-width', '450px').editableList({
+      $('#node-inpclientcode-defaults-container').css('max-height', '70vh').css('min-width', '15vw').editableList({
         addItem: function (container, i, opt) {
           var rule = opt;
           if (!rule.hasOwnProperty('t')) {
@@ -293,7 +296,7 @@ function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSen
       }
 
       // footer
-      height -= 40;
+      height -= 42;
       
       var editorRow = $("#dialog-form #client-code-tabs-code-editor>div.node-text-editor-row");
       height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
@@ -375,7 +378,17 @@ function handleClientCodeFrontend(event,data){if("execfunc"==data.msg){let doSen
               id="node-input-clientcode-editor" ></div>
       </div>
 
-      <input type="hidden" id="node-input-clientcode" autofocus="autofocus">
+      <input type="hidden" id="node-input-clientcode" autofocus="autofocus"></input>
+
+      <div class="form-row">
+        <input type="checkbox" id="node-input-removereqres"
+                           style="display:inline-block; width:35px; vertical-align:baseline;">
+        <label style="display: inline-block; width: 40%;"
+                   for="node-input-removereqres">
+              <i class="fa fa-filter"></i>
+              <span>Remove <code>msg.res</code> and <code>msg.req</code>?</span>
+            </label>        
+      </div>
     </div>
 
   </div>
@@ -420,7 +433,7 @@ Functionality:
     over the code defined in the node itself.
 
     <p>
-      Handling of Default Values
+      <b>Handling of Default Values</b>
     <p>
       Each default value can either be default, overwrite or fixed:
       <li>
@@ -429,8 +442,15 @@ Functionality:
         <ul><b>Fixed</b> - the default value is always used, ignoring whether the value is already set or not on the msg object. This is useful for constants or JSONata expressions - see loop counter below.</ul>
       </li>
     <p>
-      Loop counters using jsonata
+      <b>Loop counters using jsonata</b>
     <p>
       One usage of the default values is as an loop counter for messages going around and around. To define a loopcounter which is only defined on the msg object, define a default value <code>loopcounter</code> with the following JSONata code <code>$filter([$$.loopcounter,0,0], function ($v) { $exists($v) })[0] + 1</code> ($filter returns a single value if the array only contains one value else it returns an array).
-      
+
+    <p>
+      <b>Remove msg.req and msg.res</b>
+    <p>
+      The <code>msg.req</code> and <code>msg.res</code> can cause <code>Converting circular structure to JSON</code> errors when the message is passed to the ClientCode node. To avoid this from happening, remove these attributes from the message before passing the message to the node. 
+    <p>
+      <b>Node:</b> activating this implies that a http response following this ClientCode node will not work.      
+    <p>
 </script>
