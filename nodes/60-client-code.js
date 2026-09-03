@@ -126,10 +126,8 @@ module.exports = function (RED) {
       try {
         JSON.stringify(msg)
       } catch (e) {
-        // overwrite msg because calling node.error(..) will failure with the same error!!!
-        // worse still, it will fail silently and cause Node-RED to stop.
-        msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
         node.error(e)
+        return done()
       }
       
       let defaultValues = {}
@@ -176,10 +174,8 @@ module.exports = function (RED) {
       try {
         stupidLoop(0)
       } catch(e) {
-        // overwrite msg because calling node.error(..) will failure with the same error!!!
-        // worse still, it will fail silently and cause Node-RED to stop.
-        msg = `[Error in JSON.stringify(msg)]\n${e}\n[End Error]\n`
         node.error(e)
+        done()
       }
     });
   }
